@@ -180,7 +180,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbziPchTwXRBoXkUn-ivehN5D23weXUEVzXNTn0I75gZgRpwzoh5b557qRcqMW7MkVL6pQ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbz3efRpSCCK_V7ssOkUlVEn_7LePIl-YeFPR7nBvGlWEKR-HsG77nQduosGmGM-FxbmmA/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -230,7 +230,7 @@
         const ESTADO_INDICES = { Prestamos: 6, Soporte: 5 };
 
         function esAdmin() {
-            return googleToken !== null; // Unicamente tu cuenta de Google tiene privilegios completos
+            return googleToken !== null; 
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -420,10 +420,25 @@
 
                 tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
-                    if (admin && (seccionActual === 'Prestamos' || seccionActual === 'Soporte') && idx === ESTADO_INDICES[seccionActual]) {
+                    // Soporte colores: Verde si es "Solucionado", Amarillo si es pendiente/otro en la seccion de soporte
+                    if (seccionActual === 'Soporte' && idx === ESTADO_INDICES['Soporte']) {
+                        let colorClase = (v === "Solucionado") 
+                            ? "bg-emerald-100 text-emerald-800 border-emerald-200" 
+                            : "bg-amber-100 text-amber-800 border-amber-200";
+
+                        if (admin) {
+                            let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
+                            return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-semibold bg-white focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors">${opts}</select></td>`;
+                        } else {
+                            return `<td class="px-6 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ${colorClase}">${escaparHTML(v)}</span></td>`;
+                        }
+                    }
+
+                    if (admin && seccionActual === 'Prestamos' && idx === ESTADO_INDICES['Prestamos']) {
                         let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
                         return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-semibold bg-white focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors">${opts}</select></td>`;
                     }
+
                     return `<td class="px-6 py-3">${escaparHTML(v)}</td>`;
                 }).join('') + `<td class="px-6 py-3 text-xs font-medium text-slate-400">${escaparHTML(auditTimestamp)}</td><td class="px-6 py-3 text-xs font-medium text-slate-400">${escaparHTML(auditUser)}</td>`;
                 
@@ -615,3 +630,4 @@
     </script>
 </body>
 </html>
+        
