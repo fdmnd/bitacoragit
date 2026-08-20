@@ -74,17 +74,17 @@
                 { name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
                 { name: "cantidad", label: "Cantidad", type: "text" },
                 { name: "hora_entrega", label: "Hora Entrega", type: "time" },
-                { name: "hora_devolucion", label: "Hora Devolución", type: "time" },
-                { name: "estado_logistico", label: "Estado Logístico", type: "select", options: ["Pendiente", "Devuelto", "Bueno", "Dañado", "En Tránsito"] },
-                { name: "estado_fisico", label: "Estado Físico", type: "text" },
+                { name: "hora_devolucion", label: "Hora Devolucion", type: "time", required: false },
+                { name: "estado_logistico", label: "Estado Logistico", type: "select", options: ["Pendiente", "Devuelto", "Bueno", "Dañado", "En Tránsito"] },
+                { name: "estado_fisico", label: "Estado Fisico", type: "text" },
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ],
             Soporte: [
                 { name: "fecha_hora", label: "Fecha y Hora", type: "text" },
-                { name: "ubicacion", label: "Ubicación", type: "text" },
+                { name: "ubicacion", label: "Ubicacion", type: "text" },
                 { name: "equipo", label: "Equipo", type: "text" },
                 { name: "tipo_mantenimiento", label: "Tipo de Mantenimiento", type: "text" },
-                { name: "descripcion", label: "Descripción de la Tarea", type: "text" },
+                { name: "descripcion", label: "Descripcion de la Tarea", type: "text" },
                 { name: "estado_final", label: "Estado Final", type: "select", options: ["Abierto", "En Proceso", "Solucionado", "Derivado a Terceros"] },
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ],
@@ -238,7 +238,8 @@
                 if (val === undefined || val === '') {
                     if (!editId) {
                         if (c.type === 'date') val = hoyYMD;
-                        if (c.type === 'time') val = horaHM;
+                        // Solo asigna hora actual si es tipo time y NO es la hora de devolución
+                        if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM;
                     }
                 }
                 val = val || '';
@@ -273,7 +274,7 @@
             let toast = document.getElementById('toast'); 
             toast.innerText = m; 
             toast.className = `fixed bottom-5 right-5 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition ${t === 'error' ? 'bg-red-600' : 'bg-green-600'}`; 
-            toast.classList.add('hidden'); 
+            toast.classList.remove('hidden'); 
             setTimeout(() => toast.classList.add('hidden'), 4000); 
         }
 
