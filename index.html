@@ -180,7 +180,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxtlTPp9Xal_6KOpUBdu8upJpkcX2V2LAbucHoqBP3RJ4t7Wz95sI2f77Z-aWTFUKQ-Mg/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbziPchTwXRBoXkUn-ivehN5D23weXUEVzXNTn0I75gZgRpwzoh5b557qRcqMW7MkVL6pQ/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -230,7 +230,7 @@
         const ESTADO_INDICES = { Prestamos: 6, Soporte: 5 };
 
         function esAdmin() {
-            return googleToken !== null || customUser === 'mgonzalez';
+            return googleToken !== null; // Unicamente tu cuenta de Google tiene privilegios completos
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -250,7 +250,7 @@
                     } catch (e) { cerrarSesion(); }
                 } else if (savedCustomUser) {
                     customUser = savedCustomUser;
-                    activarSesionUI(savedCustomUser + (savedCustomUser === 'visita' ? ' (Solo lectura)' : ''));
+                    activarSesionUI(savedCustomUser + ' (Solo lectura)');
                     return;
                 }
             }
@@ -292,7 +292,6 @@
             document.getElementById('login-container').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
 
-            // Si es visita, ocultamos botones de creacion globalmente
             if (!esAdmin()) {
                 document.getElementById('btn-nuevo').classList.add('hidden');
             }
