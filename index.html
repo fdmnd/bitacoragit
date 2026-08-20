@@ -237,11 +237,17 @@
             form.innerHTML = (editId ? `<input type="hidden" id="edit-id" value="${editId}">` : '') + 
             campos.map((c, i) => {
                 let val = valores[i];
+
+                // Si es un NUEVO registro y es la hora de devolución, se oculta y envía vacía
+                if (!editId && seccionActual === 'Prestamos' && c.name === 'hora_devolucion') {
+                    return `<input type="hidden" name="campo_${i}" value="">`;
+                }
+
                 if (val === undefined || val === '') {
                     if (!editId) {
                         if (c.type === 'date') val = hoyYMD;
                         if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM;
-                        if (c.type === 'datetime-local') val = ahoraDT; // Carga fecha y hora actual editable
+                        if (c.type === 'datetime-local') val = ahoraDT;
                     }
                 }
                 val = val || '';
