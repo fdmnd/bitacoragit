@@ -229,6 +229,10 @@
         const JSON_KEY_MAP = { Prestamos: "prestamos", Soporte: "soporte", Uso_Sala: "sala", Permanente: "permanente" };
         const ESTADO_INDICES = { Prestamos: 6, Soporte: 5 };
 
+        function esAdmin() {
+            return googleToken !== null || customUser === 'mgonzalez';
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const savedToken = localStorage.getItem('googleToken');
             const savedCustomUser = localStorage.getItem('customUser');
@@ -288,7 +292,8 @@
             document.getElementById('login-container').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
 
-            if (customUser === 'visita') {
+            // Si es visita, ocultamos botones de creacion globalmente
+            if (!esAdmin()) {
                 document.getElementById('btn-nuevo').classList.add('hidden');
             }
 
@@ -342,8 +347,10 @@
                 panelBuscador.classList.remove('hidden');
             } else {
                 document.getElementById('titulo-seccion').innerText = seccion.replace('_', ' ');
-                if (customUser !== 'visita') {
+                if (esAdmin()) {
                     btnNuevo.classList.remove('hidden');
+                } else {
+                    btnNuevo.classList.add('hidden');
                 }
                 if (panelPendientes && (seccion === 'Prestamos' || seccion === 'Soporte')) {
                     panelPendientes.classList.remove('hidden');
@@ -385,8 +392,8 @@
             const head = document.getElementById('tabla-head'), body = document.getElementById('tabla-body');
             let campos = CAMPOS_SECCION[seccionActual], jsonKey = JSON_KEY_MAP[seccionActual];
             
-            let esVisita = (customUser === 'visita');
-            let thAcciones = esVisita ? '' : `<th class="px-6 py-4">Acciones</th>`;
+            let admin = esAdmin();
+            let thAcciones = admin ? `<th class="px-6 py-4">Acciones</th>` : '';
             
             head.innerHTML = `<tr>${thAcciones}` + campos.map(c => `<th class="px-6 py-4">${c.label}</th>`).join('') + `<th class="px-6 py-4">Ult. Mod.</th><th class="px-6 py-4">Usuario</th></tr>`;
             
@@ -394,7 +401,7 @@
             body.innerHTML = '';
             
             if (filas.length === 0) { 
-                let totalCols = campos.length + (esVisita ? 2 : 3);
+                let totalCols = campos.length + (admin ? 3 : 2);
                 body.innerHTML = `<tr><td colspan="${totalCols}" class="px-6 py-12 text-center text-slate-400 font-medium"><div class="flex flex-col items-center justify-center"><svg class="w-12 h-12 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>No hay registros para mostrar</div></td></tr>`; 
                 return; 
             }
@@ -407,14 +414,14 @@
                 let auditUser = valoresRestantes[valoresRestantes.length - 1] || '';
                 let datosCampos = valoresRestantes.slice(0, campos.length);
 
-                let tdAcciones = esVisita ? '' : `<td class="px-6 py-3 flex gap-2">
+                let tdAcciones = admin ? `<td class="px-6 py-3 flex gap-2">
                     <button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button>
                     <button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button>
-                </td>`;
+                </td>` : '';
 
                 tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
-                    if (!esVisita && (seccionActual === 'Prestamos' || seccionActual === 'Soporte') && idx === ESTADO_INDICES[seccionActual]) {
+                    if (admin && (seccionActual === 'Prestamos' || seccionActual === 'Soporte') && idx === ESTADO_INDICES[seccionActual]) {
                         let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
                         return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-semibold bg-white focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors">${opts}</select></td>`;
                     }
@@ -426,6 +433,7 @@
         }
 
         async function cambiarEstadoRapido(id, nuevoEstado) {
+            if (!esAdmin()) return;
             let observacion = prompt("¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)", "");
             if (observacion === null) { cargarDatosServidor(); return; }
 
@@ -447,6 +455,7 @@
         }
 
         async function eliminarRegistro(id) {
+            if (!esAdmin()) return;
             if (!confirm("¿Estas seguro de eliminar este registro? Esta accion no se puede deshacer.")) return;
             let targetMonth = document.getElementById('month-selector').value;
             mostrarToast("Eliminando registro...", "info");
@@ -499,14 +508,14 @@
         }
 
         function abrirModalNuevo() { 
-            if (customUser === 'visita') return;
+            if (!esAdmin()) return;
             document.getElementById('modal-titulo').innerText = "Nuevo Registro"; 
             construirFormularioModal(); 
             document.getElementById('modal').classList.remove('hidden'); 
         }
 
         function abrirModalEditar(id) {
-            if (customUser === 'visita') return;
+            if (!esAdmin()) return;
             let registro = globalDataCache.historial[JSON_KEY_MAP[seccionActual]].find(r => r[0] === id);
             if (!registro) return;
             document.getElementById('modal-titulo').innerText = "Editar Registro";
@@ -515,6 +524,7 @@
         }
 
         function construirFormularioModal(editId = null, valores = []) {
+            if (!esAdmin()) return;
             let form = document.getElementById('modal-form');
             let campos = CAMPOS_SECCION[seccionActual];
             
@@ -552,7 +562,7 @@
 
         async function guardarRegistro(event) {
             event.preventDefault();
-            if (customUser === 'visita') return;
+            if (!esAdmin()) return;
             const btn = document.getElementById('btn-guardar');
             btn.disabled = true; 
             btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Procesando...`;
@@ -597,6 +607,7 @@
                 ? 'bg-white text-rose-600 border-rose-200 shadow-rose-500/10' 
                 : 'bg-slate-900 text-white border-slate-700 shadow-slate-900/20'
             }`; 
+            toast.classList.add('flex');
             toast.classList.remove('hidden'); 
             setTimeout(() => toast.classList.add('hidden'), 4000); 
         }
