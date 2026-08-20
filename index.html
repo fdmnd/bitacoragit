@@ -63,28 +63,92 @@
     <div id="toast" class="fixed bottom-5 right-5 hidden bg-gray-900 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition"></div>
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwy4FnaLC_1bTDLZ73JjDye17a69hJDLN7FwCuHAK3vsdIqXDMqjHSBGNjmJOWQpMClig/exec"; 
-        let googleToken = null, seccionActual = "Prestamos", globalDataCache = null;
+        let googleToken = null; 
+        let seccionActual = "Prestamos";
+        let globalDataCache = null;
+
         const CAMPOS_SECCION = {
-            Prestamos: [{ name: "fecha", label: "Fecha", type: "date" }, { name: "solicitante", label: "Solicitante", type: "text" }, { name: "equipo", label: "Equipo", type: "text" }, { name: "observaciones", label: "Observaciones", type: "text", required: false }, { name: "estado", label: "Estado", type: "select", options: ["Pendiente", "Devuelto"] }, { name: "retira", label: "Retira", type: "text" }, { name: "entrega", label: "Entrega", type: "text" }, { name: "firma", label: "Firma", type: "text" }],
-            Soporte: [{ name: "fecha", label: "Fecha", type: "date" }, { name: "docente", label: "Docente", type: "text" }, { name: "problema", label: "Problema", type: "text" }, { name: "equipo", label: "Equipo", type: "text" }, { name: "estado", label: "Estado", type: "select", options: ["Abierto", "En Proceso", "Solucionado", "Derivado a Terceros"] }, { name: "solucion", label: "Solución", type: "text", required: false }],
-            Uso_Sala: [{ name: "fecha", label: "Fecha", type: "date" }, { name: "docente", label: "Docente", type: "text" }, { name: "curso", label: "Curso", type: "text" }, { name: "hora_inicio", label: "Hora Inicio", type: "time" }, { name: "hora_fin", label: "Hora Fin", type: "time" }, { name: "observaciones", label: "Observaciones", type: "text", required: false }],
-            Permanente: [{ name: "equipo", label: "Equipo", type: "text" }, { name: "ubicacion", label: "Ubicación", type: "text" }, { name: "n_serie", label: "N° Serie", type: "text" }, { name: "estado", label: "Estado", type: "select", options: ["Operativo", "En Reparación", "Dado de Baja"] }, { name: "responsable", label: "Responsable", type: "text", required: false }]
+            Prestamos: [
+                { name: "fecha", label: "Fecha", type: "date" },
+                { name: "solicitante", label: "Solicitante", type: "text" },
+                { name: "equipo", label: "Equipo", type: "text" },
+                { name: "observaciones", label: "Observaciones", type: "text", required: false },
+                { name: "estado", label: "Estado", type: "select", options: ["Pendiente", "Devuelto"] },
+                { name: "retira", label: "Retira", type: "text" },
+                { name: "entrega", label: "Entrega", type: "text" },
+                { name: "firma", label: "Firma", type: "text" }
+            ],
+            Soporte: [
+                { name: "fecha", label: "Fecha", type: "date" },
+                { name: "docente", label: "Docente", type: "text" },
+                { name: "problema", label: "Problema", type: "text" },
+                { name: "equipo", label: "Equipo", type: "text" },
+                { name: "estado", label: "Estado", type: "select", options: ["Abierto", "En Proceso", "Solucionado", "Derivado a Terceros"] },
+                { name: "solucion", label: "Solución", type: "text", required: false }
+            ],
+            Uso_Sala: [
+                { name: "fecha", label: "Fecha", type: "date" },
+                { name: "docente", label: "Docente", type: "text" },
+                { name: "curso", label: "Curso", type: "text" },
+                { name: "hora_inicio", label: "Hora Inicio", type: "time" },
+                { name: "hora_fin", label: "Hora Fin", type: "time" },
+                { name: "observaciones", label: "Observaciones", type: "text", required: false }
+            ],
+            Permanente: [
+                { name: "equipo", label: "Equipo", type: "text" },
+                { name: "ubicacion", label: "Ubicación", type: "text" },
+                { name: "n_serie", label: "N° Serie", type: "text" },
+                { name: "estado", label: "Estado", type: "select", options: ["Operativo", "En Reparación", "Dado de Baja"] },
+                { name: "responsable", label: "Responsable", type: "text", required: false }
+            ]
         };
+
         const JSON_KEY_MAP = { Prestamos: "prestamos", Soporte: "soporte", Uso_Sala: "sala", Permanente: "permanente" };
         const ESTADO_INDICES = { Prestamos: 4, Soporte: 4 };
 
+        // Recuperar sesión activa por 24 horas al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedToken = localStorage.getItem('googleToken');
+            const savedTime = localStorage.getItem('tokenTimestamp');
+            if (savedToken && savedTime && (Date.now() - savedTime < 24 * 60 * 60 * 1000)) {
+                googleToken = savedToken;
+                try {
+                    const base64Url = googleToken.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const payload = JSON.parse(atob(base64));
+                    document.getElementById('user-email').innerText = payload.email;
+                    document.getElementById('login-container').classList.add('hidden');
+                    document.getElementById('app-container').classList.remove('hidden');
+                    cargarDatosServidor();
+                } catch (e) {
+                    cerrarSesion();
+                }
+            }
+        });
+
         function handleCredentialResponse(response) {
             googleToken = response.credential;
-            const base64Url = googleToken.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const payload = JSON.parse(atob(base64));
-            document.getElementById('user-email').innerText = payload.email;
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            cargarDatosServidor();
+            localStorage.setItem('googleToken', googleToken);
+            localStorage.setItem('tokenTimestamp', Date.now());
+            try {
+                const base64Url = googleToken.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const payload = JSON.parse(atob(base64));
+                document.getElementById('user-email').innerText = payload.email;
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                cargarDatosServidor();
+            } catch (e) {
+                cerrarSesion();
+            }
         }
 
-        function cerrarSesion() { googleToken = null; location.reload(); }
+        function cerrarSesion() {
+            localStorage.removeItem('googleToken');
+            localStorage.removeItem('tokenTimestamp');
+            googleToken = null;
+            location.reload();
+        }
 
         function cambiarSeccion(seccion) {
             seccionActual = seccion;
@@ -100,18 +164,26 @@
             try {
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, action: "get_data" }) });
                 let result = await res.json();
-                if(result.status !== 'success') { if(result.message === "No autorizado") { cerrarSesion(); return; } throw new Error(result.message); }
+                if(result.status !== 'success') { 
+                    if(result.message === "No autorizado") { cerrarSesion(); return; } 
+                    throw new Error(result.message); 
+                }
                 globalDataCache = result.data;
                 if(globalDataCache.pendientes) {
                     document.getElementById('panel-pendientes').classList.remove('hidden');
                     document.getElementById('count-prestamos-pendientes').innerText = globalDataCache.pendientes.prestamos?.length || 0;
                     document.getElementById('count-soporte-pendientes').innerText = globalDataCache.pendientes.soporte?.length || 0;
                 }
-                renderizarTabla(); ocultarToast();
-            } catch (err) { mostrarToast('Error: ' + err.message, 'error'); }
+                renderizarTabla(); 
+                ocultarToast();
+            } catch (err) { 
+                mostrarToast('Error: ' + err.message, 'error'); 
+            }
         }
 
-        function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
+        function escaparHTML(str) { 
+            return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
+        }
 
         function renderizarTabla() {
             if (!globalDataCache || !globalDataCache.historial) return;
@@ -145,7 +217,12 @@
             } catch (err) { mostrarToast("Error: " + err.message, "error"); cargarDatosServidor(); }
         }
 
-        function abrirModalNuevo() { document.getElementById('modal-titulo').innerText = "Nuevo - " + seccionActual.replace('_', ' '); construirFormularioModal(); document.getElementById('modal').classList.remove('hidden'); }
+        function abrirModalNuevo() { 
+            document.getElementById('modal-titulo').innerText = "Nuevo - " + seccionActual.replace('_', ' '); 
+            construirFormularioModal(); 
+            document.getElementById('modal').classList.remove('hidden'); 
+        }
+
         function abrirModalEditar(id) {
             let registro = globalDataCache.historial[JSON_KEY_MAP[seccionActual]].find(r => r[0] === id);
             if (!registro) return;
@@ -156,32 +233,69 @@
 
         function construirFormularioModal(editId = null, valores = []) {
             let form = document.getElementById('modal-form');
+            let campos = CAMPOS_SECCION[seccionActual];
+            
+            // Obtener fecha y hora actual en Santiago para nuevos registros por defecto
+            const hoyYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
+            const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
+
             form.innerHTML = (editId ? `<input type="hidden" id="edit-id" value="${editId}">` : '') + 
-            CAMPOS_SECCION[seccionActual].map((c, i) => {
-                let val = valores[i] || '', req = c.required !== false ? 'required' : '';
+            campos.map((c, i) => {
+                let val = valores[i];
+                if (val === undefined || val === '') {
+                    if (!editId) {
+                        if (c.type === 'date') val = hoyYMD;
+                        if (c.type === 'time') val = horaHM;
+                    }
+                }
+                val = val || '';
+                let req = c.required !== false ? 'required' : '';
                 return `<div><label class="block text-xs font-bold uppercase text-gray-600 mb-1">${c.label}</label>${c.type === 'select' ? `<select name="campo_${i}" ${req} class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">${c.options.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>` : `<input type="${c.type}" name="campo_${i}" value="${escaparHTML(val)}" ${req} class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">`}</div>`;
             }).join('') + `<div class="flex justify-end gap-2 mt-4 pt-2 border-t"><button type="button" onclick="cerrarModal()" class="bg-gray-200 px-4 py-2 rounded text-sm">Cancelar</button><button type="submit" id="btn-guardar" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">Guardar</button></div>`;
             document.getElementById('modal').classList.remove('hidden');
         }
 
-        function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
+        function cerrarModal() { 
+            document.getElementById('modal').classList.add('hidden'); 
+        }
 
         async function guardarRegistro(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-guardar');
-            btn.disabled = true; btn.innerText = "Guardando...";
-            let payload = { token: googleToken, seccion: seccionActual, action: document.getElementById('edit-id') ? "edit_row" : "insert", rowValues: CAMPOS_SECCION[seccionActual].map((_, i) => event.target.elements[`campo_${i}`].value) };
+            btn.disabled = true; 
+            btn.innerText = "Guardando...";
+            let payload = { 
+                token: googleToken, 
+                seccion: seccionActual, 
+                action: document.getElementById('edit-id') ? "edit_row" : "insert", 
+                rowValues: CAMPOS_SECCION[seccionActual].map((_, i) => event.target.elements[`campo_${i}`].value) 
+            };
             if (payload.action === "edit_row") payload.id = document.getElementById('edit-id').value;
             try {
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
                 let result = await res.json();
                 if(result.status !== 'success') throw new Error(result.message);
-                cerrarModal(); mostrarToast("Guardado!", "success"); cargarDatosServidor();
-            } catch (err) { mostrarToast("Error: " + err.message, "error"); btn.disabled = false; btn.innerText = "Guardar"; }
+                cerrarModal(); 
+                mostrarToast("Guardado!", "success"); 
+                cargarDatosServidor();
+            } catch (err) { 
+                mostrarToast("Error: " + err.message, "error"); 
+                btn.disabled = false; 
+                btn.innerText = "Guardar"; 
+            }
         }
 
-        function mostrarToast(m, t) { let toast = document.getElementById('toast'); toast.innerText = m; toast.className = `fixed bottom-5 right-5 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition ${t === 'error' ? 'bg-red-600' : 'bg-green-600'}`; toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 4000); }
-        function ocultarToast() { document.getElementById('toast').classList.add('hidden'); }
+        function mostrarToast(m, t) { 
+            let toast = document.getElementById('toast'); 
+            toast.innerText = m; 
+            toast.className = `fixed bottom-5 right-5 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition ${t === 'error' ? 'bg-red-600' : 'bg-green-600'}`; 
+            toast.classList.remove('hidden'); 
+            setTimeout(() => toast.classList.add('hidden'), 4000); 
+        }
+
+        function ocultarToast() { 
+            document.getElementById('toast').classList.add('hidden'); 
+        }
     </script>
 </body>
 </html>
