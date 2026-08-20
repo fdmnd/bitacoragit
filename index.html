@@ -9,11 +9,9 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        /* Clases personalizadas para navegacion activa */
         .tab-active { background-color: #2563eb; color: #ffffff; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
         .tab-inactive { color: #64748b; }
         .tab-inactive:hover { background-color: #f1f5f9; color: #0f172a; }
-        /* Scrollbar suave */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -43,14 +41,22 @@
         
         <!-- Header -->
         <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
                 <div class="flex items-center gap-3">
                     <div class="bg-blue-600 p-2 rounded-lg">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     </div>
                     <h1 class="text-xl font-bold text-slate-800 tracking-tight">Bitacora TI</h1>
                 </div>
-                <div class="flex items-center gap-4">
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Selector de Meses -->
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <select id="month-selector" onchange="cambiarMes()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-1.5 outline-none font-semibold shadow-sm transition-colors cursor-pointer hover:border-blue-300">
+                            <option value="">Cargando meses...</option>
+                        </select>
+                    </div>
+
                     <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
                         <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         <span id="user-email" class="text-sm text-slate-600 font-medium truncate max-w-[150px] md:max-w-xs"></span>
@@ -74,8 +80,7 @@
         </nav>
 
         <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
-            
-            <!-- Panel de Indicadores (Tarjetas) -->
+            <!-- Tarjetas de Pendientes -->
             <div id="panel-pendientes" class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
                 <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400"></div>
@@ -100,7 +105,6 @@
                 </div>
             </div>
 
-            <!-- Cabecera de Seccion Principal -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
                     <h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Prestamos</h2>
@@ -112,7 +116,6 @@
                 </button>
             </div>
 
-            <!-- Contenedor de la Tabla -->
             <div id="tabla-container" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse whitespace-nowrap">
@@ -122,7 +125,7 @@
                 </div>
             </div>
 
-            <!-- Panel del Buscador Global -->
+            <!-- Panel Buscador -->
             <div id="panel-Buscador" class="hidden">
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
                     <div class="max-w-2xl mx-auto text-center mb-8">
@@ -142,7 +145,7 @@
         </main>
     </div>
 
-    <!-- Modal Formulario -->
+    <!-- Modal -->
     <div id="modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-opacity">
         <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
@@ -157,11 +160,11 @@
         </div>
     </div>
 
-    <!-- Toast Notificaciones -->
+    <!-- Toast -->
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxbxrPgCrJ46eeORmIb05idQsx8dH20D4PHoCy18Asoooi5B7ssbDOFBpFS9b_G61-5ng/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycby-b3LnQm01NSNhVMPW5B2lHFwQkf-Qr_OQzKhdbYKn0qQkLO9_Zh50YM2_L2hay0AZHA/exec"; 
         let googleToken = null; 
         let seccionActual = "Prestamos";
         let globalDataCache = null;
@@ -201,7 +204,7 @@
                 { name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
                 { name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
                 { name: "cantidad", label: "Cantidad", type: "text" },
-                { name: "estado", label: "Estado", type: "select", options: ["Operativo", "En Reparación", "Dado de Baja"] },
+                { name: "estado", label: "Estado", type: "select", options: ["Entregado", "Operativo", "En Reparacion", "Dado de Baja"] },
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ]
         };
@@ -221,7 +224,7 @@
                     document.getElementById('user-email').innerText = payload.email;
                     document.getElementById('login-container').classList.add('hidden');
                     document.getElementById('app-container').classList.remove('hidden');
-                    cargarDatosServidor();
+                    cargarMeses().then(() => cargarDatosServidor());
                 } catch (e) { cerrarSesion(); }
             } else {
                 cerrarSesion(false);
@@ -239,7 +242,7 @@
                 document.getElementById('user-email').innerText = payload.email;
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
-                cargarDatosServidor();
+                cargarMeses().then(() => cargarDatosServidor());
             } catch (e) { cerrarSesion(); }
         }
 
@@ -248,6 +251,21 @@
             localStorage.removeItem('tokenTimestamp');
             googleToken = null;
             if (recargar) location.reload();
+        }
+
+        async function cargarMeses() {
+            try {
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, action: "get_months" }) });
+                let result = await res.json();
+                if(result.status === 'success' && result.data.length > 0) {
+                    let selector = document.getElementById('month-selector');
+                    selector.innerHTML = result.data.map(m => `<option value="${m}">${m}</option>`).join('');
+                }
+            } catch(e) { console.error("Error cargando meses", e); }
+        }
+
+        function cambiarMes() {
+            cargarDatosServidor();
         }
 
         function cambiarSeccion(seccion) {
@@ -288,11 +306,12 @@
         async function cargarDatosServidor() {
             if (!googleToken) return cerrarSesion();
             mostrarToast("Cargando base de datos...", "info");
+            let targetMonth = document.getElementById('month-selector').value;
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, action: "get_data" }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, action: "get_data", targetMonth }) });
                 let result = await res.json();
                 if(result.status !== 'success') { 
-                    if(result.message === "No autorizado") { cerrarSesion(); return; } 
+                    if(result.message === "No autorizado") return cerrarSesion();
                     throw new Error(result.message); 
                 }
                 globalDataCache = result.data;
@@ -351,9 +370,10 @@
             let observacion = prompt("¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)", "");
             if (observacion === null) { cargarDatosServidor(); return; }
 
+            let targetMonth = document.getElementById('month-selector').value;
             mostrarToast("Actualizando estado...", "info");
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, seccion: seccionActual, action: "update_status", id, nuevoEstado, observacion }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, seccion: seccionActual, action: "update_status", id, nuevoEstado, observacion, targetMonth }) });
                 let result = await res.json();
                 if(result.status !== 'success') {
                     if (result.message === "No autorizado") return cerrarSesion();
@@ -369,9 +389,10 @@
 
         async function eliminarRegistro(id) {
             if (!confirm("¿Estas seguro de eliminar este registro? Esta accion no se puede deshacer.")) return;
+            let targetMonth = document.getElementById('month-selector').value;
             mostrarToast("Eliminando registro...", "info");
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, seccion: seccionActual, action: "delete_row", id }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, seccion: seccionActual, action: "delete_row", id, targetMonth }) });
                 let result = await res.json();
                 if(result.status !== 'success') {
                     if (result.message === "No autorizado") return cerrarSesion();
@@ -474,9 +495,11 @@
             btn.disabled = true; 
             btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Procesando...`;
             
+            let targetMonth = document.getElementById('month-selector').value;
             let payload = { 
                 token: googleToken, 
                 seccion: seccionActual, 
+                targetMonth,
                 action: document.getElementById('edit-id') ? "edit_row" : "insert", 
                 rowValues: CAMPOS_SECCION[seccionActual].map((_, i) => event.target.elements[`campo_${i}`].value) 
             };
