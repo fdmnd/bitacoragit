@@ -80,7 +80,7 @@
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ],
             Soporte: [
-                { name: "fecha_hora", label: "Fecha y Hora", type: "text" },
+                { name: "fecha_hora", label: "Fecha y Hora", type: "datetime-local" },
                 { name: "ubicacion", label: "Ubicacion", type: "text" },
                 { name: "equipo", label: "Equipo", type: "text" },
                 { name: "tipo_mantenimiento", label: "Tipo de Mantenimiento", type: "text" },
@@ -229,8 +229,10 @@
         function construirFormularioModal(editId = null, valores = []) {
             let form = document.getElementById('modal-form');
             let campos = CAMPOS_SECCION[seccionActual];
+            
             const hoyYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
             const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
+            const ahoraDT = `${hoyYMD}T${horaHM}`;
 
             form.innerHTML = (editId ? `<input type="hidden" id="edit-id" value="${editId}">` : '') + 
             campos.map((c, i) => {
@@ -238,8 +240,8 @@
                 if (val === undefined || val === '') {
                     if (!editId) {
                         if (c.type === 'date') val = hoyYMD;
-                        // Solo asigna hora actual si es tipo time y NO es la hora de devolución
                         if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM;
+                        if (c.type === 'datetime-local') val = ahoraDT; // Carga fecha y hora actual editable
                     }
                 }
                 val = val || '';
