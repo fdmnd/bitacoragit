@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión TI - Centro Educacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-wide">Gestión TI</h1>
+        <div id="userProfile" class="hidden text-sm font-medium bg-slate-800 px-3 py-1 rounded"></div>
+    </nav>
+
+    <div id="alertBox" class="hidden w-full p-4 text-center text-white font-semibold transition-all duration-300 z-50 absolute top-0 shadow-lg"></div>
+
+    <div class="flex overflow-x-auto bg-white shadow-sm border-b">
+        <button onclick="switchTab('soporte')" class="tab-btn px-6 py-4 border-b-4 border-blue-600 font-bold focus:outline-none">Soporte</button>
+        <button onclick="switchTab('sala')" class="tab-btn px-6 py-4 border-b-4 border-transparent text-slate-500 hover:text-blue-600 focus:outline-none font-medium">Uso Sala</button>
+        <button onclick="switchTab('prestamo')" class="tab-btn px-6 py-4 border-b-4 border-transparent text-slate-500 hover:text-blue-600 focus:outline-none font-medium">Préstamos</button>
+        <button onclick="switchTab('permanente')" class="tab-btn px-6 py-4 border-b-4 border-transparent text-slate-500 hover:text-blue-600 focus:outline-none font-medium">Permanentes</button>
+        <button onclick="switchTab('pendientes')" class="tab-btn px-6 py-4 border-b-4 border-transparent text-red-600 hover:text-red-800 focus:outline-none font-bold">Panel Pendientes</button>
+    </div>
+
+    <main class="flex-grow p-4 md:p-8 overflow-y-auto relative">
+        
+        <!-- Módulo de Seguridad -->
+        <div id="loginOverlay" class="absolute inset-0 bg-slate-100 z-40 flex flex-col items-center justify-center">
+            <div class="bg-white p-8 rounded-lg shadow-xl text-center">
+                <h2 class="text-2xl font-bold mb-2 text-slate-800">Autenticación Requerida</h2>
+                <p class="text-slate-500 mb-6 text-sm">Acceso exclusivo para administración TI.</p>
+                <div id="g_id_onload"
+                     data-client_id="1063772408490-0fipirlhukj70uvol4k2pjvehp753c5t.apps.googleusercontent.com"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-theme="filled_black" data-size="large"></div>
+            </div>
+        </div>
+
+        <!-- FORMULARIO: SOPORTE -->
+        <section id="soporte" class="tab-content max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Registro de Soporte Técnico</h2>
+            <form id="formSoporte" onsubmit="enviarDatos(event, 'Soporte')">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Fecha y Hora</label>
+                        <input type="datetime-local" id="sop_fecha" class="w-full border rounded p-2.5" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Ubicación</label>
+                        <input type="text" id="sop_ubicacion" class="w-full border rounded p-2.5" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Equipo</label>
+                        <input type="text" id="sop_equipo" class="w-full border rounded p-2.5" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Tipo de Mantenimiento</label>
+                        <select id="sop_tipo" class="w-full border rounded p-2.5 bg-white" required>
+                            <option value="Preventivo">Preventivo</option>
+                            <option value="Correctivo">Correctivo</option>
+                            <option value="Red">Red</option>
+                            <option value="Software">Software</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Soporte a usuario">Soporte a usuario</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold mb-1">Descripción de la Tarea</label>
+                    <textarea id="sop_desc" rows="3" class="w-full border rounded p-2.5" required></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Estado Final</label>
+                        <select id="sop_estado" class="w-full border rounded p-2.5 bg-white">
+                            <option value="Solucionado">Solucionado</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Derivado a Terceros">Derivado a Terceros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Observaciones</label>
+                        <input type="text" id="sop_obs" class="w-full border rounded p-2.5">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3.5 rounded-lg hover:bg-blue-800 transition">Guardar Soporte</button>
+            </form>
+        </section>
+
+        <!-- FORMULARIO: USO DE SALA -->
+        <section id="sala" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Registro de Uso de Sala</h2>
+            <form id="formSala" onsubmit="enviarDatos(event, 'Uso_Sala')">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div><label class="block text-sm font-semibold mb-1">Fecha</label><input type="date" id="sal_fecha" class="w-full border rounded p-2.5" required></div>
+                    <div><label class="block text-sm font-semibold mb-1">Hora</label><input type="time" id="sal_hora" class="w-full border rounded p-2.5" required></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Curso o Usuario</label>
+                        <select id="sal_curso" class="w-full border rounded p-2.5 bg-white" required>
+                            <optgroup label="Básica">
+                                <option value="1 Básico A">1° Básico A</option>
+                                <option value="8 Básico D">8° Básico D</option>
+                            </optgroup>
+                            <optgroup label="Media">
+                                <option value="1 Medio A">1° Medio A</option>
+                                <option value="4 Medio D">4° Medio D</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div><label class="block text-sm font-semibold mb-1">Profesor Responsable</label><input type="text" id="sal_profesor" class="w-full border rounded p-2.5" required></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Asignatura</label>
+                        <select id="sal_asignatura" class="w-full border rounded p-2.5 bg-white" required>
+                            <option value="Matemática">Matemática</option>
+                            <option value="Lenguaje">Lenguaje</option>
+                            <option value="Ciencias">Ciencias</option>
+                            <option value="Historia">Historia</option>
+                            <option value="Taller">Taller / PAES</option>
+                            <option value="Otra">Otra</option>
+                        </select>
+                    </div>
+                    <div><label class="block text-sm font-semibold mb-1">Observaciones</label><input type="text" id="sal_obs" class="w-full border rounded p-2.5"></div>
+                </div>
+                <div class="mb-6"><label class="block text-sm font-semibold mb-1">Actividad Realizada</label><textarea id="sal_actividad" rows="2" class="w-full border rounded p-2.5" required></textarea></div>
+                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3.5 rounded-lg hover:bg-blue-800 transition">Registrar Uso</button>
+            </form>
+        </section>
+
+        <!-- FORMULARIO: PRÉSTAMOS TEMPORALES -->
+        <section id="prestamo" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Préstamos de Equipamiento</h2>
+            <form id="formPrestamo" onsubmit="enviarDatos(event, 'Prestamos')">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+                    <div class="col-span-1"><label class="block text-sm font-semibold mb-1">Fecha</label><input type="date" id="pre_fecha" class="w-full border rounded p-2.5" required></div>
+                    <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Profesor/a - Sala</label><input type="text" id="pre_profesor" class="w-full border rounded p-2.5" required></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+                    <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Equipo Prestado</label><input type="text" id="pre_equipo" class="w-full border rounded p-2.5" required></div>
+                    <div class="col-span-1"><label class="block text-sm font-semibold mb-1">Cantidad</label><input type="number" id="pre_cant" value="1" min="1" max="99" class="w-full border rounded p-2.5" required></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div><label class="block text-sm font-semibold mb-1">Hora Entrega</label><input type="time" id="pre_hora" class="w-full border rounded p-2.5" required></div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Estado Físico Insumo</label>
+                        <select id="pre_estadoinsumo" class="w-full border rounded p-2.5 bg-white">
+                            <option value="Bueno">Bueno</option>
+                            <option value="Con detalles estéticos">Con detalles estéticos</option>
+                            <option value="Deficiente">Deficiente</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="hidden" id="pre_estadologistico" value="Pendiente">
+                <div class="mb-6"><label class="block text-sm font-semibold mb-1">Observaciones</label><input type="text" id="pre_obs" class="w-full border rounded p-2.5"></div>
+                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3.5 rounded-lg hover:bg-blue-800 transition">Registrar Préstamo</button>
+            </form>
+        </section>
+
+        <!-- FORMULARIO: PRÉSTAMO PERMANENTE -->
+        <section id="permanente" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Asignación Permanente</h2>
+            <form id="formPermanente" onsubmit="enviarDatos(event, 'Permanente')">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div><label class="block text-sm font-semibold mb-1">Fecha Registro</label><input type="date" id="per_fecha" class="w-full border rounded p-2.5" required></div>
+                    <div><label class="block text-sm font-semibold mb-1">Profesor/a - Sala</label><input type="text" id="per_profesor" class="w-full border rounded p-2.5" required></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+                    <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Equipo Asignado</label><input type="text" id="per_equipo" class="w-full border rounded p-2.5" required></div>
+                    <div class="col-span-1"><label class="block text-sm font-semibold mb-1">Cantidad</label><input type="number" id="per_cant" value="1" min="1" class="w-full border rounded p-2.5" required></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">Estado</label>
+                        <select id="per_estado" class="w-full border rounded p-2.5 bg-white">
+                            <option value="Nuevo">Nuevo</option>
+                            <option value="Usado en buen estado">Usado en buen estado</option>
+                        </select>
+                    </div>
+                    <div><label class="block text-sm font-semibold mb-1">Observaciones (N° Acta)</label><input type="text" id="per_obs" class="w-full border rounded p-2.5"></div>
+                </div>
+                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3.5 rounded-lg hover:bg-blue-800 transition">Asignar Equipo</button>
+            </form>
+        </section>
+
+        <!-- PANEL DE PENDIENTES -->
+        <section id="pendientes" class="tab-content hidden max-w-5xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+                <h2 class="text-2xl font-bold text-red-700">Centro de Operaciones Pendientes</h2>
+                <button onclick="cargarPendientes()" class="bg-slate-200 px-4 py-2 rounded-md font-semibold text-sm hover:bg-slate-300">↻ Refrescar Datos</button>
+            </div>
+            
+            <h3 class="font-bold text-lg mb-3">Préstamos Activos</h3>
+            <div class="overflow-x-auto mb-8 shadow-inner bg-slate-50 rounded">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-slate-200 text-slate-700"><tr><th class="py-3 px-4">Fecha/Hora</th><th class="py-3 px-4">Profesor/Sala</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4 text-center">Acción</th></tr></thead>
+                    <tbody id="tablaPres" class="divide-y divide-slate-200 bg-white"></tbody>
+                </table>
+            </div>
+
+            <h3 class="font-bold text-lg mb-3">Soportes Abiertos</h3>
+            <div class="overflow-x-auto shadow-inner bg-slate-50 rounded">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-slate-200 text-slate-700"><tr><th class="py-3 px-4">Fecha</th><th class="py-3 px-4">Equipo/Ubicación</th><th class="py-3 px-4">Falla</th><th class="py-3 px-4 text-center">Acción</th></tr></thead>
+                    <tbody id="tablaSop" class="divide-y divide-slate-200 bg-white"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbz5T1xpUuJb30P8bMuKXpNicf9Q9WemRUk82FDc4K9732CTRc9xfLRlHU3b4PR2Hj2wKQ/exec"; 
+        const ADMIN_EMAIL = "fabianzmk@gmail.com";
+        let googleToken = "";
+
+        function setFechasActuales() {
+            const now = new Date();
+            const fechaIso = now.toISOString().split('T')[0];
+            const horaIso = now.toTimeString().split(' ')[0].substring(0,5);
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const localDatetime = now.toISOString().slice(0, 16);
+
+            document.getElementById('sop_fecha').value = localDatetime;
+            document.getElementById('sal_fecha').value = fechaIso;
+            document.getElementById('sal_hora').value = horaIso;
+            document.getElementById('pre_fecha').value = fechaIso;
+            document.getElementById('pre_hora').value = horaIso;
+            document.getElementById('per_fecha').value = fechaIso;
+        }
+        setFechasActuales();
+
+        function handleCredentialResponse(response) {
+            googleToken = response.credential;
+            const payload = JSON.parse(atob(googleToken.split('.')[1]));
+            
+            if (payload.email === ADMIN_EMAIL) {
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('userProfile').innerText = payload.email;
+                document.getElementById('userProfile').classList.remove('hidden');
+            } else {
+                mostrarAlerta('Credenciales rechazadas. Operación abortada.', 'error');
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('border-blue-600', 'text-slate-900', 'font-bold');
+                b.classList.add('border-transparent', 'text-slate-500');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            event.target.classList.remove('border-transparent', 'text-slate-500');
+            event.target.classList.add('border-blue-600', 'text-slate-900', 'font-bold');
+            
+            if(tabId === 'pendientes') cargarPendientes();
+        }
+
+        async function enviarDatos(event, seccion) {
+            event.preventDefault();
+            const btn = event.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerText = "Procesando...";
+
+            let rowData = [];
+            if (seccion === 'Soporte') {
+                rowData = [document.getElementById('sop_fecha').value, document.getElementById('sop_ubicacion').value, document.getElementById('sop_equipo').value, document.getElementById('sop_tipo').value, document.getElementById('sop_desc').value, document.getElementById('sop_estado').value, document.getElementById('sop_obs').value];
+            } else if (seccion === 'Uso_Sala') {
+                rowData = [document.getElementById('sal_fecha').value, document.getElementById('sal_hora').value, document.getElementById('sal_curso').value, document.getElementById('sal_profesor').value, document.getElementById('sal_asignatura').value, document.getElementById('sal_actividad').value, document.getElementById('sal_obs').value];
+            } else if (seccion === 'Prestamos') {
+                rowData = [document.getElementById('pre_fecha').value, document.getElementById('pre_profesor').value, document.getElementById('pre_equipo').value, document.getElementById('pre_cant').value, document.getElementById('pre_hora').value, "", document.getElementById('pre_estadologistico').value, document.getElementById('pre_estadoinsumo').value, document.getElementById('pre_obs').value];
+            } else if (seccion === 'Permanente') {
+                rowData = [document.getElementById('per_fecha').value, document.getElementById('per_profesor').value, document.getElementById('per_equipo').value, document.getElementById('per_cant').value, document.getElementById('per_estado').value, document.getElementById('per_obs').value];
+            }
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ token: googleToken, action: "insert", seccion: seccion, rowValues: rowData }),
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }
+                });
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    event.target.reset();
+                    setFechasActuales();
+                    mostrarAlerta('Transacción confirmada en base de datos.', 'success');
+                } else throw new Error(result.message);
+            } catch (error) {
+                mostrarAlerta('Error del sistema: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Guardar";
+            }
+        }
+
+        async function cargarPendientes() {
+            const tPres = document.getElementById('tablaPres');
+            const tSop = document.getElementById('tablaSop');
+            tPres.innerHTML = '<tr><td colspan="4" class="text-center p-4">Sincronizando...</td></tr>';
+            tSop.innerHTML = '<tr><td colspan="4" class="text-center p-4">Sincronizando...</td></tr>';
+            
+            try {
+                const res = await fetch(API_URL);
+                const result = await res.json();
+                
+                if(result.status !== 'success') throw new Error();
+
+                tPres.innerHTML = result.data.prestamos.map(row => `
+                    <tr>
+                        <td class="py-2 px-4">${new Date(row[0]).toLocaleDateString()} ${row[4]}</td>
+                        <td class="py-2 px-4">${row[1]}</td>
+                        <td class="py-2 px-4">${row[2]} (x${row[3]})</td>
+                        <td class="py-2 px-4 text-center">
+                            <button onclick="actualizarEstado('${row[0]}', 'Prestamos', 'Devuelto')" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs hover:bg-emerald-700">Marcar Devuelto</button>
+                        </td>
+                    </tr>
+                `).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-500">Sin préstamos activos.</td></tr>';
+
+                tSop.innerHTML = result.data.soporte.map(row => `
+                    <tr>
+                        <td class="py-2 px-4">${new Date(row[0]).toLocaleString()}</td>
+                        <td class="py-2 px-4 font-semibold">${row[2]} <span class="font-normal text-xs block text-slate-500">${row[1]}</span></td>
+                        <td class="py-2 px-4 text-xs">${row[4]}</td>
+                        <td class="py-2 px-4 text-center">
+                            <button onclick="actualizarEstado('${row[0]}', 'Soporte', 'Solucionado')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">Cerrar Ticket</button>
+                        </td>
+                    </tr>
+                `).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-500">Sin soportes pendientes.</td></tr>';
+
+            } catch (error) {
+                tPres.innerHTML = '<tr><td colspan="4" class="text-center text-red-500 p-4">Falla de lectura.</td></tr>';
+                tSop.innerHTML = '';
+            }
+        }
+
+        async function actualizarEstado(idRegistro, seccion, nuevoEstado) {
+            if(!confirm(`¿Confirmar cambio de estado a "${nuevoEstado}"?`)) return;
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ token: googleToken, action: "update_status", id: idRegistro, seccion: seccion, nuevoEstado: nuevoEstado }),
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }
+                });
+                const result = await res.json();
+                if(result.status === 'success') {
+                    mostrarAlerta('Estado modificado correctamente.', 'success');
+                    cargarPendientes();
+                } else throw new Error(result.message);
+            } catch (error) {
+                mostrarAlerta('Falla al actualizar: ' + error.message, 'error');
+            }
+        }
+
+        function mostrarAlerta(msg, tipo) {
+            const ab = document.getElementById('alertBox');
+            ab.innerText = msg;
+            ab.className = `w-full p-4 text-center text-white font-semibold transition-all duration-300 z-50 absolute top-0 shadow-lg ${tipo==='success'?'bg-emerald-600':'bg-red-600'}`;
+            ab.classList.remove('hidden');
+            setTimeout(() => ab.classList.add('hidden'), 3500);
+        }
+    </script>
+</body>
+</html>
