@@ -20,19 +20,38 @@
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-blue-200 selection:text-blue-900">
     
-    <!-- Pantalla de Login -->
+    <!-- Pantalla de Login Dual -->
     <div id="login-container" class="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
-        <div class="bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-2xl text-center max-w-md w-full border border-white/10 z-10">
-            <div class="bg-blue-500 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl text-center max-w-md w-full border border-white/10 z-10">
+            <div class="bg-blue-500 w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
             </div>
-            <h1 class="text-3xl font-bold mb-2 tracking-tight">Bitacora TI</h1>
-            <p class="text-slate-300 mb-8 text-sm">Gestion de Infraestructura Escolar</p>
-            <div class="flex justify-center mb-2">
+            <h1 class="text-2xl font-bold mb-1 tracking-tight">Bitacora TI</h1>
+            <p class="text-slate-300 mb-6 text-xs">Gestion de Infraestructura Escolar</p>
+            
+            <div class="flex justify-center mb-6">
                 <div id="g_id_onload" data-client_id="1063772408490-0fipirlhukj70uvol4k2pjvehp753c5t.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
                 <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="center"></div>
             </div>
+
+            <div class="relative flex py-2 items-center">
+                <div class="flex-grow border-t border-slate-600"></div>
+                <span class="flex-shrink mx-4 text-slate-400 text-xs uppercase">o acceso con usuario</span>
+                <div class="flex-grow border-t border-slate-600"></div>
+            </div>
+
+            <form onsubmit="loginCustom(event)" class="space-y-3 mt-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Usuario</label>
+                    <input type="text" id="custom-user" required placeholder="Ingresa tu usuario" class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Clave</label>
+                    <input type="password" id="custom-pass" required placeholder="Ingresa tu clave" class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl text-sm font-medium shadow transition-colors mt-2">Ingresar al Sistema</button>
+            </form>
         </div>
     </div>
 
@@ -49,7 +68,6 @@
                     <h1 class="text-xl font-bold text-slate-800 tracking-tight">Bitacora TI</h1>
                 </div>
                 <div class="flex flex-wrap items-center gap-4">
-                    <!-- Selector de Meses -->
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <select id="month-selector" onchange="cambiarMes()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-1.5 outline-none font-semibold shadow-sm transition-colors cursor-pointer hover:border-blue-300">
@@ -80,7 +98,6 @@
         </nav>
 
         <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
-            <!-- Tarjetas de Pendientes -->
             <div id="panel-pendientes" class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
                 <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400"></div>
@@ -125,7 +142,6 @@
                 </div>
             </div>
 
-            <!-- Panel Buscador -->
             <div id="panel-Buscador" class="hidden">
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
                     <div class="max-w-2xl mx-auto text-center mb-8">
@@ -164,8 +180,9 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycby-b3LnQm01NSNhVMPW5B2lHFwQkf-Qr_OQzKhdbYKn0qQkLO9_Zh50YM2_L2hay0AZHA/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxtlTPp9Xal_6KOpUBdu8upJpkcX2V2LAbucHoqBP3RJ4t7Wz95sI2f77Z-aWTFUKQ-Mg/exec"; 
         let googleToken = null; 
+        let customUser = null;
         let seccionActual = "Prestamos";
         let globalDataCache = null;
 
@@ -214,22 +231,45 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedToken = localStorage.getItem('googleToken');
+            const savedCustomUser = localStorage.getItem('customUser');
             const savedTime = localStorage.getItem('tokenTimestamp');
-            if (savedToken && savedTime && (Date.now() - savedTime < 55 * 60 * 1000)) {
-                googleToken = savedToken;
-                try {
-                    const base64Url = googleToken.split('.')[1];
-                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                    const payload = JSON.parse(atob(base64));
-                    document.getElementById('user-email').innerText = payload.email;
-                    document.getElementById('login-container').classList.add('hidden');
-                    document.getElementById('app-container').classList.remove('hidden');
-                    cargarMeses().then(() => cargarDatosServidor());
-                } catch (e) { cerrarSesion(); }
-            } else {
-                cerrarSesion(false);
+
+            if (savedTime && (Date.now() - savedTime < 55 * 60 * 1000)) {
+                if (savedToken) {
+                    googleToken = savedToken;
+                    try {
+                        const base64Url = googleToken.split('.')[1];
+                        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                        const payload = JSON.parse(atob(base64));
+                        activarSesionUI(payload.email);
+                        return;
+                    } catch (e) { cerrarSesion(); }
+                } else if (savedCustomUser) {
+                    customUser = savedCustomUser;
+                    activarSesionUI(savedCustomUser + (savedCustomUser === 'visita' ? ' (Solo lectura)' : ''));
+                    return;
+                }
             }
+            cerrarSesion(false);
         });
+
+        async function loginCustom(event) {
+            event.preventDefault();
+            let user = document.getElementById('custom-user').value.trim();
+            let pass = document.getElementById('custom-pass').value.trim();
+            try {
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "login_custom", user, pass }) });
+                let result = await res.json();
+                if(result.status === 'success') {
+                    customUser = user;
+                    localStorage.setItem('customUser', user);
+                    localStorage.setItem('tokenTimestamp', Date.now());
+                    activarSesionUI(result.email);
+                } else {
+                    alert(result.message);
+                }
+            } catch(e) { alert("Error de conexion"); }
+        }
 
         function handleCredentialResponse(response) {
             googleToken = response.credential;
@@ -239,23 +279,34 @@
                 const base64Url = googleToken.split('.')[1];
                 const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
                 const payload = JSON.parse(atob(base64));
-                document.getElementById('user-email').innerText = payload.email;
-                document.getElementById('login-container').classList.add('hidden');
-                document.getElementById('app-container').classList.remove('hidden');
-                cargarMeses().then(() => cargarDatosServidor());
+                activarSesionUI(payload.email);
             } catch (e) { cerrarSesion(); }
+        }
+
+        function activarSesionUI(emailTexto) {
+            document.getElementById('user-email').innerText = emailTexto;
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+
+            if (customUser === 'visita') {
+                document.getElementById('btn-nuevo').classList.add('hidden');
+            }
+
+            cargarMeses().then(() => cargarDatosServidor());
         }
 
         function cerrarSesion(recargar = true) {
             localStorage.removeItem('googleToken');
+            localStorage.removeItem('customUser');
             localStorage.removeItem('tokenTimestamp');
             googleToken = null;
+            customUser = null;
             if (recargar) location.reload();
         }
 
         async function cargarMeses() {
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, action: "get_months" }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_months" }) });
                 let result = await res.json();
                 if(result.status === 'success' && result.data.length > 0) {
                     let selector = document.getElementById('month-selector');
@@ -291,7 +342,9 @@
                 panelBuscador.classList.remove('hidden');
             } else {
                 document.getElementById('titulo-seccion').innerText = seccion.replace('_', ' ');
-                btnNuevo.classList.remove('hidden');
+                if (customUser !== 'visita') {
+                    btnNuevo.classList.remove('hidden');
+                }
                 if (panelPendientes && (seccion === 'Prestamos' || seccion === 'Soporte')) {
                     panelPendientes.classList.remove('hidden');
                 } else if (panelPendientes) {
@@ -304,11 +357,11 @@
         }
 
         async function cargarDatosServidor() {
-            if (!googleToken) return cerrarSesion();
+            if (!googleToken && !customUser) return cerrarSesion();
             mostrarToast("Cargando base de datos...", "info");
             let targetMonth = document.getElementById('month-selector').value;
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, action: "get_data", targetMonth }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_data", targetMonth }) });
                 let result = await res.json();
                 if(result.status !== 'success') { 
                     if(result.message === "No autorizado") return cerrarSesion();
@@ -332,13 +385,17 @@
             const head = document.getElementById('tabla-head'), body = document.getElementById('tabla-body');
             let campos = CAMPOS_SECCION[seccionActual], jsonKey = JSON_KEY_MAP[seccionActual];
             
-            head.innerHTML = `<tr><th class="px-6 py-4">Acciones</th>` + campos.map(c => `<th class="px-6 py-4">${c.label}</th>`).join('') + `<th class="px-6 py-4">Ult. Mod.</th><th class="px-6 py-4">Usuario</th></tr>`;
+            let esVisita = (customUser === 'visita');
+            let thAcciones = esVisita ? '' : `<th class="px-6 py-4">Acciones</th>`;
+            
+            head.innerHTML = `<tr>${thAcciones}` + campos.map(c => `<th class="px-6 py-4">${c.label}</th>`).join('') + `<th class="px-6 py-4">Ult. Mod.</th><th class="px-6 py-4">Usuario</th></tr>`;
             
             let filas = globalDataCache.historial[jsonKey] || [];
             body.innerHTML = '';
             
             if (filas.length === 0) { 
-                body.innerHTML = `<tr><td colspan="${campos.length + 3}" class="px-6 py-12 text-center text-slate-400 font-medium"><div class="flex flex-col items-center justify-center"><svg class="w-12 h-12 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>No hay registros para mostrar</div></td></tr>`; 
+                let totalCols = campos.length + (esVisita ? 2 : 3);
+                body.innerHTML = `<tr><td colspan="${totalCols}" class="px-6 py-12 text-center text-slate-400 font-medium"><div class="flex flex-col items-center justify-center"><svg class="w-12 h-12 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>No hay registros para mostrar</div></td></tr>`; 
                 return; 
             }
             
@@ -350,12 +407,14 @@
                 let auditUser = valoresRestantes[valoresRestantes.length - 1] || '';
                 let datosCampos = valoresRestantes.slice(0, campos.length);
 
-                tr.innerHTML = `<td class="px-6 py-3 flex gap-2">
+                let tdAcciones = esVisita ? '' : `<td class="px-6 py-3 flex gap-2">
                     <button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button>
                     <button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button>
-                </td>` + 
+                </td>`;
+
+                tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
-                    if ((seccionActual === 'Prestamos' || seccionActual === 'Soporte') && idx === ESTADO_INDICES[seccionActual]) {
+                    if (!esVisita && (seccionActual === 'Prestamos' || seccionActual === 'Soporte') && idx === ESTADO_INDICES[seccionActual]) {
                         let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
                         return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-semibold bg-white focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors">${opts}</select></td>`;
                     }
@@ -373,7 +432,7 @@
             let targetMonth = document.getElementById('month-selector').value;
             mostrarToast("Actualizando estado...", "info");
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, seccion: seccionActual, action: "update_status", id, nuevoEstado, observacion, targetMonth }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "update_status", id, nuevoEstado, observacion, targetMonth }) });
                 let result = await res.json();
                 if(result.status !== 'success') {
                     if (result.message === "No autorizado") return cerrarSesion();
@@ -392,7 +451,7 @@
             let targetMonth = document.getElementById('month-selector').value;
             mostrarToast("Eliminando registro...", "info");
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, seccion: seccionActual, action: "delete_row", id, targetMonth }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "delete_row", id, targetMonth }) });
                 let result = await res.json();
                 if(result.status !== 'success') {
                     if (result.message === "No autorizado") return cerrarSesion();
@@ -411,7 +470,7 @@
             if(!query.trim()) return alert("Ingresa un termino para buscar");
             mostrarToast("Explorando archivo historico...", "info");
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, action: "search", query }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "search", query }) });
                 let result = await res.json();
                 if(result.status !== 'success') {
                     if (result.message === "No autorizado") return cerrarSesion();
@@ -440,12 +499,14 @@
         }
 
         function abrirModalNuevo() { 
+            if (customUser === 'visita') return;
             document.getElementById('modal-titulo').innerText = "Nuevo Registro"; 
             construirFormularioModal(); 
             document.getElementById('modal').classList.remove('hidden'); 
         }
 
         function abrirModalEditar(id) {
+            if (customUser === 'visita') return;
             let registro = globalDataCache.historial[JSON_KEY_MAP[seccionActual]].find(r => r[0] === id);
             if (!registro) return;
             document.getElementById('modal-titulo').innerText = "Editar Registro";
@@ -491,6 +552,7 @@
 
         async function guardarRegistro(event) {
             event.preventDefault();
+            if (customUser === 'visita') return;
             const btn = document.getElementById('btn-guardar');
             btn.disabled = true; 
             btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Procesando...`;
@@ -498,6 +560,7 @@
             let targetMonth = document.getElementById('month-selector').value;
             let payload = { 
                 token: googleToken, 
+                customUser,
                 seccion: seccionActual, 
                 targetMonth,
                 action: document.getElementById('edit-id') ? "edit_row" : "insert", 
@@ -509,7 +572,7 @@
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
                 let result = await res.json();
                 if(result.status !== 'success') {
-                    if (result.message === "No autorizado") return cerrarSesion();
+                    if (result.message === "No autorizado" || result.message === "Acceso solo de lectura") return cerrarSesion();
                     throw new Error(result.message);
                 }
                 cerrarModal(); 
@@ -524,19 +587,16 @@
 
         function mostrarToast(m, t) { 
             let toast = document.getElementById('toast'); 
-            
             let icon = t === 'error' 
                 ? `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
                 : `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
 
             toast.innerHTML = `${icon} <span>${m}</span>`; 
-            
             toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold z-50 transition-all flex items-center gap-3 border ${
                 t === 'error' 
                 ? 'bg-white text-rose-600 border-rose-200 shadow-rose-500/10' 
                 : 'bg-slate-900 text-white border-slate-700 shadow-slate-900/20'
             }`; 
-            
             toast.classList.remove('hidden'); 
             setTimeout(() => toast.classList.add('hidden'), 4000); 
         }
