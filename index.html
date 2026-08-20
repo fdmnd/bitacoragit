@@ -117,13 +117,26 @@
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Curso o Usuario</label>
                         <select id="sal_curso" class="w-full border border-slate-300 rounded-lg p-3 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
-                            <optgroup label="Básica">
-                                <option value="1 Básico A">1° Básico A</option>
-                                <option value="8 Básico D">8° Básico D</option>
+                            <option value="" disabled selected>Seleccione un curso...</option>
+                            <optgroup label="Enseñanza Básica">
+                                <option value="1° Básico A">1° Básico A</option><option value="1° Básico B">1° Básico B</option><option value="1° Básico C">1° Básico C</option><option value="1° Básico D">1° Básico D</option>
+                                <option value="2° Básico A">2° Básico A</option><option value="2° Básico B">2° Básico B</option><option value="2° Básico C">2° Básico C</option><option value="2° Básico D">2° Básico D</option>
+                                <option value="3° Básico A">3° Básico A</option><option value="3° Básico B">3° Básico B</option><option value="3° Básico C">3° Básico C</option><option value="3° Básico D">3° Básico D</option>
+                                <option value="4° Básico A">4° Básico A</option><option value="4° Básico B">4° Básico B</option><option value="4° Básico C">4° Básico C</option><option value="4° Básico D">4° Básico D</option>
+                                <option value="5° Básico A">5° Básico A</option><option value="5° Básico B">5° Básico B</option><option value="5° Básico C">5° Básico C</option><option value="5° Básico D">5° Básico D</option>
+                                <option value="6° Básico A">6° Básico A</option><option value="6° Básico B">6° Básico B</option><option value="6° Básico C">6° Básico C</option><option value="6° Básico D">6° Básico D</option>
+                                <option value="7° Básico A">7° Básico A</option><option value="7° Básico B">7° Básico B</option><option value="7° Básico C">7° Básico C</option><option value="7° Básico D">7° Básico D</option>
+                                <option value="8° Básico A">8° Básico A</option><option value="8° Básico B">8° Básico B</option><option value="8° Básico C">8° Básico C</option><option value="8° Básico D">8° Básico D</option>
                             </optgroup>
-                            <optgroup label="Media">
-                                <option value="1 Medio A">1° Medio A</option>
-                                <option value="4 Medio D">4° Medio D</option>
+                            <optgroup label="Enseñanza Media">
+                                <option value="1° Medio A">1° Medio A</option><option value="1° Medio B">1° Medio B</option><option value="1° Medio C">1° Medio C</option><option value="1° Medio D">1° Medio D</option>
+                                <option value="2° Medio A">2° Medio A</option><option value="2° Medio B">2° Medio B</option><option value="2° Medio C">2° Medio C</option><option value="2° Medio D">2° Medio D</option>
+                                <option value="3° Medio A">3° Medio A</option><option value="3° Medio B">3° Medio B</option><option value="3° Medio C">3° Medio C</option><option value="3° Medio D">3° Medio D</option>
+                                <option value="4° Medio A">4° Medio A</option><option value="4° Medio B">4° Medio B</option><option value="4° Medio C">4° Medio C</option><option value="4° Medio D">4° Medio D</option>
+                            </optgroup>
+                            <optgroup label="Otro / Personal">
+                                <option value="Profesor / Sala General">Profesor / Sala General</option>
+                                <option value="Externo / Visita">Externo / Visita</option>
                             </optgroup>
                         </select>
                     </div>
@@ -137,7 +150,10 @@
                             <option value="Lenguaje">Lenguaje</option>
                             <option value="Ciencias">Ciencias</option>
                             <option value="Historia">Historia</option>
-                            <option value="Taller">Taller / PAES</option>
+                            <option value="Inglés">Inglés</option>
+                            <option value="Tecnología">Tecnología</option>
+                            <option value="Taller / PAES">Taller / PAES</option>
+                            <option value="Libre Disposición">Libre Disposición</option>
                             <option value="Otra">Otra</option>
                         </select>
                     </div>
@@ -380,16 +396,17 @@
                 renderizarHistorial();
 
             } catch (error) {
-                mostrarAlerta('Error de lectura de datos: ' + error.message, 'error');
+                mostrarAlerta('Error de lectura: ' + error.message, 'error');
             }
         }
 
         function renderizarPendientes() {
-            if(!globalDataCache) return;
+            if(!globalDataCache || !globalDataCache.pendientes) return;
             const tPres = document.getElementById('tablaPres');
             const tSop = document.getElementById('tablaSop');
 
-            tPres.innerHTML = globalDataCache.pendientes.prestamos.map(row => `
+            const prestamos = globalDataCache.pendientes.prestamos || [];
+            tPres.innerHTML = prestamos.length > 0 ? prestamos.map(row => `
                 <tr>
                     <td class="py-3 px-4">${new Date(row[0]).toLocaleDateString()} ${row[4]}</td>
                     <td class="py-3 px-4 font-medium">${row[1]}</td>
@@ -398,9 +415,10 @@
                         <button onclick="actualizarEstadoRapido('${row[0]}', 'Prestamos', 'Devuelto')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition">Marcar Devuelto</button>
                     </td>
                 </tr>
-            `).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-400 italic">No hay préstamos pendientes.</td></tr>';
+            `).join('') : '<tr><td colspan="4" class="text-center p-4 text-slate-400 italic">Sin registros pendientes.</td></tr>';
 
-            tSop.innerHTML = globalDataCache.pendientes.soporte.map(row => `
+            const soporte = globalDataCache.pendientes.soporte || [];
+            tSop.innerHTML = soporte.length > 0 ? soporte.map(row => `
                 <tr>
                     <td class="py-3 px-4">${new Date(row[0]).toLocaleString()}</td>
                     <td class="py-3 px-4 font-semibold">${row[2]} <span class="font-normal text-xs block text-slate-500">${row[1]}</span></td>
@@ -409,11 +427,11 @@
                         <button onclick="actualizarEstadoRapido('${row[0]}', 'Soporte', 'Solucionado')" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition">Cerrar Ticket</button>
                     </td>
                 </tr>
-            `).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-400 italic">No hay tickets abiertos.</td></tr>';
+            `).join('') : '<tr><td colspan="4" class="text-center p-4 text-slate-400 italic">Sin registros pendientes.</td></tr>';
         }
 
         function renderizarHistorial() {
-            if(!globalDataCache) return;
+            if(!globalDataCache || !globalDataCache.historial) return;
             const seccion = document.getElementById('filtroHistorialSeccion').value;
             const head = document.getElementById('headHistorial');
             const body = document.getElementById('bodyHistorial');
@@ -421,19 +439,19 @@
             let datos = [];
             if(seccion === 'Soporte') {
                 head.innerHTML = `<tr><th class="py-3 px-4">Fecha/Hora</th><th class="py-3 px-4">Ubicación</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4">Tipo</th><th class="py-3 px-4">Estado</th><th class="py-3 px-4 text-center">Acción</th></tr>`;
-                datos = globalDataCache.historial.soporte;
+                datos = globalDataCache.historial.soporte || [];
             } else if(seccion === 'Uso_Sala') {
                 head.innerHTML = `<tr><th class="py-3 px-4">Fecha/Hora</th><th class="py-3 px-4">Curso</th><th class="py-3 px-4">Profesor</th><th class="py-3 px-4">Asignatura</th><th class="py-3 px-4">Actividad</th><th class="py-3 px-4 text-center">Acción</th></tr>`;
-                datos = globalDataCache.historial.sala;
+                datos = globalDataCache.historial.sala || [];
             } else if(seccion === 'Prestamos') {
                 head.innerHTML = `<tr><th class="py-3 px-4">Fecha</th><th class="py-3 px-4">Profesor/Sala</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4">Cant</th><th class="py-3 px-4">Estado</th><th class="py-3 px-4 text-center">Acción</th></tr>`;
-                datos = globalDataCache.historial.prestamos;
+                datos = globalDataCache.historial.prestamos || [];
             } else if(seccion === 'Permanente') {
                 head.innerHTML = `<tr><th class="py-3 px-4">Fecha</th><th class="py-3 px-4">Profesor/Sala</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4">Cant</th><th class="py-3 px-4">Estado</th><th class="py-3 px-4 text-center">Acción</th></tr>`;
-                datos = globalDataCache.historial.permanente;
+                datos = globalDataCache.historial.permanente || [];
             }
 
-            body.innerHTML = datos.map((row, index) => {
+            body.innerHTML = datos.length > 0 ? datos.map((row, index) => {
                 return `
                     <tr class="hover:bg-slate-50 transition">
                         <td class="py-3 px-4 font-mono text-xs">${row[0]}</td>
@@ -446,7 +464,7 @@
                         </td>
                     </tr>
                 `;
-            }).join('') || '<tr><td colspan="6" class="text-center p-4 text-slate-400 italic">No hay registros en esta sección.</td></tr>';
+            }).join('') : '<tr><td colspan="6" class="text-center p-4 text-slate-400 italic">Sin registros en esta sección.</td></tr>';
         }
 
         function abrirModalEdicion(seccion, index) {
