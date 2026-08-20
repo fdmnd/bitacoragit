@@ -62,7 +62,7 @@
     </div>
     <div id="toast" class="fixed bottom-5 right-5 hidden bg-gray-900 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition"></div>
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwJ1tqo8VoC71RFLptyJwkx2MNJgG2hhjSU5qlCiAJVBFSurvrh5D6VEiVfTEa8O5LTow/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyHU1HBPLCN-YPbsBvkXrb57MFbqTXmtNVX4RVt0xp8V5DAx1gOAt1UPoUmWyEoSmGZ1w/exec"; 
         let googleToken = null; 
         let seccionActual = "Prestamos";
         let globalDataCache = null;
@@ -184,13 +184,16 @@
             if (!globalDataCache || !globalDataCache.historial) return;
             const head = document.getElementById('tabla-head'), body = document.getElementById('tabla-body');
             let campos = CAMPOS_SECCION[seccionActual], jsonKey = JSON_KEY_MAP[seccionActual];
-            head.innerHTML = `<tr class="bg-gray-50"><th class="p-3 w-24">Acciones</th>` + campos.map(c => `<th class="p-3">${c.label}</th>`).join('') + `</tr>`;
+            head.innerHTML = `<tr class="bg-gray-50"><th class="p-3 w-32">Acciones</th>` + campos.map(c => `<th class="p-3">${c.label}</th>`).join('') + `</tr>`;
             let filas = globalDataCache.historial[jsonKey] || [];
             body.innerHTML = '';
             if (filas.length === 0) { body.innerHTML = `<tr><td colspan="${campos.length + 1}" class="p-4 text-center text-gray-400">Sin registros</td></tr>`; return; }
             filas.forEach(r => {
                 let id = r[0], valoresRestantes = r.slice(1), tr = document.createElement('tr');
-                tr.innerHTML = `<td class="p-3"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 hover:text-blue-800 font-medium">Editar</button></td>` + 
+                tr.innerHTML = `<td class="p-3 flex gap-2">
+                    <button onclick="abrirModalEditar('${id}')" class="text-blue-600 hover:text-blue-800 font-medium">Editar</button>
+                    <button onclick="eliminarRegistro('${id}')" class="text-red-600 hover:text-red-800 font-medium">Eliminar</button>
+                </td>` + 
                 valoresRestantes.map((v, idx) => {
                     if ((seccionActual === 'Prestamos' || seccionActual === 'Soporte') && idx === ESTADO_INDICES[seccionActual]) {
                         let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
@@ -225,6 +228,29 @@
                 let result = await res.json();
                 if(result.status !== 'success') throw new Error(result.message);
                 mostrarToast("Estado actualizado", "success");
+                cargarDatosServidor();
+            } catch (err) { 
+                mostrarToast("Error: " + err.message, "error"); 
+                cargarDatosServidor(); 
+            }
+        }
+
+        async function eliminarRegistro(id) {
+            if (!confirm("¿Estás seguro de eliminar este registro? Esta acción no se puede deshacer.")) return;
+            mostrarToast("Eliminando...", "info");
+            try {
+                let res = await fetch(API_URL, { 
+                    method: "POST", 
+                    body: JSON.stringify({ 
+                        token: googleToken, 
+                        seccion: seccionActual, 
+                        action: "delete_row", 
+                        id 
+                    }) 
+                });
+                let result = await res.json();
+                if(result.status !== 'success') throw new Error(result.message);
+                mostrarToast("Registro eliminado", "success");
                 cargarDatosServidor();
             } catch (err) { 
                 mostrarToast("Error: " + err.message, "error"); 
@@ -294,7 +320,7 @@
                 let result = await res.json();
                 if(result.status !== 'success') throw new Error(result.message);
                 cerrarModal(); mostrarToast("Guardado!", "success"); cargarDatosServidor();
-            } catch (err) { mostrarToast("Error: " + err.message, "error"); btn.disabled = false; btn.innerText = "Guardar"; }
+            } catch (err) { mostrarToast("Error: " + err.message, "error"); btn.disabled = false; btn.innerText = "Guardار"; }
         }
 
         function mostrarToast(m, t) { 
