@@ -3,38 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitácora TI</title>
+    <title>Bitacora TI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>.tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: bold; }</style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800">
+    <!-- Pantalla de Login -->
     <div id="login-container" class="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
         <div class="bg-gray-800 p-8 rounded-xl shadow-2xl text-center max-w-md w-full">
-            <h1 class="text-2xl font-bold mb-2">Bitácora TI</h1>
-            <p class="text-gray-400 mb-6 text-sm">Sistema de Gestión</p>
+            <h1 class="text-2xl font-bold mb-2">Bitacora TI</h1>
+            <p class="text-gray-400 mb-6 text-sm">Sistema de Gestion Escolar</p>
             <div id="g_id_onload" data-client_id="1063772408490-0fipirlhukj70uvol4k2pjvehp753c5t.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
             <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left"></div>
         </div>
     </div>
+
+    <!-- Contenedor Principal de la Aplicacion -->
     <div id="app-container" class="hidden flex flex-col min-h-screen">
         <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-blue-600">Bitácora TI</h1>
+            <h1 class="text-xl font-bold text-blue-600">Bitacora TI</h1>
             <div class="flex items-center gap-4">
                 <span id="user-email" class="text-sm text-gray-600 font-medium"></span>
                 <button onclick="cerrarSesion()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-sm transition">Salir</button>
             </div>
         </header>
-        <nav class="bg-white border-b px-6 flex gap-6">
-            <button onclick="cambiarSeccion('Prestamos')" id="btn-Prestamos" class="py-3 tab-active transition">Préstamos</button>
-            <button onclick="cambiarSeccion('Soporte')" id="btn-Soporte" class="py-3 text-gray-500 hover:text-blue-600 transition">Soporte</button>
-            <button onclick="cambiarSeccion('Uso_Sala')" id="btn-Uso_Sala" class="py-3 text-gray-500 hover:text-blue-600 transition">Uso de Sala</button>
-            <button onclick="cambiarSeccion('Permanente')" id="btn-Permanente" class="py-3 text-gray-500 hover:text-blue-600 transition">Permanente</button>
+
+        <!-- Navegacion por pestañas -->
+        <nav class="bg-white border-b px-6 flex gap-6 overflow-x-auto">
+            <button onclick="cambiarSeccion('Prestamos')" id="btn-Prestamos" class="py-3 tab-active transition whitespace-nowrap">Prestamos</button>
+            <button onclick="cambiarSeccion('Soporte')" id="btn-Soporte" class="py-3 text-gray-500 hover:text-blue-600 transition whitespace-nowrap">Soporte</button>
+            <button onclick="cambiarSeccion('Uso_Sala')" id="btn-Uso_Sala" class="py-3 text-gray-500 hover:text-blue-600 transition whitespace-nowrap">Uso de Sala</button>
+            <button onclick="cambiarSeccion('Permanente')" id="btn-Permanente" class="py-3 text-gray-500 hover:text-blue-600 transition whitespace-nowrap">Permanente</button>
+            <button onclick="cambiarSeccion('Buscador')" id="btn-Buscador" class="py-3 text-gray-500 hover:text-blue-600 transition whitespace-nowrap">Buscador Global</button>
         </nav>
+
         <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+            <!-- Panel de Pendientes -->
             <div id="panel-pendientes" class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
                 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r shadow-sm">
-                    <h3 class="font-bold text-amber-800 text-sm mb-1">Préstamos Pendientes</h3>
+                    <h3 class="font-bold text-amber-800 text-sm mb-1">Prestamos Pendientes</h3>
                     <p id="count-prestamos-pendientes" class="text-2xl font-semibold text-amber-900">0</p>
                 </div>
                 <div class="bg-rose-50 border-l-4 border-rose-500 p-4 rounded-r shadow-sm">
@@ -42,27 +50,48 @@
                     <p id="count-soporte-pendientes" class="text-2xl font-semibold text-rose-900">0</p>
                 </div>
             </div>
+
+            <!-- Cabecera de Seccion -->
             <div class="flex justify-between items-center mb-6">
-                <h2 id="titulo-seccion" class="text-2xl font-semibold text-gray-700">Préstamos</h2>
-                <button onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition">+ Nuevo Registro</button>
+                <h2 id="titulo-seccion" class="text-2xl font-semibold text-gray-700">Prestamos</h2>
+                <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition">+ Nuevo Registro</button>
             </div>
-            <div class="bg-white rounded-xl shadow overflow-x-auto">
+
+            <!-- Contenedor de la Tabla -->
+            <div id="tabla-container" class="bg-white rounded-xl shadow overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead id="tabla-head" class="bg-gray-50 border-b text-gray-600 text-sm"></thead>
                     <tbody id="tabla-body" class="divide-y divide-gray-200 text-sm"></tbody>
                 </table>
             </div>
+
+            <!-- Panel del Buscador Global (Oculto por defecto) -->
+            <div id="panel-Buscador" class="hidden bg-white p-6 rounded-xl shadow">
+                <h3 class="text-lg font-bold mb-4 text-gray-700">Busqueda Global en Historico</h3>
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="input-buscar" placeholder="Escribe una palabra clave (nombre, equipo, sala)..." class="border rounded-lg p-2 text-sm flex-1 outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="ejecutarBusqueda()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm transition">Buscar</button>
+                </div>
+                <div id="resultados-busqueda" class="space-y-2 text-sm text-gray-600">
+                    <p class="text-gray-400 text-center py-4">Ingresa un termino de busqueda para consultar en todos los meses anteriores.</p>
+                </div>
+            </div>
         </main>
     </div>
+
+    <!-- Modal de Formularios (Crear / Editar) -->
     <div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 id="modal-titulo" class="text-lg font-bold mb-4">Nuevo Registro</h3>
             <form id="modal-form" onsubmit="guardarRegistro(event)" class="space-y-4"></form>
         </div>
     </div>
+
+    <!-- Toast de Notificaciones -->
     <div id="toast" class="fixed bottom-5 right-5 hidden bg-gray-900 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition"></div>
+
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyHU1HBPLCN-YPbsBvkXrb57MFbqTXmtNVX4RVt0xp8V5DAx1gOAt1UPoUmWyEoSmGZ1w/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbx9qpHX2Zf3HhOcbdiwZaKOuzoVNyAoMS9GQFUoQ3Z9kN8RGBw3YAPa4dzxjyjo5ss5kA/exec"; 
         let googleToken = null; 
         let seccionActual = "Prestamos";
         let globalDataCache = null;
@@ -75,9 +104,7 @@
                 { name: "cantidad", label: "Cantidad", type: "text" },
                 { name: "hora_entrega", label: "Hora Entrega", type: "time" },
                 { name: "hora_devolucion", label: "Hora Devolucion", type: "time", required: false },
-                { name: "estado_logistico", label: "Estado Logistico", type: "select", options: ["Pendiente", "Devuelto", "Bueno", "Dañado", "En Tránsito"] },
-                { name: "estado_fisico", label: "Estado Fisico", type: "text" },
-                { name: "observaciones", label: "Observaciones", type: "text", required: false }
+                { name: "estado_logistico", label: "Estado Logistico", type: "select", options: ["Pendiente", "Devuelto", "Bueno", "Dañado", "En Tránsito"] }
             ],
             Soporte: [
                 { name: "fecha_hora", label: "Fecha y Hora", type: "datetime-local" },
@@ -153,8 +180,30 @@
             seccionActual = seccion;
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active', 'text-gray-500'));
             document.getElementById('btn-' + seccion).classList.add('tab-active');
-            document.getElementById('titulo-seccion').innerText = seccion.replace('_', ' ');
-            renderizarTabla();
+
+            const tablaContainer = document.getElementById('tabla-container');
+            const panelBuscador = document.getElementById('panel-Buscador');
+            const btnNuevo = document.getElementById('btn-nuevo');
+            const panelPendientes = document.getElementById('panel-pendientes');
+
+            if (seccion === 'Buscador') {
+                document.getElementById('titulo-seccion').innerText = "Buscador Global";
+                btnNuevo.classList.add('hidden');
+                panelPendientes.classList.add('hidden');
+                tablaContainer.classList.add('hidden');
+                panelBuscador.classList.remove('hidden');
+            } else {
+                document.getElementById('titulo-seccion').innerText = seccion.replace('_', ' ');
+                btnNuevo.classList.remove('hidden');
+                if (panelPendientes && (seccion === 'Prestamos' || seccion === 'Soporte')) {
+                    panelPendientes.classList.remove('hidden');
+                } else if (panelPendientes) {
+                    panelPendientes.classList.add('hidden');
+                }
+                panelBuscador.classList.add('hidden');
+                tablaContainer.classList.remove('hidden');
+                renderizarTabla();
+            }
         }
 
         async function cargarDatosServidor() {
@@ -184,29 +233,39 @@
             if (!globalDataCache || !globalDataCache.historial) return;
             const head = document.getElementById('tabla-head'), body = document.getElementById('tabla-body');
             let campos = CAMPOS_SECCION[seccionActual], jsonKey = JSON_KEY_MAP[seccionActual];
-            head.innerHTML = `<tr class="bg-gray-50"><th class="p-3 w-32">Acciones</th>` + campos.map(c => `<th class="p-3">${c.label}</th>`).join('') + `</tr>`;
+            
+            head.innerHTML = `<tr class="bg-gray-50"><th class="p-3 w-32">Acciones</th>` + campos.map(c => `<th class="p-3">${c.label}</th>`).join('') + `<th class="p-3">Ultima Modificacion</th><th class="p-3">Usuario</th></tr>`;
+            
             let filas = globalDataCache.historial[jsonKey] || [];
             body.innerHTML = '';
-            if (filas.length === 0) { body.innerHTML = `<tr><td colspan="${campos.length + 1}" class="p-4 text-center text-gray-400">Sin registros</td></tr>`; return; }
+            if (filas.length === 0) { body.innerHTML = `<tr><td colspan="${campos.length + 3}" class="p-4 text-center text-gray-400">Sin registros</td></tr>`; return; }
+            
             filas.forEach(r => {
                 let id = r[0], valoresRestantes = r.slice(1), tr = document.createElement('tr');
+                
+                // Las ultimas 2 columnas son auditoria (timestamp y usuario)
+                let auditTimestamp = valoresRestantes[valoresRestantes.length - 2] || '';
+                let auditUser = valoresRestantes[valoresRestantes.length - 1] || '';
+                let datosCampos = valoresRestantes.slice(0, campos.length);
+
                 tr.innerHTML = `<td class="p-3 flex gap-2">
                     <button onclick="abrirModalEditar('${id}')" class="text-blue-600 hover:text-blue-800 font-medium">Editar</button>
                     <button onclick="eliminarRegistro('${id}')" class="text-red-600 hover:text-red-800 font-medium">Eliminar</button>
                 </td>` + 
-                valoresRestantes.map((v, idx) => {
+                datosCampos.map((v, idx) => {
                     if ((seccionActual === 'Prestamos' || seccionActual === 'Soporte') && idx === ESTADO_INDICES[seccionActual]) {
                         let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
                         return `<td class="p-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded px-2 py-1 text-xs bg-white font-medium shadow-sm focus:ring-2 focus:ring-blue-500 outline-none">${opts}</select></td>`;
                     }
                     return `<td class="p-3">${escaparHTML(v)}</td>`;
-                }).join('');
+                }).join('') + `<td class="p-3 text-xs text-gray-500">${escaparHTML(auditTimestamp)}</td><td class="p-3 text-xs text-gray-500">${escaparHTML(auditUser)}</td>`;
+                
                 body.appendChild(tr);
             });
         }
 
         async function cambiarEstadoRapido(id, nuevoEstado) {
-            let observacion = prompt("¿Deseas agregar alguna observación para este cambio de estado? (Opcional)", "");
+            let observacion = prompt("¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)", "");
             if (observacion === null) {
                 cargarDatosServidor(); 
                 return;
@@ -236,7 +295,7 @@
         }
 
         async function eliminarRegistro(id) {
-            if (!confirm("¿Estás seguro de eliminar este registro? Esta acción no se puede deshacer.")) return;
+            if (!confirm("¿Estas seguro de eliminar este registro? Esta accion no se puede deshacer.")) return;
             mostrarToast("Eliminando...", "info");
             try {
                 let res = await fetch(API_URL, { 
@@ -258,6 +317,36 @@
             }
         }
 
+        async function ejecutarBusqueda() {
+            let query = document.getElementById('input-buscar').value;
+            if(!query.trim()) return alert("Ingresa un termino para buscar");
+            mostrarToast("Buscando en historico...", "info");
+            try {
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, action: "search", query }) });
+                let result = await res.json();
+                if(result.status !== 'success') throw new Error(result.message);
+                
+                let contenedor = document.getElementById('resultados-busqueda');
+                if(result.data.length === 0) {
+                    contenedor.innerHTML = `<p class="text-gray-400 text-center py-4">No se encontraron resultados.</p>`;
+                    ocultarToast();
+                    return;
+                }
+                contenedor.innerHTML = result.data.map(r => `
+                    <div class="p-3 border rounded-lg bg-gray-50 flex flex-col gap-1">
+                        <div class="flex justify-between text-xs font-bold text-blue-600">
+                            <span>Seccion: ${r.seccion}</span>
+                            <span>Archivo: ${r.archivo}</span>
+                        </div>
+                        <div class="text-gray-700">${r.datos.slice(1).join(' | ')}</div>
+                    </div>
+                `).join('');
+                ocultarToast();
+            } catch (err) {
+                mostrarToast("Error: " + err.message, "error");
+            }
+        }
+
         function abrirModalNuevo() { 
             document.getElementById('modal-titulo').innerText = "Nuevo - " + seccionActual.replace('_', ' '); 
             construirFormularioModal(); 
@@ -268,7 +357,7 @@
             let registro = globalDataCache.historial[JSON_KEY_MAP[seccionActual]].find(r => r[0] === id);
             if (!registro) return;
             document.getElementById('modal-titulo').innerText = "Editar Registro";
-            construirFormularioModal(id, registro.slice(1));
+            construirFormularioModal(id, registro.slice(1, CAMPOS_SECCION[seccionActual].length + 1));
             document.getElementById('modal').classList.remove('hidden');
         }
 
@@ -320,7 +409,7 @@
                 let result = await res.json();
                 if(result.status !== 'success') throw new Error(result.message);
                 cerrarModal(); mostrarToast("Guardado!", "success"); cargarDatosServidor();
-            } catch (err) { mostrarToast("Error: " + err.message, "error"); btn.disabled = false; btn.innerText = "Guardار"; }
+            } catch (err) { mostrarToast("Error: " + err.message, "error"); btn.disabled = false; btn.innerText = "Guardar"; }
         }
 
         function mostrarToast(m, t) { 
