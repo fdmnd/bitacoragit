@@ -62,7 +62,7 @@
     </div>
     <div id="toast" class="fixed bottom-5 right-5 hidden bg-gray-900 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition"></div>
     <script>
-        const API_URL = https://script.google.com/macros/s/AKfycbxsEOXbgPhON6mIS7y2rM3wRRFIlwi8tzAnUJBnoHw-Pq-MSK_HQey1B39v7EJfef5rkA/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbx52_99e-sJjRpzzj1jyyktQVSRelPO2b-gagje_9UTCy1eNTRKMilND9XU0P2I_azsJw/exec"; 
         let googleToken = null; 
         let seccionActual = "Prestamos";
         let globalDataCache = null;
@@ -238,7 +238,6 @@
             campos.map((c, i) => {
                 let val = valores[i];
 
-                // Si es un NUEVO registro y es la hora de devolución en préstamos, se oculta
                 if (!editId && seccionActual === 'Prestamos' && c.name === 'hora_devolucion') {
                     return `<input type="hidden" name="campo_${i}" value="">`;
                 }
