@@ -70,43 +70,46 @@
         const CAMPOS_SECCION = {
             Prestamos: [
                 { name: "fecha", label: "Fecha", type: "date" },
-                { name: "solicitante", label: "Solicitante", type: "text" },
-                { name: "equipo", label: "Equipo", type: "text" },
-                { name: "observaciones", label: "Observaciones", type: "text", required: false },
-                { name: "estado", label: "Estado", type: "select", options: ["Pendiente", "Devuelto"] },
-                { name: "retira", label: "Retira", type: "text" },
-                { name: "entrega", label: "Entrega", type: "text" },
-                { name: "firma", label: "Firma", type: "text" }
+                { name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
+                { name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
+                { name: "cantidad", label: "Cantidad", type: "text" },
+                { name: "hora_entrega", label: "Hora Entrega", type: "time" },
+                { name: "hora_devolucion", label: "Hora Devolución", type: "time" },
+                { name: "estado_logistico", label: "Estado Logístico", type: "select", options: ["Pendiente", "Devuelto", "Bueno", "Dañado", "En Tránsito"] },
+                { name: "estado_fisico", label: "Estado Físico", type: "text" },
+                { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ],
             Soporte: [
-                { name: "fecha", label: "Fecha", type: "date" },
-                { name: "docente", label: "Docente", type: "text" },
-                { name: "problema", label: "Problema", type: "text" },
+                { name: "fecha_hora", label: "Fecha y Hora", type: "text" },
+                { name: "ubicacion", label: "Ubicación", type: "text" },
                 { name: "equipo", label: "Equipo", type: "text" },
-                { name: "estado", label: "Estado", type: "select", options: ["Abierto", "En Proceso", "Solucionado", "Derivado a Terceros"] },
-                { name: "solucion", label: "Solución", type: "text", required: false }
+                { name: "tipo_mantenimiento", label: "Tipo de Mantenimiento", type: "text" },
+                { name: "descripcion", label: "Descripción de la Tarea", type: "text" },
+                { name: "estado_final", label: "Estado Final", type: "select", options: ["Abierto", "En Proceso", "Solucionado", "Derivado a Terceros"] },
+                { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ],
             Uso_Sala: [
                 { name: "fecha", label: "Fecha", type: "date" },
-                { name: "docente", label: "Docente", type: "text" },
-                { name: "curso", label: "Curso", type: "text" },
-                { name: "hora_inicio", label: "Hora Inicio", type: "time" },
-                { name: "hora_fin", label: "Hora Fin", type: "time" },
+                { name: "hora", label: "Hora", type: "time" },
+                { name: "curso_usuario", label: "Curso o Usuario", type: "text" },
+                { name: "profesor_responsable", label: "Profesor Responsable", type: "text" },
+                { name: "asignatura", label: "Asignatura", type: "text" },
+                { name: "actividad", label: "Actividad Realizada", type: "text" },
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ],
             Permanente: [
-                { name: "equipo", label: "Equipo", type: "text" },
-                { name: "ubicacion", label: "Ubicación", type: "text" },
-                { name: "n_serie", label: "N° Serie", type: "text" },
+                { name: "fecha_registro", label: "Fecha Registro", type: "date" },
+                { name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
+                { name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
+                { name: "cantidad", label: "Cantidad", type: "text" },
                 { name: "estado", label: "Estado", type: "select", options: ["Operativo", "En Reparación", "Dado de Baja"] },
-                { name: "responsable", label: "Responsable", type: "text", required: false }
+                { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ]
         };
 
         const JSON_KEY_MAP = { Prestamos: "prestamos", Soporte: "soporte", Uso_Sala: "sala", Permanente: "permanente" };
-        const ESTADO_INDICES = { Prestamos: 4, Soporte: 4 };
+        const ESTADO_INDICES = { Prestamos: 6, Soporte: 5 };
 
-        // Recuperar sesión activa por 24 horas al cargar la página
         window.addEventListener('DOMContentLoaded', () => {
             const savedToken = localStorage.getItem('googleToken');
             const savedTime = localStorage.getItem('tokenTimestamp');
@@ -120,9 +123,7 @@
                     document.getElementById('login-container').classList.add('hidden');
                     document.getElementById('app-container').classList.remove('hidden');
                     cargarDatosServidor();
-                } catch (e) {
-                    cerrarSesion();
-                }
+                } catch (e) { cerrarSesion(); }
             }
         });
 
@@ -138,9 +139,7 @@
                 document.getElementById('login-container').classList.add('hidden');
                 document.getElementById('app-container').classList.remove('hidden');
                 cargarDatosServidor();
-            } catch (e) {
-                cerrarSesion();
-            }
+            } catch (e) { cerrarSesion(); }
         }
 
         function cerrarSesion() {
@@ -176,14 +175,10 @@
                 }
                 renderizarTabla(); 
                 ocultarToast();
-            } catch (err) { 
-                mostrarToast('Error: ' + err.message, 'error'); 
-            }
+            } catch (err) { mostrarToast('Error: ' + err.message, 'error'); }
         }
 
-        function escaparHTML(str) { 
-            return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); 
-        }
+        function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
         function renderizarTabla() {
             if (!globalDataCache || !globalDataCache.historial) return;
@@ -234,8 +229,6 @@
         function construirFormularioModal(editId = null, valores = []) {
             let form = document.getElementById('modal-form');
             let campos = CAMPOS_SECCION[seccionActual];
-            
-            // Obtener fecha y hora actual en Santiago para nuevos registros por defecto
             const hoyYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
             const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
 
@@ -255,15 +248,12 @@
             document.getElementById('modal').classList.remove('hidden');
         }
 
-        function cerrarModal() { 
-            document.getElementById('modal').classList.add('hidden'); 
-        }
+        function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
 
         async function guardarRegistro(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-guardar');
-            btn.disabled = true; 
-            btn.innerText = "Guardando...";
+            btn.disabled = true; btn.innerText = "Guardando...";
             let payload = { 
                 token: googleToken, 
                 seccion: seccionActual, 
@@ -275,27 +265,19 @@
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
                 let result = await res.json();
                 if(result.status !== 'success') throw new Error(result.message);
-                cerrarModal(); 
-                mostrarToast("Guardado!", "success"); 
-                cargarDatosServidor();
-            } catch (err) { 
-                mostrarToast("Error: " + err.message, "error"); 
-                btn.disabled = false; 
-                btn.innerText = "Guardar"; 
-            }
+                cerrarModal(); mostrarToast("Guardado!", "success"); cargarDatosServidor();
+            } catch (err) { mostrarToast("Error: " + err.message, "error"); btn.disabled = false; btn.innerText = "Guardar"; }
         }
 
         function mostrarToast(m, t) { 
             let toast = document.getElementById('toast'); 
             toast.innerText = m; 
             toast.className = `fixed bottom-5 right-5 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition ${t === 'error' ? 'bg-red-600' : 'bg-green-600'}`; 
-            toast.classList.remove('hidden'); 
+            toast.classList.add('hidden'); 
             setTimeout(() => toast.classList.add('hidden'), 4000); 
         }
 
-        function ocultarToast() { 
-            document.getElementById('toast').classList.add('hidden'); 
-        }
+        function ocultarToast() { document.getElementById('toast').classList.add('hidden'); }
     </script>
 </body>
 </html>
