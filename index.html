@@ -420,23 +420,32 @@
 
                 tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
-                    // Colores dinamicos para Soporte (Verde si es Solucionado, Amarillo para pendientes/otros)
+                    // Mapeo dinámico de colores para la sección de Soporte
                     if (seccionActual === 'Soporte' && idx === ESTADO_INDICES['Soporte']) {
                         let colorClase = (v === "Solucionado") 
-                            ? "bg-emerald-100 text-emerald-800 border-emerald-200" 
-                            : "bg-amber-100 text-amber-800 border-amber-200";
+                            ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
+                            : "bg-amber-100 text-amber-800 border-amber-300";
 
                         if (admin) {
                             let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
-                            return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-semibold bg-white focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors">${opts}</select></td>`;
+                            return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg px-2 py-1.5 text-xs font-bold shadow-sm cursor-pointer transition-colors outline-none focus:ring-2 focus:ring-blue-500 ${colorClase}">${opts}</select></td>`;
                         } else {
-                            return `<td class="px-6 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ${colorClase}">${escaparHTML(v)}</span></td>`;
+                            return `<td class="px-6 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold border ${colorClase}">${escaparHTML(v)}</span></td>`;
                         }
                     }
 
-                    if (admin && seccionActual === 'Prestamos' && idx === ESTADO_INDICES['Prestamos']) {
-                        let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
-                        return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-semibold bg-white focus:ring-2 focus:ring-blue-500 outline-none text-slate-700 shadow-sm cursor-pointer hover:border-blue-300 transition-colors">${opts}</select></td>`;
+                    // Mapeo dinámico de colores para la sección de Prestamos
+                    if (seccionActual === 'Prestamos' && idx === ESTADO_INDICES['Prestamos']) {
+                        let colorClase = (v === "Devuelto" || v === "Bueno") 
+                            ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
+                            : "bg-amber-100 text-amber-800 border-amber-300";
+
+                        if (admin) {
+                            let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
+                            return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg px-2 py-1.5 text-xs font-bold shadow-sm cursor-pointer transition-colors outline-none focus:ring-2 focus:ring-blue-500 ${colorClase}">${opts}</select></td>`;
+                        } else {
+                            return `<td class="px-6 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold border ${colorClase}">${escaparHTML(v)}</span></td>`;
+                        }
                     }
 
                     return `<td class="px-6 py-3">${escaparHTML(v)}</td>`;
