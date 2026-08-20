@@ -62,7 +62,7 @@
     </div>
     <div id="toast" class="fixed bottom-5 right-5 hidden bg-gray-900 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition"></div>
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx52_99e-sJjRpzzj1jyyktQVSRelPO2b-gagje_9UTCy1eNTRKMilND9XU0P2I_azsJw/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwJ1tqo8VoC71RFLptyJwkx2MNJgG2hhjSU5qlCiAJVBFSurvrh5D6VEiVfTEa8O5LTow/exec"; 
         let googleToken = null; 
         let seccionActual = "Prestamos";
         let globalDataCache = null;
@@ -203,13 +203,33 @@
         }
 
         async function cambiarEstadoRapido(id, nuevoEstado) {
+            let observacion = prompt("¿Deseas agregar alguna observación para este cambio de estado? (Opcional)", "");
+            if (observacion === null) {
+                cargarDatosServidor(); 
+                return;
+            }
+
             mostrarToast("Actualizando...", "info");
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, seccion: seccionActual, action: "update_status", id, nuevoEstado }) });
+                let res = await fetch(API_URL, { 
+                    method: "POST", 
+                    body: JSON.stringify({ 
+                        token: googleToken, 
+                        seccion: seccionActual, 
+                        action: "update_status", 
+                        id, 
+                        nuevoEstado,
+                        observacion 
+                    }) 
+                });
                 let result = await res.json();
                 if(result.status !== 'success') throw new Error(result.message);
+                mostrarToast("Estado actualizado", "success");
                 cargarDatosServidor();
-            } catch (err) { mostrarToast("Error: " + err.message, "error"); cargarDatosServidor(); }
+            } catch (err) { 
+                mostrarToast("Error: " + err.message, "error"); 
+                cargarDatosServidor(); 
+            }
         }
 
         function abrirModalNuevo() { 
