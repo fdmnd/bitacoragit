@@ -7,61 +7,78 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans h-screen flex flex-col">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
 
-    <nav class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold tracking-wide">Gestión TI</h1>
-        <div id="userProfile" class="hidden text-sm font-medium bg-slate-800 px-3 py-1 rounded"></div>
+    <!-- Navegación Superior -->
+    <nav class="bg-slate-900 text-white p-4 shadow-lg flex justify-between items-center sticky top-0 z-30">
+        <h1 class="text-xl font-bold tracking-wide flex items-center gap-2">
+            <span class="bg-blue-600 text-xs px-2 py-1 rounded-md uppercase">TI</span>
+            Gestión Educacional
+        </h1>
+        <div id="userProfile" class="hidden text-xs font-semibold bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700"></div>
     </nav>
 
-    <div id="alertBox" class="hidden w-full p-4 text-center text-white font-semibold transition-all duration-300 z-50 absolute top-0 shadow-lg"></div>
+    <!-- Alertas Flotantes -->
+    <div id="alertBox" class="hidden w-full p-4 text-center text-white font-semibold transition-all duration-300 z-50 fixed top-0 left-0 shadow-2xl"></div>
 
-    <div class="flex overflow-x-auto bg-white shadow-sm border-b">
-        <button onclick="switchTab('soporte')" class="tab-btn px-6 py-4 border-b-4 border-blue-600 font-bold focus:outline-none">Soporte</button>
-        <button onclick="switchTab('sala')" class="tab-btn px-6 py-4 border-b-4 border-transparent text-slate-500 hover:text-blue-600 focus:outline-none font-medium">Uso Sala</button>
-        <button onclick="switchTab('prestamo')" class="tab-btn px-6 py-4 border-b-4 border-transparent text-slate-500 hover:text-blue-600 focus:outline-none font-medium">Préstamos</button>
-        <button onclick="switchTab('permanente')" class="tab-btn px-6 py-4 border-b-4 border-transparent text-slate-500 hover:text-blue-600 focus:outline-none font-medium">Permanentes</button>
-        <button onclick="switchTab('pendientes')" class="tab-btn px-6 py-4 border-b-4 border-transparent text-red-600 hover:text-red-800 focus:outline-none font-bold">Panel Pendientes</button>
+    <!-- Menú de Pestañas -->
+    <div class="flex overflow-x-auto bg-white shadow-sm border-b border-slate-200 sticky top-[60px] z-20">
+        <button onclick="switchTab('soporte')" class="tab-btn px-5 py-3.5 border-b-4 border-blue-600 text-slate-900 font-bold whitespace-nowrap text-sm focus:outline-none">Soporte</button>
+        <button onclick="switchTab('sala')" class="tab-btn px-5 py-3.5 border-b-4 border-transparent text-slate-500 hover:text-blue-600 whitespace-nowrap text-sm font-medium focus:outline-none">Uso Sala</button>
+        <button onclick="switchTab('prestamo')" class="tab-btn px-5 py-3.5 border-b-4 border-transparent text-slate-500 hover:text-blue-600 whitespace-nowrap text-sm font-medium focus:outline-none">Préstamos</button>
+        <button onclick="switchTab('permanente')" class="tab-btn px-5 py-3.5 border-b-4 border-transparent text-slate-500 hover:text-blue-600 whitespace-nowrap text-sm font-medium focus:outline-none">Permanentes</button>
+        <button onclick="switchTab('pendientes')" class="tab-btn px-5 py-3.5 border-b-4 border-transparent text-red-600 hover:text-red-800 whitespace-nowrap text-sm font-bold focus:outline-none">Pendientes</button>
+        <button onclick="switchTab('historial')" class="tab-btn px-5 py-3.5 border-b-4 border-transparent text-indigo-600 hover:text-indigo-800 whitespace-nowrap text-sm font-bold focus:outline-none">Historial / Editar</button>
     </div>
 
-    <main class="flex-grow p-4 md:p-8 overflow-y-auto relative">
+    <!-- Contenedor Principal -->
+    <main class="flex-grow p-4 md:p-8 pb-32 overflow-y-auto">
         
-        <!-- Módulo de Seguridad -->
-        <div id="loginOverlay" class="absolute inset-0 bg-slate-100 z-40 flex flex-col items-center justify-center">
-            <div class="bg-white p-8 rounded-lg shadow-xl text-center">
-                <h2 class="text-2xl font-bold mb-2 text-slate-800">Autenticación Requerida</h2>
-                <p class="text-slate-500 mb-6 text-sm">Acceso exclusivo para administración TI.</p>
+        <!-- MODAL DE LOGIN -->
+        <div id="loginOverlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center border border-slate-100">
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-xl">🔒</div>
+                <h2 class="text-2xl font-bold mb-1 text-slate-800">Acceso Restringido</h2>
+                <p class="text-slate-500 mb-6 text-xs">Identifícate con tu cuenta autorizada.</p>
                 <div id="g_id_onload"
                      data-client_id="1063772408490-0fipirlhukj70uvol4k2pjvehp753c5t.apps.googleusercontent.com"
                      data-callback="handleCredentialResponse"
                      data-auto_prompt="false">
                 </div>
-                <div class="g_id_signin" data-type="standard" data-theme="filled_black" data-size="large"></div>
+                <div class="g_id_signin flex justify-center" data-type="standard" data-theme="filled_black" data-size="large"></div>
             </div>
         </div>
 
-        <!-- FORMULARIO: SOPORTE -->
-        <section id="soporte" class="tab-content max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
-            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Registro de Soporte Técnico</h2>
+        <!-- MODAL FLOTANTE DE EDICIÓN -->
+        <div id="editModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col border border-slate-100 overflow-hidden">
+                <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
+                    <h3 class="font-bold text-lg" id="editModalTitle">Editar Registro</h3>
+                    <button onclick="cerrarModal()" class="text-slate-400 hover:text-white font-bold text-xl">&times;</button>
+                </div>
+                <form id="formModalEdit" onsubmit="guardarEdicionModal(event)" class="p-6 overflow-y-auto flex-grow space-y-4">
+                    <div id="modalInputsContainer" class="space-y-4"></div>
+                    <div class="pt-4 flex gap-3">
+                        <button type="button" onclick="cerrarModal()" class="w-1/2 bg-slate-200 text-slate-700 font-bold py-3 rounded-lg hover:bg-slate-300 transition text-sm">Cancelar</button>
+                        <button type="submit" class="w-1/2 bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition shadow-md text-sm">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- FORMULARIO 1: SOPORTE -->
+        <section id="soporte" class="tab-content max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-3">Registro de Soporte Técnico</h2>
             <form id="formSoporte" onsubmit="enviarDatos(event, 'Soporte')">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Fecha y Hora</label>
-                        <input type="datetime-local" id="sop_fecha" class="w-full border rounded p-2.5" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Ubicación</label>
-                        <input type="text" id="sop_ubicacion" class="w-full border rounded p-2.5" required>
-                    </div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha y Hora</label><input type="datetime-local" id="sop_fecha" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Ubicación</label><input type="text" id="sop_ubicacion" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Ej: Sala Profesores" required></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Equipo</label><input type="text" id="sop_equipo" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">Equipo</label>
-                        <input type="text" id="sop_equipo" class="w-full border rounded p-2.5" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Tipo de Mantenimiento</label>
-                        <select id="sop_tipo" class="w-full border rounded p-2.5 bg-white" required>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo de Mantenimiento</label>
+                        <select id="sop_tipo" class="w-full border border-slate-300 rounded-lg p-3 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
                             <option value="Preventivo">Preventivo</option>
                             <option value="Correctivo">Correctivo</option>
                             <option value="Red">Red</option>
@@ -72,40 +89,34 @@
                         </select>
                     </div>
                 </div>
-                <div class="mb-5">
-                    <label class="block text-sm font-semibold mb-1">Descripción de la Tarea</label>
-                    <textarea id="sop_desc" rows="3" class="w-full border rounded p-2.5" required></textarea>
-                </div>
+                <div class="mb-5"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Descripción de la Tarea</label><textarea id="sop_desc" rows="3" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></textarea></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">Estado Final</label>
-                        <select id="sop_estado" class="w-full border rounded p-2.5 bg-white">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estado Final</label>
+                        <select id="sop_estado" class="w-full border border-slate-300 rounded-lg p-3 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             <option value="Solucionado">Solucionado</option>
                             <option value="Pendiente">Pendiente</option>
                             <option value="Derivado a Terceros">Derivado a Terceros</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Observaciones</label>
-                        <input type="text" id="sop_obs" class="w-full border rounded p-2.5">
-                    </div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones</label><input type="text" id="sop_obs" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 </div>
-                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3.5 rounded-lg hover:bg-blue-800 transition">Guardar Soporte</button>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition shadow-md hover:shadow-lg text-sm">Guardar Ticket de Soporte</button>
             </form>
         </section>
 
-        <!-- FORMULARIO: USO DE SALA -->
-        <section id="sala" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
-            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Registro de Uso de Sala</h2>
+        <!-- FORMULARIO 2: USO DE SALA -->
+        <section id="sala" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-3">Registro de Uso de Sala</h2>
             <form id="formSala" onsubmit="enviarDatos(event, 'Uso_Sala')">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                    <div><label class="block text-sm font-semibold mb-1">Fecha</label><input type="date" id="sal_fecha" class="w-full border rounded p-2.5" required></div>
-                    <div><label class="block text-sm font-semibold mb-1">Hora</label><input type="time" id="sal_hora" class="w-full border rounded p-2.5" required></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha</label><input type="date" id="sal_fecha" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora / Bloque</label><input type="time" id="sal_hora" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">Curso o Usuario</label>
-                        <select id="sal_curso" class="w-full border rounded p-2.5 bg-white" required>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Curso o Usuario</label>
+                        <select id="sal_curso" class="w-full border border-slate-300 rounded-lg p-3 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
                             <optgroup label="Básica">
                                 <option value="1 Básico A">1° Básico A</option>
                                 <option value="8 Básico D">8° Básico D</option>
@@ -116,12 +127,12 @@
                             </optgroup>
                         </select>
                     </div>
-                    <div><label class="block text-sm font-semibold mb-1">Profesor Responsable</label><input type="text" id="sal_profesor" class="w-full border rounded p-2.5" required></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Profesor Responsable</label><input type="text" id="sal_profesor" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">Asignatura</label>
-                        <select id="sal_asignatura" class="w-full border rounded p-2.5 bg-white" required>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Asignatura</label>
+                        <select id="sal_asignatura" class="w-full border border-slate-300 rounded-lg p-3 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
                             <option value="Matemática">Matemática</option>
                             <option value="Lenguaje">Lenguaje</option>
                             <option value="Ciencias">Ciencias</option>
@@ -130,30 +141,30 @@
                             <option value="Otra">Otra</option>
                         </select>
                     </div>
-                    <div><label class="block text-sm font-semibold mb-1">Observaciones</label><input type="text" id="sal_obs" class="w-full border rounded p-2.5"></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones</label><input type="text" id="sal_obs" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 </div>
-                <div class="mb-6"><label class="block text-sm font-semibold mb-1">Actividad Realizada</label><textarea id="sal_actividad" rows="2" class="w-full border rounded p-2.5" required></textarea></div>
-                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3.5 rounded-lg hover:bg-blue-800 transition">Registrar Uso</button>
+                <div class="mb-6"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Actividad Realizada</label><textarea id="sal_actividad" rows="2" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></textarea></div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition shadow-md hover:shadow-lg text-sm">Registrar Uso de Sala</button>
             </form>
         </section>
 
-        <!-- FORMULARIO: PRÉSTAMOS TEMPORALES -->
-        <section id="prestamo" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
-            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Préstamos de Equipamiento</h2>
+        <!-- FORMULARIO 3: PRÉSTAMOS -->
+        <section id="prestamo" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-3">Préstamos de Equipamiento</h2>
             <form id="formPrestamo" onsubmit="enviarDatos(event, 'Prestamos')">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-                    <div class="col-span-1"><label class="block text-sm font-semibold mb-1">Fecha</label><input type="date" id="pre_fecha" class="w-full border rounded p-2.5" required></div>
-                    <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Profesor/a - Sala</label><input type="text" id="pre_profesor" class="w-full border rounded p-2.5" required></div>
+                    <div class="col-span-1"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha</label><input type="date" id="pre_fecha" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
+                    <div class="col-span-2"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Profesor/a - Sala</label><input type="text" id="pre_profesor" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-                    <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Equipo Prestado</label><input type="text" id="pre_equipo" class="w-full border rounded p-2.5" required></div>
-                    <div class="col-span-1"><label class="block text-sm font-semibold mb-1">Cantidad</label><input type="number" id="pre_cant" value="1" min="1" max="99" class="w-full border rounded p-2.5" required></div>
+                    <div class="col-span-2"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Equipo Prestado</label><input type="text" id="pre_equipo" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
+                    <div class="col-span-1"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cantidad</label><input type="number" id="pre_cant" value="1" min="1" max="99" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                    <div><label class="block text-sm font-semibold mb-1">Hora Entrega</label><input type="time" id="pre_hora" class="w-full border rounded p-2.5" required></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora Entrega</label><input type="time" id="pre_hora" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">Estado Físico Insumo</label>
-                        <select id="pre_estadoinsumo" class="w-full border rounded p-2.5 bg-white">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estado Físico Insumo</label>
+                        <select id="pre_estadoinsumo" class="w-full border border-slate-300 rounded-lg p-3 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             <option value="Bueno">Bueno</option>
                             <option value="Con detalles estéticos">Con detalles estéticos</option>
                             <option value="Deficiente">Deficiente</option>
@@ -161,66 +172,132 @@
                     </div>
                 </div>
                 <input type="hidden" id="pre_estadologistico" value="Pendiente">
-                <div class="mb-6"><label class="block text-sm font-semibold mb-1">Observaciones</label><input type="text" id="pre_obs" class="w-full border rounded p-2.5"></div>
-                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3.5 rounded-lg hover:bg-blue-800 transition">Registrar Préstamo</button>
+                <div class="mb-6"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones</label><input type="text" id="pre_obs" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition shadow-md hover:shadow-lg text-sm">Registrar Préstamo</button>
             </form>
         </section>
 
-        <!-- FORMULARIO: PRÉSTAMO PERMANENTE -->
-        <section id="permanente" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
-            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-2">Asignación Permanente</h2>
+        <!-- FORMULARIO 4: PERMANENTE -->
+        <section id="permanente" class="tab-content hidden max-w-3xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800 border-b pb-3">Asignación Permanente</h2>
             <form id="formPermanente" onsubmit="enviarDatos(event, 'Permanente')">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                    <div><label class="block text-sm font-semibold mb-1">Fecha Registro</label><input type="date" id="per_fecha" class="w-full border rounded p-2.5" required></div>
-                    <div><label class="block text-sm font-semibold mb-1">Profesor/a - Sala</label><input type="text" id="per_profesor" class="w-full border rounded p-2.5" required></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Registro</label><input type="date" id="per_fecha" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Profesor/a - Sala</label><input type="text" id="per_profesor" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-                    <div class="col-span-2"><label class="block text-sm font-semibold mb-1">Equipo Asignado</label><input type="text" id="per_equipo" class="w-full border rounded p-2.5" required></div>
-                    <div class="col-span-1"><label class="block text-sm font-semibold mb-1">Cantidad</label><input type="number" id="per_cant" value="1" min="1" class="w-full border rounded p-2.5" required></div>
+                    <div class="col-span-2"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Equipo Asignado</label><input type="text" id="per_equipo" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
+                    <div class="col-span-1"><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cantidad</label><input type="number" id="per_cant" value="1" min="1" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none" required></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">Estado</label>
-                        <select id="per_estado" class="w-full border rounded p-2.5 bg-white">
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estado</label>
+                        <select id="per_estado" class="w-full border border-slate-300 rounded-lg p-3 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             <option value="Nuevo">Nuevo</option>
                             <option value="Usado en buen estado">Usado en buen estado</option>
                         </select>
                     </div>
-                    <div><label class="block text-sm font-semibold mb-1">Observaciones (N° Acta)</label><input type="text" id="per_obs" class="w-full border rounded p-2.5"></div>
+                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones (N° Acta)</label><input type="text" id="per_obs" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                 </div>
-                <button type="submit" class="w-full bg-blue-700 text-white font-bold py-3.5 rounded-lg hover:bg-blue-800 transition">Asignar Equipo</button>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition shadow-md hover:shadow-lg text-sm">Asignar Equipo</button>
             </form>
         </section>
 
         <!-- PANEL DE PENDIENTES -->
-        <section id="pendientes" class="tab-content hidden max-w-5xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-sm border border-slate-200">
+        <section id="pendientes" class="tab-content hidden max-w-5xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80">
             <div class="flex justify-between items-center border-b pb-4 mb-6">
                 <h2 class="text-2xl font-bold text-red-700">Centro de Operaciones Pendientes</h2>
-                <button onclick="cargarPendientes()" class="bg-slate-200 px-4 py-2 rounded-md font-semibold text-sm hover:bg-slate-300">↻ Refrescar Datos</button>
+                <button onclick="cargarDatosServidor()" class="bg-slate-100 px-4 py-2 rounded-lg font-semibold text-xs hover:bg-slate-200 transition border border-slate-300">↻ Refrescar</button>
             </div>
             
-            <h3 class="font-bold text-lg mb-3">Préstamos Activos</h3>
-            <div class="overflow-x-auto mb-8 shadow-inner bg-slate-50 rounded">
+            <h3 class="font-bold text-base text-slate-700 mb-3">Préstamos Activos (Por devolver)</h3>
+            <div class="overflow-x-auto mb-8 shadow-inner bg-slate-50 rounded-xl border border-slate-200">
                 <table class="min-w-full text-sm text-left">
-                    <thead class="bg-slate-200 text-slate-700"><tr><th class="py-3 px-4">Fecha/Hora</th><th class="py-3 px-4">Profesor/Sala</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4 text-center">Acción</th></tr></thead>
+                    <thead class="bg-slate-200/70 text-slate-700 uppercase text-[11px] font-bold">
+                        <tr><th class="py-3 px-4">Fecha/Hora</th><th class="py-3 px-4">Profesor/Sala</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4 text-center">Acción</th></tr>
+                    </thead>
                     <tbody id="tablaPres" class="divide-y divide-slate-200 bg-white"></tbody>
                 </table>
             </div>
 
-            <h3 class="font-bold text-lg mb-3">Soportes Abiertos</h3>
-            <div class="overflow-x-auto shadow-inner bg-slate-50 rounded">
+            <h3 class="font-bold text-base text-slate-700 mb-3">Soportes Abiertos</h3>
+            <div class="overflow-x-auto shadow-inner bg-slate-50 rounded-xl border border-slate-200">
                 <table class="min-w-full text-sm text-left">
-                    <thead class="bg-slate-200 text-slate-700"><tr><th class="py-3 px-4">Fecha</th><th class="py-3 px-4">Equipo/Ubicación</th><th class="py-3 px-4">Falla</th><th class="py-3 px-4 text-center">Acción</th></tr></thead>
+                    <thead class="bg-slate-200/70 text-slate-700 uppercase text-[11px] font-bold">
+                        <tr><th class="py-3 px-4">Fecha</th><th class="py-3 px-4">Equipo/Ubicación</th><th class="py-3 px-4">Falla</th><th class="py-3 px-4 text-center">Acción</th></tr>
+                    </thead>
                     <tbody id="tablaSop" class="divide-y divide-slate-200 bg-white"></tbody>
                 </table>
             </div>
         </section>
+
+        <!-- SECCIÓN NUEVA: HISTORIAL Y EDICIÓN -->
+        <section id="historial" class="tab-content hidden max-w-6xl mx-auto bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/80">
+            <div class="flex flex-col md:flex-row justify-between md:items-center border-b pb-4 mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-indigo-900">Historial de Registros del Mes</h2>
+                    <p class="text-slate-500 text-xs">Revisa y modifica cualquier dato ingresado en el sistema.</p>
+                </div>
+                <div class="flex gap-2">
+                    <select id="filtroHistorialSeccion" onchange="renderizarHistorial()" class="border border-slate-300 rounded-lg p-2 text-xs bg-white font-semibold">
+                        <option value="Soporte">Soporte</option>
+                        <option value="Uso_Sala">Uso de Sala</option>
+                        <option value="Prestamos">Préstamos</option>
+                        <option value="Permanente">Permanentes</option>
+                    </select>
+                    <button onclick="cargarDatosServidor()" class="bg-slate-100 px-4 py-2 rounded-lg font-semibold text-xs hover:bg-slate-200 transition border border-slate-300">↻ Sincronizar</button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto shadow-inner bg-slate-50 rounded-xl border border-slate-200">
+                <table class="min-w-full text-sm text-left">
+                    <thead id="headHistorial" class="bg-slate-200/70 text-slate-700 uppercase text-[11px] font-bold"></thead>
+                    <tbody id="bodyHistorial" class="divide-y divide-slate-200 bg-white"></tbody>
+                </table>
+            </div>
+        </section>
+
     </main>
 
+    <!-- SCRIPTS -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbz5T1xpUuJb30P8bMuKXpNicf9Q9WemRUk82FDc4K9732CTRc9xfLRlHU3b4PR2Hj2wKQ/exec"; 
         const ADMIN_EMAIL = "fabianzmk@gmail.com";
+        const SESSION_DURATION_HOURS = 8;
+
         let googleToken = "";
+        let globalDataCache = null;
+        let registroEnEdicion = null;
+
+        function verificarSesion() {
+            const sessionData = localStorage.getItem('ti_session');
+            if (sessionData) {
+                const session = JSON.parse(sessionData);
+                if (session.email === ADMIN_EMAIL && new Date().getTime() < session.expiresAt) {
+                    googleToken = session.token;
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('userProfile').innerText = session.email;
+                    document.getElementById('userProfile').classList.remove('hidden');
+                } else {
+                    localStorage.removeItem('ti_session');
+                }
+            }
+        }
+
+        function handleCredentialResponse(response) {
+            googleToken = response.credential;
+            const payload = JSON.parse(atob(googleToken.split('.')[1]));
+            
+            if (payload.email === ADMIN_EMAIL) {
+                const expiresAt = new Date().getTime() + (SESSION_DURATION_HOURS * 60 * 60 * 1000);
+                localStorage.setItem('ti_session', JSON.stringify({ token: googleToken, email: payload.email, expiresAt: expiresAt }));
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('userProfile').innerText = payload.email;
+                document.getElementById('userProfile').classList.remove('hidden');
+            } else {
+                mostrarAlerta('Credenciales rechazadas. Acceso solo para el Administrador TI.', 'error');
+            }
+        }
 
         function setFechasActuales() {
             const now = new Date();
@@ -236,20 +313,9 @@
             document.getElementById('pre_hora').value = horaIso;
             document.getElementById('per_fecha').value = fechaIso;
         }
-        setFechasActuales();
 
-        function handleCredentialResponse(response) {
-            googleToken = response.credential;
-            const payload = JSON.parse(atob(googleToken.split('.')[1]));
-            
-            if (payload.email === ADMIN_EMAIL) {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('userProfile').innerText = payload.email;
-                document.getElementById('userProfile').classList.remove('hidden');
-            } else {
-                mostrarAlerta('Credenciales rechazadas. Operación abortada.', 'error');
-            }
-        }
+        setFechasActuales();
+        verificarSesion();
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
@@ -261,14 +327,14 @@
             event.target.classList.remove('border-transparent', 'text-slate-500');
             event.target.classList.add('border-blue-600', 'text-slate-900', 'font-bold');
             
-            if(tabId === 'pendientes') cargarPendientes();
+            if(tabId === 'pendientes' || tabId === 'historial') cargarDatosServidor();
         }
 
         async function enviarDatos(event, seccion) {
             event.preventDefault();
             const btn = event.target.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerText = "Procesando...";
+            btn.innerText = "Guardando en Drive...";
 
             let rowData = [];
             if (seccion === 'Soporte') {
@@ -292,57 +358,155 @@
                 if (result.status === 'success') {
                     event.target.reset();
                     setFechasActuales();
-                    mostrarAlerta('Transacción confirmada en base de datos.', 'success');
+                    mostrarAlerta('Registro guardado exitosamente en Google Sheet.', 'success');
                 } else throw new Error(result.message);
             } catch (error) {
                 mostrarAlerta('Error del sistema: ' + error.message, 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerText = "Guardar";
+                btn.innerText = "Guardar Registro";
             }
         }
 
-        async function cargarPendientes() {
-            const tPres = document.getElementById('tablaPres');
-            const tSop = document.getElementById('tablaSop');
-            tPres.innerHTML = '<tr><td colspan="4" class="text-center p-4">Sincronizando...</td></tr>';
-            tSop.innerHTML = '<tr><td colspan="4" class="text-center p-4">Sincronizando...</td></tr>';
-            
+        async function cargarDatosServidor() {
             try {
                 const res = await fetch(API_URL);
                 const result = await res.json();
                 
-                if(result.status !== 'success') throw new Error();
-
-                tPres.innerHTML = result.data.prestamos.map(row => `
-                    <tr>
-                        <td class="py-2 px-4">${new Date(row[0]).toLocaleDateString()} ${row[4]}</td>
-                        <td class="py-2 px-4">${row[1]}</td>
-                        <td class="py-2 px-4">${row[2]} (x${row[3]})</td>
-                        <td class="py-2 px-4 text-center">
-                            <button onclick="actualizarEstado('${row[0]}', 'Prestamos', 'Devuelto')" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs hover:bg-emerald-700">Marcar Devuelto</button>
-                        </td>
-                    </tr>
-                `).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-500">Sin préstamos activos.</td></tr>';
-
-                tSop.innerHTML = result.data.soporte.map(row => `
-                    <tr>
-                        <td class="py-2 px-4">${new Date(row[0]).toLocaleString()}</td>
-                        <td class="py-2 px-4 font-semibold">${row[2]} <span class="font-normal text-xs block text-slate-500">${row[1]}</span></td>
-                        <td class="py-2 px-4 text-xs">${row[4]}</td>
-                        <td class="py-2 px-4 text-center">
-                            <button onclick="actualizarEstado('${row[0]}', 'Soporte', 'Solucionado')" class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">Cerrar Ticket</button>
-                        </td>
-                    </tr>
-                `).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-500">Sin soportes pendientes.</td></tr>';
+                if(result.status !== 'success') throw new Error(result.message);
+                
+                globalDataCache = result.data;
+                renderizarPendientes();
+                renderizarHistorial();
 
             } catch (error) {
-                tPres.innerHTML = '<tr><td colspan="4" class="text-center text-red-500 p-4">Falla de lectura.</td></tr>';
-                tSop.innerHTML = '';
+                mostrarAlerta('Error de lectura de datos: ' + error.message, 'error');
             }
         }
 
-        async function actualizarEstado(idRegistro, seccion, nuevoEstado) {
+        function renderizarPendientes() {
+            if(!globalDataCache) return;
+            const tPres = document.getElementById('tablaPres');
+            const tSop = document.getElementById('tablaSop');
+
+            tPres.innerHTML = globalDataCache.pendientes.prestamos.map(row => `
+                <tr>
+                    <td class="py-3 px-4">${new Date(row[0]).toLocaleDateString()} ${row[4]}</td>
+                    <td class="py-3 px-4 font-medium">${row[1]}</td>
+                    <td class="py-3 px-4">${row[2]} (x${row[3]})</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="actualizarEstadoRapido('${row[0]}', 'Prestamos', 'Devuelto')" class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-700 transition">Marcar Devuelto</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-400 italic">No hay préstamos pendientes.</td></tr>';
+
+            tSop.innerHTML = globalDataCache.pendientes.soporte.map(row => `
+                <tr>
+                    <td class="py-3 px-4">${new Date(row[0]).toLocaleString()}</td>
+                    <td class="py-3 px-4 font-semibold">${row[2]} <span class="font-normal text-xs block text-slate-500">${row[1]}</span></td>
+                    <td class="py-3 px-4 text-xs">${row[4]}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="actualizarEstadoRapido('${row[0]}', 'Soporte', 'Solucionado')" class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 transition">Cerrar Ticket</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="4" class="text-center p-4 text-slate-400 italic">No hay tickets abiertos.</td></tr>';
+        }
+
+        function renderizarHistorial() {
+            if(!globalDataCache) return;
+            const seccion = document.getElementById('filtroHistorialSeccion').value;
+            const head = document.getElementById('headHistorial');
+            const body = document.getElementById('bodyHistorial');
+            
+            let datos = [];
+            if(seccion === 'Soporte') {
+                head.innerHTML = `<tr><th class="py-3 px-4">Fecha/Hora</th><th class="py-3 px-4">Ubicación</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4">Tipo</th><th class="py-3 px-4">Estado</th><th class="py-3 px-4 text-center">Acción</th></tr>`;
+                datos = globalDataCache.historial.soporte;
+            } else if(seccion === 'Uso_Sala') {
+                head.innerHTML = `<tr><th class="py-3 px-4">Fecha/Hora</th><th class="py-3 px-4">Curso</th><th class="py-3 px-4">Profesor</th><th class="py-3 px-4">Asignatura</th><th class="py-3 px-4">Actividad</th><th class="py-3 px-4 text-center">Acción</th></tr>`;
+                datos = globalDataCache.historial.sala;
+            } else if(seccion === 'Prestamos') {
+                head.innerHTML = `<tr><th class="py-3 px-4">Fecha</th><th class="py-3 px-4">Profesor/Sala</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4">Cant</th><th class="py-3 px-4">Estado</th><th class="py-3 px-4 text-center">Acción</th></tr>`;
+                datos = globalDataCache.historial.prestamos;
+            } else if(seccion === 'Permanente') {
+                head.innerHTML = `<tr><th class="py-3 px-4">Fecha</th><th class="py-3 px-4">Profesor/Sala</th><th class="py-3 px-4">Equipo</th><th class="py-3 px-4">Cant</th><th class="py-3 px-4">Estado</th><th class="py-3 px-4 text-center">Acción</th></tr>`;
+                datos = globalDataCache.historial.permanente;
+            }
+
+            body.innerHTML = datos.map((row, index) => {
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-3 px-4 font-mono text-xs">${row[0]}</td>
+                        <td class="py-3 px-4 font-medium">${row[1]}</td>
+                        <td class="py-3 px-4">${row[2]}</td>
+                        <td class="py-3 px-4 text-xs">${row[3] || ''}</td>
+                        <td class="py-3 px-4"><span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs border font-semibold">${row[5] || row[4] || ''}</span></td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="abrirModalEdicion('${seccion}', ${index})" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-3 py-1 rounded-lg text-xs font-bold hover:bg-indigo-100 transition">✏️ Editar</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('') || '<tr><td colspan="6" class="text-center p-4 text-slate-400 italic">No hay registros en esta sección.</td></tr>';
+        }
+
+        function abrirModalEdicion(seccion, index) {
+            let row = globalDataCache.historial[seccion === 'Uso_Sala' ? 'sala' : seccion.toLowerCase()][index];
+            registroEnEdicion = { seccion: seccion, idOriginal: row[0], rowData: [...row] };
+
+            document.getElementById('editModalTitle').innerText = `Editar Registro: ${seccion}`;
+            const container = document.getElementById('modalInputsContainer');
+            container.innerHTML = "";
+
+            row.forEach((val, i) => {
+                let disabled = (i === 0) ? "disabled class='w-full border rounded-lg p-2 text-sm bg-slate-100 font-mono text-slate-500'" : "class='w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none'";
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">${i === 0 ? 'ID (Marca de Tiempo - No Editable)' : 'Dato Columna ' + (i+1)}</label>
+                        <input type="text" id="modal_field_${i}" value="${val}" ${disabled}>
+                    </div>
+                `;
+            });
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function cerrarModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            registroEnEdicion = null;
+        }
+
+        async function guardarEdicionModal(event) {
+            event.preventDefault();
+            if(!registroEnEdicion) return;
+
+            let updatedRowValues = registroEnEdicion.rowData.map((_, i) => document.getElementById(`modal_field_${i}`).value);
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        token: googleToken,
+                        action: "edit_row",
+                        seccion: registroEnEdicion.seccion,
+                        id: registroEnEdicion.idOriginal,
+                        rowValues: updatedRowValues
+                    }),
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }
+                });
+
+                const result = await res.json();
+                if(result.status === 'success') {
+                    mostrarAlerta('Registro modificado con éxito.', 'success');
+                    cerrarModal();
+                    cargarDatosServidor();
+                } else throw new Error(result.message);
+
+            } catch(error) {
+                mostrarAlerta('Falla al guardar edición: ' + error.message, 'error');
+            }
+        }
+
+        async function actualizarEstadoRapido(idRegistro, seccion, nuevoEstado) {
             if(!confirm(`¿Confirmar cambio de estado a "${nuevoEstado}"?`)) return;
             try {
                 const res = await fetch(API_URL, {
@@ -353,7 +517,7 @@
                 const result = await res.json();
                 if(result.status === 'success') {
                     mostrarAlerta('Estado modificado correctamente.', 'success');
-                    cargarPendientes();
+                    cargarDatosServidor();
                 } else throw new Error(result.message);
             } catch (error) {
                 mostrarAlerta('Falla al actualizar: ' + error.message, 'error');
@@ -363,7 +527,7 @@
         function mostrarAlerta(msg, tipo) {
             const ab = document.getElementById('alertBox');
             ab.innerText = msg;
-            ab.className = `w-full p-4 text-center text-white font-semibold transition-all duration-300 z-50 absolute top-0 shadow-lg ${tipo==='success'?'bg-emerald-600':'bg-red-600'}`;
+            ab.className = `w-full p-4 text-center text-white font-semibold transition-all duration-300 z-50 fixed top-0 left-0 shadow-2xl ${tipo==='success'?'bg-emerald-600':'bg-red-600'}`;
             ab.classList.remove('hidden');
             setTimeout(() => ab.classList.add('hidden'), 3500);
         }
