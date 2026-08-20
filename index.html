@@ -180,7 +180,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbz3efRpSCCK_V7ssOkUlVEn_7LePIl-YeFPR7nBvGlWEKR-HsG77nQduosGmGM-FxbmmA/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxGhF8RDrgMPZ8aUReufefHs8b-8PTyVzDfocfz14SPPK4ylCoCBUFYXEh21ZcIHk3TqQ/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -420,7 +420,7 @@
 
                 tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
-                    // Soporte colores: Verde si es "Solucionado", Amarillo si es pendiente/otro en la seccion de soporte
+                    // Colores dinamicos para Soporte (Verde si es Solucionado, Amarillo para pendientes/otros)
                     if (seccionActual === 'Soporte' && idx === ESTADO_INDICES['Soporte']) {
                         let colorClase = (v === "Solucionado") 
                             ? "bg-emerald-100 text-emerald-800 border-emerald-200" 
@@ -630,4 +630,3 @@
     </script>
 </body>
 </html>
-        
