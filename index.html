@@ -238,7 +238,7 @@
             campos.map((c, i) => {
                 let val = valores[i];
 
-                // Si es un NUEVO registro y es la hora de devolución, se oculta y envía vacía
+                // Si es un NUEVO registro y es la hora de devolución en préstamos, se oculta
                 if (!editId && seccionActual === 'Prestamos' && c.name === 'hora_devolucion') {
                     return `<input type="hidden" name="campo_${i}" value="">`;
                 }
