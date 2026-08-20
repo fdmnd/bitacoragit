@@ -62,7 +62,7 @@
     </div>
     <div id="toast" class="fixed bottom-5 right-5 hidden bg-gray-900 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition"></div>
     <script>
-        const API_URL = "https://script.google.com/macros/s/TU_URL_REAL_AQUI/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwy4FnaLC_1bTDLZ73JjDye17a69hJDLN7FwCuHAK3vsdIqXDMqjHSBGNjmJOWQpMClig/exec"; 
         let googleToken = null, seccionActual = "Prestamos", globalDataCache = null;
         const CAMPOS_SECCION = {
             Prestamos: [{ name: "fecha", label: "Fecha", type: "date" }, { name: "solicitante", label: "Solicitante", type: "text" }, { name: "equipo", label: "Equipo", type: "text" }, { name: "observaciones", label: "Observaciones", type: "text", required: false }, { name: "estado", label: "Estado", type: "select", options: ["Pendiente", "Devuelto"] }, { name: "retira", label: "Retira", type: "text" }, { name: "entrega", label: "Entrega", type: "text" }, { name: "firma", label: "Firma", type: "text" }],
@@ -72,6 +72,7 @@
         };
         const JSON_KEY_MAP = { Prestamos: "prestamos", Soporte: "soporte", Uso_Sala: "sala", Permanente: "permanente" };
         const ESTADO_INDICES = { Prestamos: 4, Soporte: 4 };
+
         function handleCredentialResponse(response) {
             googleToken = response.credential;
             const base64Url = googleToken.split('.')[1];
@@ -82,7 +83,9 @@
             document.getElementById('app-container').classList.remove('hidden');
             cargarDatosServidor();
         }
+
         function cerrarSesion() { googleToken = null; location.reload(); }
+
         function cambiarSeccion(seccion) {
             seccionActual = seccion;
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active', 'text-gray-500'));
@@ -90,6 +93,7 @@
             document.getElementById('titulo-seccion').innerText = seccion.replace('_', ' ');
             renderizarTabla();
         }
+
         async function cargarDatosServidor() {
             if (!googleToken) return cerrarSesion();
             mostrarToast("Cargando...", "info");
@@ -106,7 +110,9 @@
                 renderizarTabla(); ocultarToast();
             } catch (err) { mostrarToast('Error: ' + err.message, 'error'); }
         }
+
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
+
         function renderizarTabla() {
             if (!globalDataCache || !globalDataCache.historial) return;
             const head = document.getElementById('tabla-head'), body = document.getElementById('tabla-body');
@@ -128,6 +134,7 @@
                 body.appendChild(tr);
             });
         }
+
         async function cambiarEstadoRapido(id, nuevoEstado) {
             mostrarToast("Actualizando...", "info");
             try {
@@ -137,6 +144,7 @@
                 cargarDatosServidor();
             } catch (err) { mostrarToast("Error: " + err.message, "error"); cargarDatosServidor(); }
         }
+
         function abrirModalNuevo() { document.getElementById('modal-titulo').innerText = "Nuevo - " + seccionActual.replace('_', ' '); construirFormularioModal(); document.getElementById('modal').classList.remove('hidden'); }
         function abrirModalEditar(id) {
             let registro = globalDataCache.historial[JSON_KEY_MAP[seccionActual]].find(r => r[0] === id);
@@ -145,6 +153,7 @@
             construirFormularioModal(id, registro.slice(1));
             document.getElementById('modal').classList.remove('hidden');
         }
+
         function construirFormularioModal(editId = null, valores = []) {
             let form = document.getElementById('modal-form');
             form.innerHTML = (editId ? `<input type="hidden" id="edit-id" value="${editId}">` : '') + 
@@ -154,7 +163,9 @@
             }).join('') + `<div class="flex justify-end gap-2 mt-4 pt-2 border-t"><button type="button" onclick="cerrarModal()" class="bg-gray-200 px-4 py-2 rounded text-sm">Cancelar</button><button type="submit" id="btn-guardar" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">Guardar</button></div>`;
             document.getElementById('modal').classList.remove('hidden');
         }
+
         function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
+
         async function guardarRegistro(event) {
             event.preventDefault();
             const btn = document.getElementById('btn-guardar');
@@ -168,6 +179,7 @@
                 cerrarModal(); mostrarToast("Guardado!", "success"); cargarDatosServidor();
             } catch (err) { mostrarToast("Error: " + err.message, "error"); btn.disabled = false; btn.innerText = "Guardar"; }
         }
+
         function mostrarToast(m, t) { let toast = document.getElementById('toast'); toast.innerText = m; toast.className = `fixed bottom-5 right-5 text-white px-4 py-2 rounded-lg shadow-xl text-sm z-50 transition ${t === 'error' ? 'bg-red-600' : 'bg-green-600'}`; toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 4000); }
         function ocultarToast() { document.getElementById('toast').classList.add('hidden'); }
     </script>
