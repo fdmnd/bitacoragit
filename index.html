@@ -201,7 +201,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycby-hOc3yXAzsy004Ih_N9rmKvYDAl9k04EBnLH9Ch5JoOmDV-jEP8ADkxOGLanLhu5wuA/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbw8nPjXZQfKG1tppWWiq7blYURDD35qE9bB5sFw_PPuJbBO-FagaGRytH___gN7gpYipg/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -361,7 +361,6 @@
             const panelPendientes = document.getElementById('panel-pendientes');
             const subtitulo = document.getElementById('subtitulo-seccion');
 
-            // Ocultar todos los paneles
             tablaContainer.classList.add('hidden');
             panelBuscador.classList.add('hidden');
             panelPapelera.classList.add('hidden');
@@ -572,37 +571,44 @@
 
         function renderizarPapelera() {
             let contenedor = document.getElementById('contenedor-papelera');
-            if(!globalPapeleraCache) return;
+            if (!globalPapeleraCache) return;
 
             let tieneElementos = false;
             let htmlAcceso = Object.keys(globalPapeleraCache).map(sec => {
                 let filas = globalPapeleraCache[sec] || [];
-                if(filas.length === 0) return '';
+                if (filas.length === 0) return '';
                 tieneElementos = true;
 
                 let itemsHtml = filas.map(r => {
                     let id = r[0];
-                    let detalle = r.slice(1, r.length - 2).join(' | ');
-                    let fechaBorrado = r[r.length - 2];
+                    if (!id) return '';
                     
+                    let camposDetalle = r.slice(1, r.length - 2).filter(c => c !== "");
+                    let detalle = camposDetalle.join(' | ');
+                    let fechaMod = r[r.length - 2] || 'Fecha no registrada';
+                    let usuarioMod = r[r.length - 1] || 'Sistema';
+
                     return `
-                    <div class="flex items-center justify-between bg-slate-50 border border-slate-200 p-4 rounded-xl hover:bg-slate-100/80 transition-colors">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between bg-slate-50 border border-slate-200 p-4 rounded-xl hover:bg-slate-100/80 transition-colors gap-3">
                         <div class="flex flex-col gap-1 pr-4">
-                            <span class="text-xs font-bold text-slate-500">Eliminado el: ${escaparHTML(fechaBorrado)}</span>
-                            <span class="text-sm text-slate-700 leading-relaxed">${escaparHTML(detalle)}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-slate-500">Eliminado: ${escaparHTML(fechaMod)}</span>
+                                <span class="text-xs text-slate-400">Por: ${escaparHTML(usuarioMod)}</span>
+                            </div>
+                            <span class="text-sm font-medium text-slate-700 leading-relaxed">${escaparHTML(detalle)}</span>
                         </div>
-                        ${esAdmin() ? `<button onclick="restaurarRegistro('${id}', '${sec}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Restaurar</button>` : ''}
+                        ${esAdmin() ? `<button onclick="restaurarRegistro('${id}', '${sec}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 shrink-0 self-start md:self-center"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Restaurar</button>` : ''}
                     </div>`;
                 }).join('');
 
                 return `
                 <div class="space-y-3">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg inline-block">${sec} (${filas.length})</h4>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg inline-block">${sec.replace('_', ' ')} (${filas.length})</h4>
                     <div class="space-y-2">${itemsHtml}</div>
                 </div>`;
             }).join('');
 
-            if(!tieneElementos) {
+            if (!tieneElementos) {
                 contenedor.innerHTML = `<div class="p-8 text-center text-slate-400 font-medium bg-slate-50 rounded-xl border border-slate-200">La papelera de reciclaje esta vacia.</div>`;
             } else {
                 contenedor.innerHTML = htmlAcceso;
