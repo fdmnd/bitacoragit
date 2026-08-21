@@ -450,7 +450,6 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
-        // Retorna exactamente el mismo texto enviado desde Google Sheets
         function formatearFechaHoraSoporte(val) {
             if (!val) return '';
             let str = String(val).trim();
@@ -467,6 +466,34 @@
                 let fecha = partes[0];
                 let hora = partes[1].substring(0, 5);
                 return `${fecha} ${hora}`;
+            }
+
+            return str;
+        }
+
+        // Convierte cualquier formato guardado al formato "YYYY-MM-DDTHH:mm" requerido por <input type="datetime-local">
+        function prepararDatetimeInput(val) {
+            if (!val) return '';
+            let str = String(val).trim();
+            let mesSel = document.getElementById('month-selector').value;
+            let prefijoFecha = mesSel ? `${mesSel}-01` : new Date().toISOString().slice(0, 10);
+
+            if (str.includes('T')) {
+                let partes = str.split('T');
+                let f = partes[0];
+                let h = partes[1].substring(0, 5);
+                return `${f}T${h}`;
+            }
+
+            if (str.includes(' ')) {
+                let partes = str.split(' ');
+                let f = partes[0];
+                let h = partes[1].substring(0, 5);
+                return `${f}T${h}`;
+            }
+
+            if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(str)) {
+                return `${prefijoFecha}T${str.substring(0, 5)}`;
             }
 
             return str;
@@ -493,7 +520,7 @@
 
             if (seccionActual === 'Soporte') {
                 let tipoOrden = document.getElementById('select-orden-soporte').value;
-                let idxEstado = ESTADO_INDICES['Soporte'] + 1; // Ajuste por ID en posición 0
+                let idxEstado = ESTADO_INDICES['Soporte'] + 1;
 
                 filas.sort((a, b) => {
                     let estadoA = String(a[idxEstado] || '');
@@ -797,7 +824,10 @@
                         if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM;
                         if (c.type === 'datetime-local') val = ahoraDT;
                     }
+                } else if (editId && c.type === 'datetime-local') {
+                    val = prepararDatetimeInput(val);
                 }
+
                 val = val || '';
                 let req = c.required !== false ? 'required' : '';
 
@@ -831,10 +861,14 @@
 
             let rowValues = CAMPOS_SECCION[seccionActual].map((_, i) => event.target.elements[`campo_${i}`].value);
 
+            // Garantía estricta para Soporte: si la fecha y hora recolectada no contiene la fecha completa, se mantiene la de la planilla intacta
             if (isEdit && seccionActual === 'Soporte') {
                 let registroPrevio = globalDataCache.historial[JSON_KEY_MAP['Soporte']].find(r => r[0] === editId);
-                if (registroPrevio && (!rowValues[0] || rowValues[0].trim() === "")) {
-                    rowValues[0] = registroPrevio[1];
+                if (registroPrevio) {
+                    let valCampo = rowValues[0] ? String(rowValues[0]).trim() : '';
+                    if (!valCampo.includes('-') && !valCampo.includes('/')) {
+                        rowValues[0] = registroPrevio[1];
+                    }
                 }
             }
 
