@@ -448,22 +448,25 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
-        // Formatea y valida la fecha y hora completa de Soporte
+        // Extrae exactamente el texto plano de la fecha y hora sin desfasar la zona horaria
         function formatearFechaHoraSoporte(val) {
             if (!val) return '';
             let str = String(val).trim();
-            
-            // Si viene con formato ISO (e.g. 2026-08-21T14:30:00.000Z) o con espacio
+
+            // Formato ISO enviado por Sheets: "2026-08-14T14:30:00.000Z" -> "2026-08-14 14:30"
             if (str.includes('T')) {
-                str = str.replace('T', ' ').split('.')[0];
-                return str.substring(0, 16); // "2026-08-21 14:30"
+                let partes = str.split('T');
+                let fecha = partes[0];
+                let hora = partes[1].substring(0, 5);
+                return `${fecha} ${hora}`;
             }
-            
-            // Si Google Sheets envió solo la hora, adjuntar la fecha seleccionada del mes activo
-            if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(str)) {
-                let mesSel = document.getElementById('month-selector').value;
-                let prefijoFecha = mesSel ? `${mesSel}-01` : new Date().toISOString().slice(0, 10);
-                return `${prefijoFecha} ${str.substring(0, 5)}`;
+
+            // Formato Texto separado por espacio: "2026-08-14 14:30:00" -> "2026-08-14 14:30"
+            if (str.includes(' ')) {
+                let partes = str.split(' ');
+                let fecha = partes[0];
+                let hora = partes[1].substring(0, 5);
+                return `${fecha} ${hora}`;
             }
 
             return str;
