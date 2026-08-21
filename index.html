@@ -130,10 +130,25 @@
                     <h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Prestamos</h2>
                     <p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
                 </div>
-                <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Nuevo Registro
-                </button>
+                
+                <div class="flex items-center gap-3">
+                    <!-- Selector de Ordenamiento exclusivo para Soporte -->
+                    <div id="contenedor-ordenamiento" class="hidden flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-xl shadow-sm">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
+                        <label class="text-xs font-bold text-slate-500">Ordenar por:</label>
+                        <select id="select-orden-soporte" onchange="renderizarTabla()" class="text-xs font-semibold text-slate-700 bg-transparent outline-none cursor-pointer">
+                            <option value="creacion_desc">Fecha/Hora Creación (Más recientes)</option>
+                            <option value="creacion_asc">Fecha/Hora Creación (Más antiguos)</option>
+                            <option value="mod_desc">Última Modificación (Más recientes)</option>
+                            <option value="mod_asc">Última Modificación (Más antiguos)</option>
+                        </select>
+                    </div>
+
+                    <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Nuevo Registro
+                    </button>
+                </div>
             </div>
 
             <!-- Tabla Principal -->
@@ -201,7 +216,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbw8nPjXZQfKG1tppWWiq7blYURDD35qE9bB5sFw_PPuJbBO-FagaGRytH___gN7gpYipg/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzDzFQzEiB2M4HmjgP794lqxI7oDyiS79dk8LCB38dWP2-BoQ5GqsEOBv2G8nYdUFf7/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -259,7 +274,6 @@
             const savedCustomUser = localStorage.getItem('customUser');
             const savedTime = localStorage.getItem('tokenTimestamp');
 
-            // Duracion de sesion ajustada a 60 minutos exactos (3,600,000 ms)
             if (savedTime && (Date.now() - Number(savedTime) < 60 * 60 * 1000)) {
                 if (savedToken) {
                     googleToken = savedToken;
@@ -313,7 +327,7 @@
                 const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
                 const payload = JSON.parse(atob(base64));
                 activarSesionUI(payload.email);
-            } catch (e) { cerrarSesion(false); }
+            } catch (e) { cerrarSesion(); }
         }
 
         function activarSesionUI(emailTexto) {
@@ -368,10 +382,12 @@
             const btnNuevo = document.getElementById('btn-nuevo');
             const panelPendientes = document.getElementById('panel-pendientes');
             const subtitulo = document.getElementById('subtitulo-seccion');
+            const contenedorOrden = document.getElementById('contenedor-ordenamiento');
 
             tablaContainer.classList.add('hidden');
             panelBuscador.classList.add('hidden');
             panelPapelera.classList.add('hidden');
+            contenedorOrden.classList.add('hidden');
 
             if (seccion === 'Buscador') {
                 document.getElementById('titulo-seccion').innerText = "Buscador Global";
@@ -394,6 +410,11 @@
                 } else {
                     btnNuevo.classList.add('hidden');
                 }
+                
+                if (seccion === 'Soporte') {
+                    contenedorOrden.classList.remove('hidden');
+                }
+
                 if (panelPendientes && (seccion === 'Prestamos' || seccion === 'Soporte')) {
                     panelPendientes.classList.remove('hidden');
                 } else if (panelPendientes) {
@@ -428,6 +449,15 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
+        function formatearFechaHoraSoporte(val) {
+            if (!val) return '';
+            let str = String(val).trim();
+            if (str.includes('T')) {
+                str = str.replace('T', ' ');
+            }
+            return str;
+        }
+
         function renderizarTabla() {
             if (!globalDataCache || !globalDataCache.historial) return;
             const head = document.getElementById('tabla-head'), body = document.getElementById('tabla-body');
@@ -438,13 +468,29 @@
             
             head.innerHTML = `<tr>${thAcciones}` + campos.map(c => `<th class="px-6 py-4 whitespace-nowrap">${c.label}</th>`).join('') + `<th class="px-6 py-4 whitespace-nowrap">Ult. Mod.</th><th class="px-6 py-4 whitespace-nowrap">Usuario</th></tr>`;
             
-            let filas = globalDataCache.historial[jsonKey] || [];
+            let filas = [...(globalDataCache.historial[jsonKey] || [])];
             body.innerHTML = '';
             
             if (filas.length === 0) { 
                 let totalCols = campos.length + (admin ? 3 : 2);
                 body.innerHTML = `<tr><td colspan="${totalCols}" class="px-6 py-12 text-center text-slate-400 font-medium"><div class="flex flex-col items-center justify-center"><svg class="w-12 h-12 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>No hay registros para mostrar</div></td></tr>`; 
                 return; 
+            }
+
+            if (seccionActual === 'Soporte') {
+                let tipoOrden = document.getElementById('select-orden-soporte').value;
+                filas.sort((a, b) => {
+                    let fechaCreacionA = String(a[1] || '');
+                    let fechaCreacionB = String(b[1] || '');
+                    let fechaModA = String(a[a.length - 2] || '');
+                    let fechaModB = String(b[b.length - 2] || '');
+
+                    if (tipoOrden === 'creacion_desc') return fechaCreacionB.localeCompare(fechaCreacionA);
+                    if (tipoOrden === 'creacion_asc') return fechaCreacionA.localeCompare(fechaCreacionB);
+                    if (tipoOrden === 'mod_desc') return fechaModB.localeCompare(fechaModA);
+                    if (tipoOrden === 'mod_asc') return fechaModA.localeCompare(fechaModB);
+                    return 0;
+                });
             }
             
             filas.forEach(r => {
@@ -462,6 +508,10 @@
 
                 tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
+                    if (seccionActual === 'Soporte' && idx === 0) {
+                        return `<td class="px-6 py-3 whitespace-nowrap font-semibold text-slate-700">${escaparHTML(formatearFechaHoraSoporte(v))}</td>`;
+                    }
+
                     if (seccionActual === 'Soporte' && idx === ESTADO_INDICES['Soporte']) {
                         let colorClase = (v === "Solucionado") 
                             ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
@@ -501,7 +551,6 @@
                         }
                     }
 
-                    // Formateo flexible para campos de texto extendido
                     let esTextoLargo = (campos[idx].name === 'descripcion' || campos[idx].name === 'observaciones' || campos[idx].name === 'actividad');
                     let claseCelda = esTextoLargo 
                         ? "px-6 py-3 whitespace-normal break-words min-w-[280px] max-w-xs leading-relaxed" 
@@ -723,7 +772,16 @@
                 }
                 val = val || '';
                 let req = c.required !== false ? 'required' : '';
-                return `<div><label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">${c.label}</label>${c.type === 'select' ? `<select name="campo_${i}" ${req} class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-slate-50 focus:bg-white text-slate-700 transition-all cursor-pointer shadow-sm">${c.options.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>` : `<input type="${c.type}" name="campo_${i}" value="${escaparHTML(val)}" ${req} class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-slate-50 focus:bg-white text-slate-700 transition-all shadow-sm placeholder-slate-400">`}</div>`;
+
+                let disabledAttr = (editId && seccionActual === 'Soporte' && c.name === 'fecha_hora') ? 'disabled' : '';
+                let extraInputClass = disabledAttr ? 'bg-slate-200 text-slate-500 cursor-not-allowed' : 'bg-slate-50 text-slate-700';
+                let hiddenInputIfDisabled = disabledAttr ? `<input type="hidden" name="campo_${i}" value="${escaparHTML(val)}">` : '';
+
+                return `<div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">${c.label} ${disabledAttr ? '(No modificable)' : ''}</label>
+                    ${hiddenInputIfDisabled}
+                    ${c.type === 'select' ? `<select name="campo_${i}" ${req} ${disabledAttr} class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:bg-white transition-all cursor-pointer shadow-sm ${extraInputClass}">${c.options.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>` : `<input type="${c.type}" name="campo_${i}" value="${escaparHTML(val)}" ${req} ${disabledAttr} class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:bg-white transition-all shadow-sm placeholder-slate-400 ${extraInputClass}">`}
+                </div>`;
             }).join('') + '</div>' + 
             `<div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 bg-white sticky bottom-0">
                 <button type="button" onclick="cerrarModal()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-5 py-2.5 rounded-xl font-medium transition-colors">Cancelar</button>
