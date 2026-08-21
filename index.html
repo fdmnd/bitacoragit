@@ -217,7 +217,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxCjW-LZPxur95ru6oqQT1YFUWTKZmstZIxSQJ_Kd9EPIuFjqzT_VUhZKEoVkFLumMIgw/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwV7jCT1LcHV00JjhnPBGIrVzSoyLN_YWOTV-pS0bY0riM0obz1owGY6B7S0SMBXs1p_g/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -450,7 +450,7 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
-        // Devuelve íntegramente el contenido de la celda enviado por la planilla
+        // Devuelve íntegramente el contenido de la celda de soporte sin recortar
         function formatearFechaHoraSoporte(val) {
             if (val === null || val === undefined) return '';
             return String(val).trim();
