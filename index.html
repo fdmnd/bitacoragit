@@ -210,8 +210,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        // URL ACTUALIZADA AL NUEVO SCRIPT DE GOOGLE APPS SCRIPT
-       const API_URL = "https://script.google.com/macros/s/AKfycbw4-5yOZIl9HkQzLtDBE2_eNM4Eo2wck0agXaraGqhS-jlctsJ45WDIAiV7MIWf2easzw/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbzMAxvnIO1VgpVveQdOUb5q6EKMq_r4ueGMgSNnKUD971EFYwmGqU2-arlx27BWlqP2jA/exec";
        
         let googleToken = null; 
         let customUser = null;
@@ -458,18 +457,18 @@
             // Reglas de ordenamiento específicas para Soporte
             if (seccionActual === 'Soporte') {
                 const ordenSelect = document.getElementById('orden-soporte').value;
-                const idxEstado = ESTADO_INDICES['Soporte']; // Columna de estado final
+                const idxEstado = ESTADO_INDICES['Soporte']; 
                 
                 filas.sort((a, b) => {
-                    let valEstadoA = a[idxEstado + 1] || ""; // +1 por el ID al inicio
+                    let valEstadoA = a[idxEstado + 1] || ""; 
                     let valEstadoB = b[idxEstado + 1] || "";
                     
                     let esFinalizadoA = (valEstadoA === "Solucionado");
                     let esFinalizadoB = (valEstadoB === "Solucionado");
                     
-                    // Prioridad 1: Pendientes/procesados arriba, finalizados abajo
+                    // Prioridad 1: Pendientes/Procesados arriba, Finalizados abajo
                     if (esFinalizadoA !== esFinalizadoB) {
-                        return esFinalizadoA ? 1 : -1; // Si A es finalizado va abajo (1), sino va arriba (-1)
+                        return esFinalizadoA ? 1 : -1; 
                     }
                     
                     // Prioridad 2: Ordenar por fecha y hora (columna 1, que es fecha_hora)
