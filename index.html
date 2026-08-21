@@ -217,7 +217,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzDzFQzEiB2M4HmjgP794lqxI7oDyiS79dk8LCB38dWP2-BoQ5GqsEOBv2G8nYdUFf7/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbxhoXsONpKzy6WeUViYhh7h7cCyKf--du0tio_67VFr-KObD7hV5gWXHNI4ndza9VnqEw/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -450,28 +450,12 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
+        // Muestra íntegramente el valor recibido desde Google Sheets
         function formatearFechaHoraSoporte(val) {
-            if (!val) return '';
-            let str = String(val).trim();
-
-            if (str.includes('T')) {
-                let partes = str.split('T');
-                let fecha = partes[0];
-                let hora = partes[1].substring(0, 5);
-                return `${fecha} ${hora}`;
-            }
-
-            if (str.includes(' ')) {
-                let partes = str.split(' ');
-                let fecha = partes[0];
-                let hora = partes[1].substring(0, 5);
-                return `${fecha} ${hora}`;
-            }
-
-            return str;
+            if (val === null || val === undefined) return '';
+            return String(val).trim();
         }
 
-        // Convierte cualquier formato guardado al formato "YYYY-MM-DDTHH:mm" requerido por <input type="datetime-local">
         function prepararDatetimeInput(val) {
             if (!val) return '';
             let str = String(val).trim();
@@ -861,7 +845,6 @@
 
             let rowValues = CAMPOS_SECCION[seccionActual].map((_, i) => event.target.elements[`campo_${i}`].value);
 
-            // Garantía estricta para Soporte: si la fecha y hora recolectada no contiene la fecha completa, se mantiene la de la planilla intacta
             if (isEdit && seccionActual === 'Soporte') {
                 let registroPrevio = globalDataCache.historial[JSON_KEY_MAP['Soporte']].find(r => r[0] === editId);
                 if (registroPrevio) {
