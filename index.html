@@ -217,7 +217,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx727kjLjzCWx-SyaiQ_YqjMjIefhWK8M7XTeov_RtZUh-auG8TFNWSt5V47ZxhIjKe/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwH_d1S0cNJe_mzEHK4v4OIbfN7JvLkzn-PVD4nZlqn7SlCzMmwYptdxwOhxZKZ_xc4pg/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -450,6 +450,39 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
+        // Devuelve íntegramente el contenido de la celda enviado por la planilla
+        function formatearFechaHoraSoporte(val) {
+            if (val === null || val === undefined) return '';
+            return String(val).trim();
+        }
+
+        function prepararDatetimeInput(val) {
+            if (!val) return '';
+            let str = String(val).trim();
+            let mesSel = document.getElementById('month-selector').value;
+            let prefijoFecha = mesSel ? `${mesSel}-01` : new Date().toISOString().slice(0, 10);
+
+            if (str.includes('T')) {
+                let partes = str.split('T');
+                let f = partes[0];
+                let h = partes[1].substring(0, 5);
+                return `${f}T${h}`;
+            }
+
+            if (str.includes(' ')) {
+                let partes = str.split(' ');
+                let f = partes[0];
+                let h = partes[1].substring(0, 5);
+                return `${f}T${h}`;
+            }
+
+            if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(str)) {
+                return `${prefijoFecha}T${str.substring(0, 5)}`;
+            }
+
+            return str;
+        }
+
         function renderizarTabla() {
             if (!globalDataCache || !globalDataCache.historial) return;
             const head = document.getElementById('tabla-head'), body = document.getElementById('tabla-body');
@@ -514,6 +547,10 @@
 
                 tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
+                    if (seccionActual === 'Soporte' && idx === 0) {
+                        return `<td class="px-6 py-3 whitespace-nowrap font-semibold text-slate-700">${escaparHTML(formatearFechaHoraSoporte(v))}</td>`;
+                    }
+
                     if (seccionActual === 'Soporte' && idx === ESTADO_INDICES['Soporte']) {
                         let colorClase = (v === "Solucionado") 
                             ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
@@ -771,6 +808,8 @@
                         if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM;
                         if (c.type === 'datetime-local') val = ahoraDT;
                     }
+                } else if (editId && c.type === 'datetime-local') {
+                    val = prepararDatetimeInput(val);
                 }
 
                 val = val || '';
@@ -809,7 +848,10 @@
             if (isEdit && seccionActual === 'Soporte') {
                 let registroPrevio = globalDataCache.historial[JSON_KEY_MAP['Soporte']].find(r => r[0] === editId);
                 if (registroPrevio) {
-                    rowValues[0] = registroPrevio[1]; 
+                    let valCampo = rowValues[0] ? String(rowValues[0]).trim() : '';
+                    if (!valCampo.includes('-') && !valCampo.includes('/')) {
+                        rowValues[0] = registroPrevio[1];
+                    }
                 }
             }
 
