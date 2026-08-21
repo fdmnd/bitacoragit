@@ -130,10 +130,19 @@
                     <h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Prestamos</h2>
                     <p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
                 </div>
-                <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Nuevo Registro
-                </button>
+                <div class="flex items-center gap-3">
+                    <!-- Controles de ordenamiento para Soporte -->
+                    <div id="controles-soporte" class="hidden flex items-center gap-2">
+                        <select id="orden-soporte" onchange="renderizarTabla()" class="bg-white border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 outline-none font-medium shadow-sm cursor-pointer hover:border-blue-300">
+                            <option value="recientes">Ordenar: Más recientes primero</option>
+                            <option value="antiguos">Ordenar: Más antiguos primero</option>
+                        </select>
+                    </div>
+                    <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Nuevo Registro
+                    </button>
+                </div>
             </div>
 
             <!-- Tabla Principal -->
@@ -203,7 +212,7 @@
     <script>
         // URL ACTUALIZADA AL NUEVO SCRIPT DE GOOGLE APPS SCRIPT
        const API_URL = "https://script.google.com/macros/s/AKfycbw4-5yOZIl9HkQzLtDBE2_eNM4Eo2wck0agXaraGqhS-jlctsJ45WDIAiV7MIWf2easzw/exec";
-        
+       
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -369,10 +378,12 @@
             const btnNuevo = document.getElementById('btn-nuevo');
             const panelPendientes = document.getElementById('panel-pendientes');
             const subtitulo = document.getElementById('subtitulo-seccion');
+            const controlesSoporte = document.getElementById('controles-soporte');
 
             tablaContainer.classList.add('hidden');
             panelBuscador.classList.add('hidden');
             panelPapelera.classList.add('hidden');
+            controlesSoporte.classList.add('hidden');
 
             if (seccion === 'Buscador') {
                 document.getElementById('titulo-seccion').innerText = "Buscador Global";
@@ -390,6 +401,9 @@
             } else {
                 document.getElementById('titulo-seccion').innerText = seccion.replace('_', ' ');
                 subtitulo.innerText = "Gestiona los registros de la seccion actual.";
+                if (seccion === 'Soporte') {
+                    controlesSoporte.classList.remove('hidden');
+                }
                 if (esAdmin()) {
                     btnNuevo.classList.remove('hidden');
                 } else {
@@ -439,7 +453,37 @@
             
             head.innerHTML = `<tr>${thAcciones}` + campos.map(c => `<th class="px-6 py-4 whitespace-nowrap">${c.label}</th>`).join('') + `<th class="px-6 py-4 whitespace-nowrap">Ult. Mod.</th><th class="px-6 py-4 whitespace-nowrap">Usuario</th></tr>`;
             
-            let filas = globalDataCache.historial[jsonKey] || [];
+            let filas = [...(globalDataCache.historial[jsonKey] || [])];
+            
+            // Reglas de ordenamiento específicas para Soporte
+            if (seccionActual === 'Soporte') {
+                const ordenSelect = document.getElementById('orden-soporte').value;
+                const idxEstado = ESTADO_INDICES['Soporte']; // Columna de estado final
+                
+                filas.sort((a, b) => {
+                    let valEstadoA = a[idxEstado + 1] || ""; // +1 por el ID al inicio
+                    let valEstadoB = b[idxEstado + 1] || "";
+                    
+                    let esFinalizadoA = (valEstadoA === "Solucionado");
+                    let esFinalizadoB = (valEstadoB === "Solucionado");
+                    
+                    // Prioridad 1: Pendientes/procesados arriba, finalizados abajo
+                    if (esFinalizadoA !== esFinalizadoB) {
+                        return esFinalizadoA ? 1 : -1; // Si A es finalizado va abajo (1), sino va arriba (-1)
+                    }
+                    
+                    // Prioridad 2: Ordenar por fecha y hora (columna 1, que es fecha_hora)
+                    let fechaA = new Date(a[1] || 0);
+                    let fechaB = new Date(b[1] || 0);
+                    
+                    if (ordenSelect === 'antiguos') {
+                        return fechaA - fechaB;
+                    } else {
+                        return fechaB - fechaA; // Más recientes primero por defecto
+                    }
+                });
+            }
+
             body.innerHTML = '';
             
             if (filas.length === 0) { 
