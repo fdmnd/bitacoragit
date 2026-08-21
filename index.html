@@ -94,6 +94,9 @@
                 <button onclick="cambiarSeccion('Buscador')" id="btn-Buscador" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Buscador
                 </button>
+                <button onclick="cambiarSeccion('Papelera')" id="btn-Papelera" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Papelera
+                </button>
             </div>
         </nav>
 
@@ -125,7 +128,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
                     <h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Prestamos</h2>
-                    <p class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
+                    <p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
                 </div>
                 <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -133,6 +136,7 @@
                 </button>
             </div>
 
+            <!-- Tabla Principal -->
             <div id="tabla-container" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse whitespace-nowrap">
@@ -142,6 +146,7 @@
                 </div>
             </div>
 
+            <!-- Panel Buscador -->
             <div id="panel-Buscador" class="hidden">
                 <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
                     <div class="max-w-2xl mx-auto text-center mb-8">
@@ -157,6 +162,22 @@
                     </div>
                 </div>
                 <div id="resultados-busqueda" class="space-y-3"></div>
+            </div>
+
+            <!-- Panel Papelera -->
+            <div id="panel-Papelera" class="hidden">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">Registros Eliminados</h3>
+                            <p class="text-slate-500 text-xs">Puedes restaurar cualquier elemento borrado a su planilla original.</p>
+                        </div>
+                        <button onclick="cargarDatosPapelera()" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-200 transition-colors flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Actualizar Papelera
+                        </button>
+                    </div>
+                    <div id="contenedor-papelera" class="space-y-6"></div>
+                </div>
             </div>
         </main>
     </div>
@@ -180,11 +201,12 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzN2bfpG628arlV703Voz8fHZorwPGu_ou4LQDpyP3ahVFZgOFupLd2mseY5Gdvx4E2/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycby-hOc3yXAzsy004Ih_N9rmKvYDAl9k04EBnLH9Ch5JoOmDV-jEP8ADkxOGLanLhu5wuA/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
         let globalDataCache = null;
+        let globalPapeleraCache = null;
 
         const CAMPOS_SECCION = {
             Prestamos: [
@@ -219,7 +241,8 @@
             Permanente: [
                 { name: "fecha_entrega", label: "Fecha de Entrega", type: "date" },
                 { name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
-                { name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
+                { name: "insumo", label: "Insumo", type: "text" },
+                { name: "equipo", label: "Equipo", type: "text" },
                 { name: "cantidad", label: "Cantidad", type: "text" },
                 { name: "estado", label: "Estado", type: "select", options: ["Asignado a usuario", "Devuelto", "Entregado", "Operativo", "En Reparacion", "Dado de Baja"] },
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
@@ -227,11 +250,9 @@
         };
 
         const JSON_KEY_MAP = { Prestamos: "prestamos", Soporte: "soporte", Uso_Sala: "sala", Permanente: "permanente" };
-        const ESTADO_INDICES = { Prestamos: 6, Soporte: 5, Permanente: 4 };
+        const ESTADO_INDICES = { Prestamos: 6, Soporte: 5, Permanente: 5 };
 
-        function esAdmin() {
-            return googleToken !== null; 
-        }
+        function esAdmin() { return googleToken !== null; }
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedToken = localStorage.getItem('googleToken');
@@ -319,9 +340,7 @@
             } catch(e) { console.error("Error cargando meses", e); }
         }
 
-        function cambiarMes() {
-            cargarDatosServidor();
-        }
+        function cambiarMes() { cargarDatosServidor(); }
 
         function cambiarSeccion(seccion) {
             seccionActual = seccion;
@@ -330,22 +349,39 @@
                 b.classList.add('tab-inactive');
             });
             let btnActivo = document.getElementById('btn-' + seccion);
-            btnActivo.classList.remove('tab-inactive');
-            btnActivo.classList.add('tab-active');
+            if(btnActivo) {
+                btnActivo.classList.remove('tab-inactive');
+                btnActivo.classList.add('tab-active');
+            }
 
             const tablaContainer = document.getElementById('tabla-container');
             const panelBuscador = document.getElementById('panel-Buscador');
+            const panelPapelera = document.getElementById('panel-Papelera');
             const btnNuevo = document.getElementById('btn-nuevo');
             const panelPendientes = document.getElementById('panel-pendientes');
+            const subtitulo = document.getElementById('subtitulo-seccion');
+
+            // Ocultar todos los paneles
+            tablaContainer.classList.add('hidden');
+            panelBuscador.classList.add('hidden');
+            panelPapelera.classList.add('hidden');
 
             if (seccion === 'Buscador') {
                 document.getElementById('titulo-seccion').innerText = "Buscador Global";
+                subtitulo.innerText = "Busca registros en todo el historial guardado.";
                 btnNuevo.classList.add('hidden');
                 panelPendientes.classList.add('hidden');
-                tablaContainer.classList.add('hidden');
                 panelBuscador.classList.remove('hidden');
+            } else if (seccion === 'Papelera') {
+                document.getElementById('titulo-seccion').innerText = "Papelera de Reciclaje";
+                subtitulo.innerText = "Historial de registros eliminados con opcion de restauracion.";
+                btnNuevo.classList.add('hidden');
+                panelPendientes.classList.add('hidden');
+                panelPapelera.classList.remove('hidden');
+                cargarDatosPapelera();
             } else {
                 document.getElementById('titulo-seccion').innerText = seccion.replace('_', ' ');
+                subtitulo.innerText = "Gestiona los registros de la seccion actual.";
                 if (esAdmin()) {
                     btnNuevo.classList.remove('hidden');
                 } else {
@@ -356,7 +392,6 @@
                 } else if (panelPendientes) {
                     panelPendientes.classList.add('hidden');
                 }
-                panelBuscador.classList.add('hidden');
                 tablaContainer.classList.remove('hidden');
                 renderizarTabla();
             }
@@ -420,7 +455,6 @@
 
                 tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
-                    // Colores y selectores para Soporte
                     if (seccionActual === 'Soporte' && idx === ESTADO_INDICES['Soporte']) {
                         let colorClase = (v === "Solucionado") 
                             ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
@@ -434,7 +468,6 @@
                         }
                     }
 
-                    // Colores y selectores para Prestamos
                     if (seccionActual === 'Prestamos' && idx === ESTADO_INDICES['Prestamos']) {
                         let colorClase = (v === "Devuelto" || v === "Bueno") 
                             ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
@@ -448,7 +481,6 @@
                         }
                     }
 
-                    // Colores y selectores para Permanente
                     if (seccionActual === 'Permanente' && idx === ESTADO_INDICES['Permanente']) {
                         let colorClase = (v === "Devuelto" || v === "Operativo") 
                             ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
@@ -505,9 +537,9 @@
 
         async function eliminarRegistro(id) {
             if (!esAdmin()) return;
-            if (!confirm("¿Estas seguro de eliminar este registro? Esta accion no se puede deshacer.")) return;
+            if (!confirm("¿Estas seguro de mover este registro a la papelera de reciclaje?")) return;
             let targetMonth = document.getElementById('month-selector').value;
-            mostrarToast("Eliminando registro...", "info");
+            mostrarToast("Moviendo a la papelera...", "info");
             try {
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "delete_row", id, targetMonth }) });
                 let result = await res.json();
@@ -515,11 +547,83 @@
                     if (result.message === "No autorizado") return cerrarSesion();
                     throw new Error(result.message);
                 }
-                mostrarToast("Registro eliminado", "success");
+                mostrarToast("Registro movido a la papelera", "success");
                 cargarDatosServidor();
             } catch (err) { 
                 mostrarToast("Error al eliminar", "error"); 
                 cargarDatosServidor(); 
+            }
+        }
+
+        async function cargarDatosPapelera() {
+            mostrarToast("Cargando elementos de la papelera...", "info");
+            try {
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_deleted_data" }) });
+                let result = await res.json();
+                if(result.status !== 'success') throw new Error(result.message);
+                
+                globalPapeleraCache = result.data;
+                renderizarPapelera();
+                ocultarToast();
+            } catch(e) {
+                mostrarToast("Error al cargar papelera", "error");
+            }
+        }
+
+        function renderizarPapelera() {
+            let contenedor = document.getElementById('contenedor-papelera');
+            if(!globalPapeleraCache) return;
+
+            let tieneElementos = false;
+            let htmlAcceso = Object.keys(globalPapeleraCache).map(sec => {
+                let filas = globalPapeleraCache[sec] || [];
+                if(filas.length === 0) return '';
+                tieneElementos = true;
+
+                let itemsHtml = filas.map(r => {
+                    let id = r[0];
+                    let detalle = r.slice(1, r.length - 2).join(' | ');
+                    let fechaBorrado = r[r.length - 2];
+                    
+                    return `
+                    <div class="flex items-center justify-between bg-slate-50 border border-slate-200 p-4 rounded-xl hover:bg-slate-100/80 transition-colors">
+                        <div class="flex flex-col gap-1 pr-4">
+                            <span class="text-xs font-bold text-slate-500">Eliminado el: ${escaparHTML(fechaBorrado)}</span>
+                            <span class="text-sm text-slate-700 leading-relaxed">${escaparHTML(detalle)}</span>
+                        </div>
+                        ${esAdmin() ? `<button onclick="restaurarRegistro('${id}', '${sec}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Restaurar</button>` : ''}
+                    </div>`;
+                }).join('');
+
+                return `
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg inline-block">${sec} (${filas.length})</h4>
+                    <div class="space-y-2">${itemsHtml}</div>
+                </div>`;
+            }).join('');
+
+            if(!tieneElementos) {
+                contenedor.innerHTML = `<div class="p-8 text-center text-slate-400 font-medium bg-slate-50 rounded-xl border border-slate-200">La papelera de reciclaje esta vacia.</div>`;
+            } else {
+                contenedor.innerHTML = htmlAcceso;
+            }
+        }
+
+        async function restaurarRegistro(id, seccion) {
+            if (!esAdmin()) return;
+            if (!confirm("¿Deseas restaurar este registro a su planilla de origen?")) return;
+            let targetMonth = document.getElementById('month-selector').value;
+            mostrarToast("Restaurando registro...", "info");
+            try {
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion, action: "restore_row", id, targetMonth }) });
+                let result = await res.json();
+                if(result.status !== 'success') throw new Error(result.message);
+                
+                mostrarToast("Registro restaurado con exito", "success");
+                cargarDatosPapelera();
+                cargarDatosServidor();
+            } catch(e) {
+                mostrarToast("Error al restaurar", "error");
             }
         }
 
