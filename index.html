@@ -180,7 +180,7 @@
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxGhF8RDrgMPZ8aUReufefHs8b-8PTyVzDfocfz14SPPK4ylCoCBUFYXEh21ZcIHk3TqQ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbzN2bfpG628arlV703Voz8fHZorwPGu_ou4LQDpyP3ahVFZgOFupLd2mseY5Gdvx4E2/exec"; 
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Prestamos";
@@ -221,13 +221,13 @@
                 { name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
                 { name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
                 { name: "cantidad", label: "Cantidad", type: "text" },
-                { name: "estado", label: "Estado", type: "select", options: ["Entregado", "Operativo", "En Reparacion", "Dado de Baja"] },
+                { name: "estado", label: "Estado", type: "select", options: ["Asignado a usuario", "Devuelto", "Entregado", "Operativo", "En Reparacion", "Dado de Baja"] },
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ]
         };
 
         const JSON_KEY_MAP = { Prestamos: "prestamos", Soporte: "soporte", Uso_Sala: "sala", Permanente: "permanente" };
-        const ESTADO_INDICES = { Prestamos: 6, Soporte: 5 };
+        const ESTADO_INDICES = { Prestamos: 6, Soporte: 5, Permanente: 4 };
 
         function esAdmin() {
             return googleToken !== null; 
@@ -420,7 +420,7 @@
 
                 tr.innerHTML = tdAcciones + 
                 datosCampos.map((v, idx) => {
-                    // Mapeo dinámico de colores para la sección de Soporte
+                    // Colores y selectores para Soporte
                     if (seccionActual === 'Soporte' && idx === ESTADO_INDICES['Soporte']) {
                         let colorClase = (v === "Solucionado") 
                             ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
@@ -434,11 +434,25 @@
                         }
                     }
 
-                    // Mapeo dinámico de colores para la sección de Prestamos
+                    // Colores y selectores para Prestamos
                     if (seccionActual === 'Prestamos' && idx === ESTADO_INDICES['Prestamos']) {
                         let colorClase = (v === "Devuelto" || v === "Bueno") 
                             ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
                             : "bg-amber-100 text-amber-800 border-amber-300";
+
+                        if (admin) {
+                            let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
+                            return `<td class="px-6 py-3"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg px-2 py-1.5 text-xs font-bold shadow-sm cursor-pointer transition-colors outline-none focus:ring-2 focus:ring-blue-500 ${colorClase}">${opts}</select></td>`;
+                        } else {
+                            return `<td class="px-6 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold border ${colorClase}">${escaparHTML(v)}</span></td>`;
+                        }
+                    }
+
+                    // Colores y selectores para Permanente
+                    if (seccionActual === 'Permanente' && idx === ESTADO_INDICES['Permanente']) {
+                        let colorClase = (v === "Devuelto" || v === "Operativo") 
+                            ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
+                            : "bg-blue-100 text-blue-800 border-blue-300";
 
                         if (admin) {
                             let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
@@ -457,8 +471,20 @@
 
         async function cambiarEstadoRapido(id, nuevoEstado) {
             if (!esAdmin()) return;
-            let observacion = prompt("¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)", "");
-            if (observacion === null) { cargarDatosServidor(); return; }
+            let observacion = "";
+
+            let mensaje = (nuevoEstado === "Solucionado" || nuevoEstado === "Devuelto")
+                ? "Agrega una observacion de cierre (Opcional):"
+                : "¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)";
+
+            let respuesta = prompt(mensaje, "");
+
+            if (respuesta === null) {
+                cargarDatosServidor();
+                return;
+            }
+
+            observacion = respuesta.trim();
 
             let targetMonth = document.getElementById('month-selector').value;
             mostrarToast("Actualizando estado...", "info");
