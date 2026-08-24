@@ -189,7 +189,6 @@
         let globalDataCache = null;
         let globalPapeleraCache = null;
         
-        // Variable para la vista de Soporte, con memoria en localStorage (default: 'tarjetas')
         let vistaSoporteActual = localStorage.getItem('vistaSoporteActual') || 'tarjetas';
 
         const CAMPOS_SECCION = {
@@ -310,7 +309,6 @@
 
         function cambiarMes() { cargarDatosServidor(); }
 
-        // Función para cambiar las vistas (Tarjetas, Lista, Compacta)
         function cambiarVistaSoporte(vista) {
             vistaSoporteActual = vista;
             localStorage.setItem('vistaSoporteActual', vista);
@@ -387,14 +385,12 @@
             let filas = [...(globalDataCache.historial[jsonKey] || [])];
             let admin = esAdmin();
 
-            // LÓGICA EXCLUSIVA PARA SOPORTE CON MULTIPLES VISTAS
             if (seccionActual === 'Soporte') {
                 document.getElementById('vista-tabla').classList.add('hidden');
                 const vistaContenedor = document.getElementById('vista-soporte-contenedor');
                 vistaContenedor.classList.remove('hidden');
                 vistaContenedor.innerHTML = '';
 
-                // Estilos visuales para los botones de vistas
                 const botonesVistas = ['tarjetas', 'lista', 'compacta'];
                 botonesVistas.forEach(v => {
                     let btn = document.getElementById('btn-vista-' + v);
@@ -407,7 +403,6 @@
                     }
                 });
 
-                // Clases del contenedor principal de soporte
                 if (vistaSoporteActual === 'tarjetas') {
                     vistaContenedor.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
                 } else if (vistaSoporteActual === 'lista') {
@@ -443,16 +438,13 @@
                     let v_desc = datos[4];
                     let v_estado = datos[5];
                     
-                    // Fecha de Creación
                     let fechaObj = new Date(v_fecha);
                     let fechaMostrar = isNaN(fechaObj) ? v_fecha : fechaObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }).replace(',', ' -');
                     
-                    // Fecha de Modificación (Cierre)
                     let auditTimestamp = datos[datos.length - 2] || '';
                     let fechaModObj = new Date(auditTimestamp);
                     let fechaModMostrar = isNaN(fechaModObj) ? auditTimestamp : fechaModObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
 
-                    // Alerta visual de antigüedad (abierto > 3 días)
                     let badgeAntiguedad = '';
                     if (!isNaN(fechaObj) && v_estado !== "Solucionado") {
                         let diasAbierto = Math.floor((new Date() - fechaObj) / (1000 * 60 * 60 * 24));
@@ -466,7 +458,6 @@
                     
                     if (admin) {
                         let colorClase = (v_estado === "Solucionado") ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
-                        // En vista compacta hacemos el select más pequeño
                         let paddingClase = (vistaSoporteActual === 'compacta') ? "px-2 py-1 text-[11px]" : "px-2 py-1 text-xs";
                         let opts = campos[idxEstado].options.map(o => `<option value="${o}" ${v_estado === o ? 'selected' : ''}>${o}</option>`).join('');
                         selectHtml = `<select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg ${paddingClase} font-bold shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${colorClase}">${opts}</select>`;
@@ -476,7 +467,6 @@
                         selectHtml = `<span class="px-2.5 py-1 rounded-full ${sizeClase} font-bold border ${colorClase}">${escaparHTML(v_estado)}</span>`;
                     }
 
-                    // GENERACIÓN DE VISTAS (HTML)
                     if (vistaSoporteActual === 'tarjetas') {
                         vistaContenedor.innerHTML += `
                             <div class="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col p-5 relative overflow-hidden group">
@@ -550,7 +540,6 @@
                 return;
             }
 
-            // RENDERIZADO DE TABLA NORMAL (Préstamos, Permanente, Uso Sala)
             document.getElementById('vista-soporte-contenedor').classList.add('hidden');
             const vistaTabla = document.getElementById('vista-tabla');
             vistaTabla.classList.remove('hidden');
@@ -602,14 +591,15 @@
         async function cambiarEstadoRapido(id, nuevoEstado) {
             if (!esAdmin()) return;
             let observacion = prompt((nuevoEstado === "Solucionado" || nuevoEstado === "Devuelto") ? "Agrega una observacion de cierre (Opcional):" : "¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)", "");
-            if (observacion === null) { cargarDatosServidor(); return; }
+            if (observacion === null) return;
 
             mostrarToast("Actualizando estado...", "info");
             try {
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "update_status", id, nuevoEstado, observacion: observacion.trim(), targetMonth: document.getElementById('month-selector').value }) });
                 let result = await res.json();
                 if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(result.message); }
-                mostrarToast("Estado guardado", "success"); cargarDatosServidor();
+                mostrarToast("Estado guardado", "success"); 
+                await cargarDatosServidor();
             } catch (err) { mostrarToast("Error al guardar", "error"); cargarDatosServidor(); }
         }
 
@@ -621,7 +611,8 @@
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "delete_row", id, targetMonth: document.getElementById('month-selector').value }) });
                 let result = await res.json();
                 if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(result.message); }
-                mostrarToast("Movido a la papelera", "success"); cargarDatosServidor();
+                mostrarToast("Movido a la papelera", "success"); 
+                await cargarDatosServidor();
             } catch (err) { mostrarToast("Error al eliminar", "error"); cargarDatosServidor(); }
         }
 
@@ -704,14 +695,12 @@
                     if (!editId) { if (c.type === 'date') val = hoyYMD; if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM; if (c.type === 'datetime-local') val = ahoraDT; }
                 }
                 
-                // SISTEMA DE BLOQUEO DE FECHA (Solo lectura si se está editando y es el primer campo: fecha)
                 let esCampoFecha = (c.type === 'date' || c.type === 'datetime-local');
                 let esModoEdicionDeFecha = (editId !== null && i === 0 && esCampoFecha);
                 
                 let req = c.required !== false ? 'required' : '';
                 let readonlyAttr = esModoEdicionDeFecha ? 'readonly' : '';
                 
-                // Clases visuales para diferenciar campo bloqueado vs campo editable
                 let inputClasses = esModoEdicionDeFecha 
                     ? 'bg-slate-100 cursor-not-allowed opacity-70 border-slate-200 text-slate-500' 
                     : 'bg-slate-50 focus:bg-white focus:ring-blue-500 border-slate-300 text-slate-700 hover:border-blue-300';
@@ -737,8 +726,14 @@
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
                 let result = await res.json();
                 if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(); }
-                cerrarModal(); mostrarToast("Guardado con exito", "success"); cargarDatosServidor();
-            } catch (err) { mostrarToast("Error", "error"); btn.disabled = false; btn.innerHTML = "Guardar Cambios"; }
+                cerrarModal(); 
+                mostrarToast("Guardado con exito", "success"); 
+                await cargarDatosServidor();
+            } catch (err) { 
+                mostrarToast("Error", "error"); 
+                btn.disabled = false; 
+                btn.innerHTML = "Guardar Cambios"; 
+            }
         }
 
         function mostrarToast(m, t) { 
