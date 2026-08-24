@@ -101,11 +101,18 @@
                     <h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Prestamos</h2>
                     <p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div id="controles-soporte" class="hidden flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Controles exclusivos de Soporte -->
+                    <div id="controles-soporte" class="hidden flex items-center gap-3">
+                        <!-- Selector de Vistas -->
+                        <div class="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                            <button onclick="cambiarVistaSoporte('tarjetas')" id="btn-vista-tarjetas" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Tarjetas"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg></button>
+                            <button onclick="cambiarVistaSoporte('lista')" id="btn-vista-lista" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Lista Detallada"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+                            <button onclick="cambiarVistaSoporte('compacta')" id="btn-vista-compacta" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Compacta"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg></button>
+                        </div>
                         <select id="orden-soporte" onchange="renderizarTabla()" class="bg-white border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 outline-none font-medium shadow-sm cursor-pointer hover:border-blue-300">
-                            <option value="recientes">Ordenar: Más recientes primero</option>
-                            <option value="antiguos">Ordenar: Más antiguos primero</option>
+                            <option value="recientes">Más recientes primero</option>
+                            <option value="antiguos">Más antiguos primero</option>
                         </select>
                     </div>
                     <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
@@ -114,7 +121,7 @@
                 </div>
             </div>
 
-            <!-- Contenedor Mixto (Tabla o Tarjetas) -->
+            <!-- Contenedor Mixto -->
             <div id="data-container">
                 <!-- Vista de Tabla Tradicional (Ocultable) -->
                 <div id="vista-tabla" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -125,9 +132,8 @@
                         </table>
                     </div>
                 </div>
-
-                <!-- Vista de Tarjetas para Soporte -->
-                <div id="vista-tarjetas" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                <!-- Contenedor de Soporte (Múltiples vistas) -->
+                <div id="vista-soporte-contenedor" class="hidden"></div>
             </div>
 
             <!-- Panel Buscador -->
@@ -182,6 +188,9 @@
         let seccionActual = "Prestamos";
         let globalDataCache = null;
         let globalPapeleraCache = null;
+        
+        // Variable para la vista de Soporte, con memoria en localStorage (default: 'tarjetas')
+        let vistaSoporteActual = localStorage.getItem('vistaSoporteActual') || 'tarjetas';
 
         const CAMPOS_SECCION = {
             Prestamos: [
@@ -196,13 +205,13 @@
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
             ],
             Soporte: [
-                { name: "fecha_hora", label: "Fecha y Hora", type: "datetime-local" },
+                { name: "fecha_hora", label: "Fecha y Hora (Creación)", type: "datetime-local" },
                 { name: "ubicacion", label: "Ubicacion", type: "text" },
                 { name: "equipo", label: "Equipo", type: "text" },
                 { name: "tipo_mantenimiento", label: "Tipo de Mantenimiento", type: "text" },
                 { name: "descripcion", label: "Descripcion de la Tarea", type: "text" },
                 { name: "estado_final", label: "Estado Final", type: "select", options: ["Abierto", "En Proceso", "Solucionado", "Derivado a Terceros"] },
-                { name: "observaciones", label: "Observaciones", type: "text", required: false }
+                { name: "observaciones", label: "Observaciones de Cierre", type: "text", required: false }
             ],
             Uso_Sala: [
                 { name: "fecha", label: "Fecha", type: "date" },
@@ -301,6 +310,13 @@
 
         function cambiarMes() { cargarDatosServidor(); }
 
+        // Función para cambiar las vistas (Tarjetas, Lista, Compacta)
+        function cambiarVistaSoporte(vista) {
+            vistaSoporteActual = vista;
+            localStorage.setItem('vistaSoporteActual', vista);
+            renderizarTabla();
+        }
+
         function cambiarSeccion(seccion) {
             seccionActual = seccion;
             document.querySelectorAll('nav button').forEach(b => { b.classList.remove('tab-active'); b.classList.add('tab-inactive'); });
@@ -314,9 +330,8 @@
             const subtitulo = document.getElementById('subtitulo-seccion');
             const controlesSoporte = document.getElementById('controles-soporte');
             
-            // Ocultar vistas de datos principales al cambiar
             document.getElementById('vista-tabla').classList.add('hidden');
-            document.getElementById('vista-tarjetas').classList.add('hidden');
+            document.getElementById('vista-soporte-contenedor').classList.add('hidden');
 
             panelBuscador.classList.add('hidden');
             panelPapelera.classList.add('hidden');
@@ -372,12 +387,34 @@
             let filas = [...(globalDataCache.historial[jsonKey] || [])];
             let admin = esAdmin();
 
-            // LÓGICA EXCLUSIVA Y REDISEÑO DE TICKETS PARA SOPORTE
+            // LÓGICA EXCLUSIVA PARA SOPORTE CON MULTIPLES VISTAS
             if (seccionActual === 'Soporte') {
                 document.getElementById('vista-tabla').classList.add('hidden');
-                const vistaTarjetas = document.getElementById('vista-tarjetas');
-                vistaTarjetas.classList.remove('hidden');
-                vistaTarjetas.innerHTML = '';
+                const vistaContenedor = document.getElementById('vista-soporte-contenedor');
+                vistaContenedor.classList.remove('hidden');
+                vistaContenedor.innerHTML = '';
+
+                // Estilos visuales para los botones de vistas
+                const botonesVistas = ['tarjetas', 'lista', 'compacta'];
+                botonesVistas.forEach(v => {
+                    let btn = document.getElementById('btn-vista-' + v);
+                    if (v === vistaSoporteActual) {
+                        btn.classList.add('bg-blue-50', 'text-blue-600', 'shadow-sm');
+                        btn.classList.remove('text-slate-400');
+                    } else {
+                        btn.classList.remove('bg-blue-50', 'text-blue-600', 'shadow-sm');
+                        btn.classList.add('text-slate-400');
+                    }
+                });
+
+                // Clases del contenedor principal de soporte
+                if (vistaSoporteActual === 'tarjetas') {
+                    vistaContenedor.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+                } else if (vistaSoporteActual === 'lista') {
+                    vistaContenedor.className = 'flex flex-col gap-4';
+                } else if (vistaSoporteActual === 'compacta') {
+                    vistaContenedor.className = 'flex flex-col rounded-xl overflow-hidden shadow-sm border border-slate-200';
+                }
 
                 const ordenSelect = document.getElementById('orden-soporte').value;
                 const idxEstado = ESTADO_INDICES['Soporte'];
@@ -386,13 +423,12 @@
                     let esFinalizadoA = ((a[idxEstado + 1] || "") === "Solucionado");
                     let esFinalizadoB = ((b[idxEstado + 1] || "") === "Solucionado");
                     if (esFinalizadoA !== esFinalizadoB) return esFinalizadoA ? 1 : -1; 
-                    
                     let fechaA = new Date(a[1] || 0), fechaB = new Date(b[1] || 0);
                     return ordenSelect === 'antiguos' ? fechaA - fechaB : fechaB - fechaA;
                 });
 
                 if (filas.length === 0) {
-                    vistaTarjetas.innerHTML = `<div class="col-span-full py-16 text-center text-slate-400 bg-white rounded-2xl border border-slate-200"><p>No hay tickets para mostrar</p></div>`;
+                    vistaContenedor.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200"><p>No hay tickets para mostrar</p></div>`;
                     return;
                 }
 
@@ -407,15 +443,21 @@
                     let v_desc = datos[4];
                     let v_estado = datos[5];
                     
+                    // Fecha de Creación
                     let fechaObj = new Date(v_fecha);
                     let fechaMostrar = isNaN(fechaObj) ? v_fecha : fechaObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }).replace(',', ' -');
                     
-                    // Alerta visual de tickets viejos
+                    // Fecha de Modificación (Cierre)
+                    let auditTimestamp = datos[datos.length - 2] || '';
+                    let fechaModObj = new Date(auditTimestamp);
+                    let fechaModMostrar = isNaN(fechaModObj) ? auditTimestamp : fechaModObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+
+                    // Alerta visual de antigüedad (abierto > 3 días)
                     let badgeAntiguedad = '';
                     if (!isNaN(fechaObj) && v_estado !== "Solucionado") {
                         let diasAbierto = Math.floor((new Date() - fechaObj) / (1000 * 60 * 60 * 24));
                         if (diasAbierto >= 3) {
-                            badgeAntiguedad = `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 mt-1 shadow-sm"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Abierto hace ${diasAbierto} días</span>`;
+                            badgeAntiguedad = `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 shadow-sm shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> +${diasAbierto} días</span>`;
                         }
                     }
 
@@ -424,45 +466,92 @@
                     
                     if (admin) {
                         let colorClase = (v_estado === "Solucionado") ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
+                        // En vista compacta hacemos el select más pequeño
+                        let paddingClase = (vistaSoporteActual === 'compacta') ? "px-2 py-1 text-[11px]" : "px-2 py-1 text-xs";
                         let opts = campos[idxEstado].options.map(o => `<option value="${o}" ${v_estado === o ? 'selected' : ''}>${o}</option>`).join('');
-                        selectHtml = `<select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg px-2 py-1 text-xs font-bold shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${colorClase}">${opts}</select>`;
+                        selectHtml = `<select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg ${paddingClase} font-bold shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${colorClase}">${opts}</select>`;
                     } else {
                         let colorClase = (v_estado === "Solucionado") ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-amber-100 text-amber-800 border-amber-300";
-                        selectHtml = `<span class="px-2.5 py-1 rounded-full text-xs font-bold border ${colorClase}">${escaparHTML(v_estado)}</span>`;
+                        let sizeClase = (vistaSoporteActual === 'compacta') ? "text-[10px]" : "text-xs";
+                        selectHtml = `<span class="px-2.5 py-1 rounded-full ${sizeClase} font-bold border ${colorClase}">${escaparHTML(v_estado)}</span>`;
                     }
 
-                    vistaTarjetas.innerHTML += `
-                        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col p-5 relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 right-0 h-1 ${colorStrip}"></div>
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="flex flex-col">
-                                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">${fechaMostrar}</span>
-                                    ${badgeAntiguedad}
+                    // GENERACIÓN DE VISTAS (HTML)
+                    if (vistaSoporteActual === 'tarjetas') {
+                        vistaContenedor.innerHTML += `
+                            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col p-5 relative overflow-hidden group">
+                                <div class="absolute top-0 left-0 right-0 h-1 ${colorStrip}"></div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <div class="flex flex-col">
+                                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">${fechaMostrar}</span>
+                                        <div class="mt-1">${badgeAntiguedad}</div>
+                                    </div>
+                                    ${selectHtml}
                                 </div>
-                                ${selectHtml}
-                            </div>
-                            <div class="mb-4 flex-1">
-                                <h4 class="text-lg font-bold text-slate-800 leading-tight mb-2">${escaparHTML(v_equipo)}</h4>
-                                <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-3 bg-slate-50 inline-flex px-2 py-1 rounded-lg border border-slate-100">
-                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    ${escaparHTML(v_ubicacion)}
+                                <div class="mb-4 flex-1">
+                                    <h4 class="text-lg font-bold text-slate-800 leading-tight mb-2">${escaparHTML(v_equipo)}</h4>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-3 bg-slate-50 inline-flex px-2 py-1 rounded-lg border border-slate-100">
+                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                        ${escaparHTML(v_ubicacion)}
+                                    </div>
+                                    <p class="text-sm text-slate-600 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50 leading-relaxed">${escaparHTML(v_desc)}</p>
                                 </div>
-                                <p class="text-sm text-slate-600 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50 leading-relaxed">${escaparHTML(v_desc)}</p>
-                            </div>
-                            <div class="pt-4 border-t border-slate-100 flex items-center justify-between mt-auto">
-                                <span class="text-[10px] text-slate-400 font-semibold bg-slate-50 px-2 py-1 rounded-md">TIPO: ${escaparHTML(v_tipo).toUpperCase()}</span>
-                                ${admin ? `<div class="flex gap-2">
-                                    <button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button>
-                                    <button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                                </div>` : ''}
-                            </div>
-                        </div>`;
+                                <div class="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] text-slate-400 font-semibold">TIPO: ${escaparHTML(v_tipo).toUpperCase()}</span>
+                                        <span class="text-[10px] text-slate-400 font-medium mt-0.5">Modificado: ${escaparHTML(fechaModMostrar)}</span>
+                                    </div>
+                                    ${admin ? `<div class="flex gap-2">
+                                        <button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button>
+                                        <button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                    </div>` : ''}
+                                </div>
+                            </div>`;
+                    } else if (vistaSoporteActual === 'lista') {
+                        vistaContenedor.innerHTML += `
+                            <div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row p-4 relative overflow-hidden group gap-4">
+                                <div class="absolute left-0 top-0 bottom-0 w-1.5 ${colorStrip}"></div>
+                                <div class="flex-1 pl-3">
+                                    <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2">
+                                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 w-32">${fechaMostrar}</span>
+                                        <h4 class="text-base font-bold text-slate-800 leading-tight">${escaparHTML(v_equipo)}</h4>
+                                        <span class="text-[10px] text-slate-400 font-semibold bg-slate-50 px-2 py-1 rounded-md border border-slate-100 shrink-0">TIPO: ${escaparHTML(v_tipo).toUpperCase()}</span>
+                                        ${badgeAntiguedad}
+                                    </div>
+                                    <p class="text-sm text-slate-600 bg-blue-50/40 p-3 rounded-lg border border-blue-50 leading-relaxed mb-3">${escaparHTML(v_desc)}</p>
+                                    <div class="flex flex-wrap items-center gap-4 text-xs">
+                                        <div class="flex items-center gap-1.5 text-slate-500 font-medium"><svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>${escaparHTML(v_ubicacion)}</div>
+                                        <div class="text-[11px] text-slate-400 bg-slate-50 px-2 py-1 rounded-md">Modificado: ${escaparHTML(fechaModMostrar)}</div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row md:flex-col justify-between md:items-end gap-3 min-w-[140px] pl-0 md:pl-4 md:border-l md:border-slate-100 mt-2 md:mt-0">
+                                    ${selectHtml}
+                                    ${admin ? `<div class="flex gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>` : ''}
+                                </div>
+                            </div>`;
+                    } else if (vistaSoporteActual === 'compacta') {
+                        vistaContenedor.innerHTML += `
+                            <div class="bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors flex flex-wrap md:flex-nowrap items-center p-3 relative overflow-hidden group gap-2 lg:gap-4 last:border-0">
+                                <div class="absolute left-0 top-0 bottom-0 w-1 ${colorStrip}"></div>
+                                <div class="w-full md:w-32 pl-3"><span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">${fechaMostrar}</span></div>
+                                <div class="w-full md:w-1/4 font-semibold text-sm text-slate-800 truncate" title="${escaparHTML(v_equipo)}">${escaparHTML(v_equipo)}</div>
+                                <div class="w-full md:w-1/6 text-xs text-slate-500 truncate" title="${escaparHTML(v_ubicacion)}">${escaparHTML(v_ubicacion)}</div>
+                                <div class="w-full md:flex-1 flex justify-end items-center gap-3">
+                                    <div class="hidden lg:flex items-center gap-2">
+                                        ${badgeAntiguedad}
+                                        <span class="text-[10px] text-slate-400">Mod: ${escaparHTML(fechaModMostrar.split(' ')[0])}</span>
+                                    </div>
+                                    ${selectHtml}
+                                    ${admin ? `<div class="flex gap-1"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 hover:bg-blue-100 p-1.5 rounded-lg text-xs font-bold transition-colors">Edit</button></div>` : ''}
+                                </div>
+                            </div>`;
+                    }
                 });
                 return;
             }
 
             // RENDERIZADO DE TABLA NORMAL (Préstamos, Permanente, Uso Sala)
-            document.getElementById('vista-tarjetas').classList.add('hidden');
+            document.getElementById('vista-soporte-contenedor').classList.add('hidden');
             const vistaTabla = document.getElementById('vista-tabla');
             vistaTabla.classList.remove('hidden');
 
@@ -614,8 +703,25 @@
                 if (val === undefined || val === '') {
                     if (!editId) { if (c.type === 'date') val = hoyYMD; if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM; if (c.type === 'datetime-local') val = ahoraDT; }
                 }
+                
+                // SISTEMA DE BLOQUEO DE FECHA (Solo lectura si se está editando y es el primer campo: fecha)
+                let esCampoFecha = (c.type === 'date' || c.type === 'datetime-local');
+                let esModoEdicionDeFecha = (editId !== null && i === 0 && esCampoFecha);
+                
                 let req = c.required !== false ? 'required' : '';
-                return `<div><label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">${c.label}</label>${c.type === 'select' ? `<select name="campo_${i}" ${req} class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm outline-none bg-slate-50 focus:bg-white text-slate-700 cursor-pointer shadow-sm">${c.options.map(o => `<option value="${o}" ${(val||'') === o ? 'selected' : ''}>${o}</option>`).join('')}</select>` : `<input type="${c.type}" name="campo_${i}" value="${escaparHTML(val||'')}" ${req} class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm outline-none bg-slate-50 focus:bg-white text-slate-700 shadow-sm">`}</div>`;
+                let readonlyAttr = esModoEdicionDeFecha ? 'readonly' : '';
+                
+                // Clases visuales para diferenciar campo bloqueado vs campo editable
+                let inputClasses = esModoEdicionDeFecha 
+                    ? 'bg-slate-100 cursor-not-allowed opacity-70 border-slate-200 text-slate-500' 
+                    : 'bg-slate-50 focus:bg-white focus:ring-blue-500 border-slate-300 text-slate-700 hover:border-blue-300';
+
+                return `<div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">${c.label}</label>
+                    ${c.type === 'select' 
+                        ? `<select name="campo_${i}" ${req} class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm outline-none bg-slate-50 focus:bg-white text-slate-700 cursor-pointer shadow-sm">${c.options.map(o => `<option value="${o}" ${(val||'') === o ? 'selected' : ''}>${o}</option>`).join('')}</select>` 
+                        : `<input type="${c.type}" name="campo_${i}" value="${escaparHTML(val||'')}" ${req} ${readonlyAttr} class="w-full border rounded-xl px-4 py-2.5 text-sm outline-none shadow-sm transition-colors ${inputClasses}">`
+                    }</div>`;
             }).join('') + '</div>' + 
             `<div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 bg-white sticky bottom-0"><button type="button" onclick="cerrarModal()" class="bg-white border border-slate-300 px-5 py-2.5 rounded-xl font-medium">Cancelar</button><button type="submit" id="btn-guardar" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-sm">Guardar Cambios</button></div>`;
         }
