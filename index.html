@@ -173,16 +173,16 @@
         </div>
     </div>
 
-    <!-- Mini Modal de Devolución de Préstamo (Con Fecha y Hora) -->
+    <!-- Mini Modal de Devolución de Préstamo (Solo Hora) -->
     <div id="modal-devolucion" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <h3 class="text-lg font-bold text-slate-800 mb-2">Confirmar Devolución</h3>
-            <p class="text-xs text-slate-500 mb-4">Ingresa la fecha y hora exacta en la que se entregó el insumo.</p>
+            <p class="text-xs text-slate-500 mb-4">Ingresa la hora exacta en la que se devolvió el insumo.</p>
             <form onsubmit="confirmarDevolucionPrestamo(event)" class="space-y-4">
                 <input type="hidden" id="dev-id">
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha y Hora Devolución</label>
-                    <input type="datetime-local" id="dev-hora" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora de Devolución</label>
+                    <input type="time" id="dev-hora" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones (Opcional)</label>
@@ -215,7 +215,7 @@
                 { name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
                 { name: "cantidad", label: "Cantidad", type: "text" },
                 { name: "hora_entrega", label: "Hora Entrega", type: "time" },
-                { name: "hora_devolucion", label: "Hora Devolucion", type: "datetime-local", required: false },
+                { name: "hora_devolucion", label: "Hora Devolucion", type: "time", required: false },
                 { name: "estado_logistico", label: "Estado Logistico", type: "select", options: ["Pendiente", "Devuelto", "Bueno", "Dañado", "En Tránsito"] },
                 { name: "estado_fisico", label: "Estado Fisico", type: "text", required: false },
                 { name: "observaciones", label: "Observaciones", type: "text", required: false }
@@ -310,7 +310,6 @@
             document.getElementById('login-container').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
             
-            // Ocultar elementos privilegiados para el rol de lectura
             if (!esAdmin()) {
                 document.getElementById('btn-nuevo').classList.add('hidden');
                 document.querySelectorAll('.hidden-readonly').forEach(el => el.classList.add('hidden'));
@@ -404,16 +403,12 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
-        // Formateador seguro para evitar despliegues erróneos de 1988/1969
-        function formatearHoraSegura(strHora) {
-            if (!strHora || strHora === 'null' || strHora === 'undefined' || strHora.includes('1988') || strHora.includes('1969')) {
-                return '<span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-amber-200">Sin devolver</span>';
-            }
-            let obj = new Date(strHora);
-            if (!isNaN(obj)) {
-                return obj.toLocaleString('es-CL', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }).replace(',', ' -');
-            }
-            return escaparHTML(strHora);
+        // Formateador para extraer SOLO HORA y evadir fechas fantasma (ej: 1899)
+        function formatearSoloHora(strHora) {
+            if (!strHora || strHora === 'null' || strHora === 'undefined' || strHora === '') return '--:--';
+            let s = String(strHora);
+            if (s.includes('T')) return s.split('T')[1].substring(0, 5); 
+            return escaparHTML(s);
         }
 
         function renderizarTabla() {
@@ -537,7 +532,7 @@
                 return;
             }
 
-            // RENDERIZADO DE TABLA GENERAL (Acciones al final)
+            // RENDERIZADO DE TABLA GENERAL
             document.getElementById('vista-soporte-contenedor').classList.add('hidden');
             const vistaTabla = document.getElementById('vista-tabla');
             vistaTabla.classList.remove('hidden');
@@ -568,10 +563,19 @@
 
                 tr.innerHTML = datosCampos.map((v, idx) => {
                     let idxEst = ESTADO_INDICES[seccionActual];
-                    
-                    // Columna especial para hora de devolución sin el bug 1988
+
+                    // Columna especial para hora de devolución (Índice 5 en Préstamos)
                     if (seccionActual === 'Prestamos' && idx === 5) {
-                        return `<td class="px-6 py-3 whitespace-nowrap font-medium text-xs">${formatearHoraSegura(v)}</td>`;
+                        let textHora = formatearSoloHora(v);
+                        if (textHora === '--:--') {
+                            return `<td class="px-6 py-3 whitespace-nowrap font-medium text-xs"><span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-amber-200">Sin devolver</span></td>`;
+                        }
+                        return `<td class="px-6 py-3 whitespace-nowrap font-medium text-slate-700">${textHora}</td>`;
+                    }
+
+                    // Si la columna está definida como type="time" (ej: Hora Entrega o Hora Uso Sala)
+                    if (campos[idx].type === 'time') {
+                        return `<td class="px-6 py-3 whitespace-nowrap font-medium text-slate-700">${formatearSoloHora(v)}</td>`;
                     }
 
                     if (idx === idxEst && (seccionActual === 'Prestamos' || seccionActual === 'Permanente')) {
@@ -595,13 +599,12 @@
         async function cambiarEstadoRapido(id, nuevoEstado) {
             if (!esAdmin()) return;
             
-            // Apertura del modal de devolución con captura de fecha y hora completa
+            // Apertura del modal de devolución con captura de HORA
             if (seccionActual === 'Prestamos' && nuevoEstado === 'Devuelto') {
-                const hoyYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
                 const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
                 
                 document.getElementById('dev-id').value = id;
-                document.getElementById('dev-hora').value = `${hoyYMD}T${horaHM}`;
+                document.getElementById('dev-hora').value = horaHM;
                 document.getElementById('modal-devolucion').classList.remove('hidden');
                 return;
             }
@@ -709,7 +712,6 @@
             document.getElementById('modal-titulo').innerText = "Nuevo Registro"; 
             construirFormularioModal(); 
 
-            // Restauración automática del borrador guardado en localStorage
             const borrador = localStorage.getItem('borrador_modal_' + seccionActual);
             if (borrador) {
                 try {
@@ -768,7 +770,6 @@
             }).join('') + '</div>' + 
             `<div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 bg-white sticky bottom-0"><button type="button" onclick="cerrarModal()" class="bg-white border border-slate-300 px-5 py-2.5 rounded-xl font-medium">Cancelar</button><button type="submit" id="btn-guardar" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-sm">Guardar Cambios</button></div>`;
 
-            // Escuchador de auto-guardado mientras el usuario escribe
             const form = document.getElementById('modal-form');
             form.addEventListener('input', () => {
                 if (!document.getElementById('edit-id')) {
