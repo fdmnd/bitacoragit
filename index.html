@@ -16,6 +16,8 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-blue-200 selection:text-blue-900">
@@ -67,23 +69,24 @@
             </div>
         </header>
 
+        <!-- Navegación con el nuevo orden pedido y Papelera a la derecha -->
         <nav class="bg-white border-b border-slate-200 shadow-sm z-20">
-            <div class="max-w-7xl mx-auto px-6 py-3 flex gap-2 overflow-x-auto hide-scrollbar">
-                <button onclick="cambiarSeccion('Prestamos')" id="btn-Prestamos" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-active">Prestamos</button>
-                <button onclick="cambiarSeccion('Soporte')" id="btn-Soporte" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Soporte</button>
+            <div class="max-w-7xl mx-auto px-6 py-3 flex gap-2 overflow-x-auto hide-scrollbar items-center">
+                <button onclick="cambiarSeccion('Soporte')" id="btn-Soporte" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-active">Soporte</button>
                 <button onclick="cambiarSeccion('Uso_Sala')" id="btn-Uso_Sala" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Uso de Sala</button>
-                <button onclick="cambiarSeccion('Permanente')" id="btn-Permanente" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Permanente</button>
+                <button onclick="cambiarSeccion('Prestamos')" id="btn-Prestamos" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Prestamos</button>
+                <button onclick="cambiarSeccion('Permanente')" id="btn-Permanente" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Prestamos Permanentes</button>
                 <button onclick="cambiarSeccion('Buscador')" id="btn-Buscador" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Buscador
                 </button>
-                <button onclick="cambiarSeccion('Papelera')" id="btn-Papelera" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2">
+                <button onclick="cambiarSeccion('Papelera')" id="btn-Papelera" class="ml-auto px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2 hidden-readonly">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Papelera
                 </button>
             </div>
         </nav>
 
         <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
-            <div id="panel-pendientes" class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+            <div id="panel-pendientes" class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400"></div>
                     <div><p class="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">Prestamos Pendientes</p><h3 id="count-prestamos-pendientes" class="text-4xl font-bold text-slate-800">0</h3></div>
@@ -98,11 +101,11 @@
 
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                 <div>
-                    <h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Prestamos</h2>
+                    <h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Soporte</h2>
                     <p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <div id="controles-soporte" class="hidden flex items-center gap-3">
+                    <div id="controles-soporte" class="flex items-center gap-3">
                         <div class="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
                             <button onclick="cambiarVistaSoporte('tarjetas')" id="btn-vista-tarjetas" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Tarjetas"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg></button>
                             <button onclick="cambiarVistaSoporte('lista')" id="btn-vista-lista" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Lista Detallada"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
@@ -120,7 +123,7 @@
             </div>
 
             <div id="data-container">
-                <div id="vista-tabla" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div id="vista-tabla" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead id="tabla-head" class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold"></thead>
@@ -128,7 +131,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="vista-soporte-contenedor" class="hidden"></div>
+                <div id="vista-soporte-contenedor"></div>
             </div>
 
             <div id="panel-Buscador" class="hidden">
@@ -160,6 +163,7 @@
         </main>
     </div>
 
+    <!-- Modal Formulario Base -->
     <div id="modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-opacity">
         <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
@@ -170,17 +174,39 @@
         </div>
     </div>
 
+    <!-- Mini Modal de Devolución de Préstamo -->
+    <div id="modal-devolucion" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">Confirmar Devolución</h3>
+            <p class="text-xs text-slate-500 mb-4">Ingresa la fecha y hora exacta en la que se entregó el insumo.</p>
+            <form onsubmit="confirmarDevolucionPrestamo(event)" class="space-y-4">
+                <input type="hidden" id="dev-id">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora / Fecha Devolución</label>
+                    <input type="time" id="dev-hora" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones (Opcional)</label>
+                    <input type="text" id="dev-obs" placeholder="Ej. Entregado en buen estado" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="cerrarModalDevolucion()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-xl shadow-sm">Guardar Devolución</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzhgFe4Rg3vhMRv4Wf21gpWs_Su5jG0sAex9xRTJlCWNxupXw3ihsbxULxcd46TObN4Jg/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwxeDVppt3FxSQpDH31q7fXOV8bf89I1ZoR00fef0FFeVwQ0-3h-DJDAvbWQyapsK_QeA/exec";
        
         let googleToken = null; 
         let customUser = null;
-        let seccionActual = "Prestamos";
+        let seccionActual = "Soporte";
         let globalDataCache = null;
         let globalPapeleraCache = null;
-        
         let vistaSoporteActual = localStorage.getItem('vistaSoporteActual') || 'tarjetas';
 
         const CAMPOS_SECCION = {
@@ -228,6 +254,11 @@
         const ESTADO_INDICES = { Prestamos: 6, Soporte: 5, Permanente: 5 };
 
         function esAdmin() { return googleToken !== null; }
+
+        // Heartbeat para prevenir caducidad inesperada
+        window.addEventListener('click', () => {
+            if (googleToken || customUser) localStorage.setItem('tokenTimestamp', Date.now());
+        });
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedToken = localStorage.getItem('googleToken');
@@ -279,7 +310,13 @@
             document.getElementById('user-email').innerText = emailTexto;
             document.getElementById('login-container').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
-            if (!esAdmin()) document.getElementById('btn-nuevo').classList.add('hidden');
+            
+            // Ocultar pestaña papelera y botón nuevo para usuario de lectura
+            if (!esAdmin()) {
+                document.getElementById('btn-nuevo').classList.add('hidden');
+                document.querySelectorAll('.hidden-readonly').forEach(el => el.classList.add('hidden'));
+            }
+            
             cargarMeses().then(() => cargarDatosServidor());
         }
 
@@ -300,12 +337,7 @@
         }
 
         function cambiarMes() { cargarDatosServidor(); }
-
-        function cambiarVistaSoporte(vista) {
-            vistaSoporteActual = vista;
-            localStorage.setItem('vistaSoporteActual', vista);
-            renderizarTabla();
-        }
+        function cambiarVistaSoporte(vista) { vistaSoporteActual = vista; localStorage.setItem('vistaSoporteActual', vista); renderizarTabla(); }
 
         function cambiarSeccion(seccion) {
             seccionActual = seccion;
@@ -331,11 +363,14 @@
                 document.getElementById('titulo-seccion').innerText = "Buscador Global"; subtitulo.innerText = "Busca registros en todo el historial guardado.";
                 btnNuevo.classList.add('hidden'); panelPendientes.classList.add('hidden'); panelBuscador.classList.remove('hidden');
             } else if (seccion === 'Papelera') {
+                if(!esAdmin()) return cambiarSeccion('Soporte');
                 document.getElementById('titulo-seccion').innerText = "Papelera de Reciclaje"; subtitulo.innerText = "Historial de registros eliminados.";
                 btnNuevo.classList.add('hidden'); panelPendientes.classList.add('hidden'); panelPapelera.classList.remove('hidden');
                 cargarDatosPapelera();
             } else {
-                document.getElementById('titulo-seccion').innerText = seccion.replace('_', ' '); subtitulo.innerText = "Gestiona los registros de la seccion actual.";
+                document.getElementById('titulo-seccion').innerText = (seccion === 'Permanente') ? 'Prestamos Permanentes' : seccion.replace('_', ' '); 
+                subtitulo.innerText = "Gestiona los registros de la seccion actual.";
+                
                 if (seccion === 'Soporte') controlesSoporte.classList.remove('hidden');
                 if (esAdmin()) btnNuevo.classList.remove('hidden'); else btnNuevo.classList.add('hidden');
                 
@@ -370,6 +405,14 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
+        // Formateador seguro contra la fecha 1988/1969
+        function formatearHoraSegura(strHora) {
+            if (!strHora || strHora === 'null' || strHora === 'undefined' || strHora.includes('1988') || strHora.includes('1969')) {
+                return '<span class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded text-xs font-semibold border border-amber-200">Sin devolver</span>';
+            }
+            return escaparHTML(strHora);
+        }
+
         function renderizarTabla() {
             if (!globalDataCache || !globalDataCache.historial) return;
             let campos = CAMPOS_SECCION[seccionActual];
@@ -395,13 +438,9 @@
                     }
                 });
 
-                if (vistaSoporteActual === 'tarjetas') {
-                    vistaContenedor.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-                } else if (vistaSoporteActual === 'lista') {
-                    vistaContenedor.className = 'flex flex-col gap-4';
-                } else if (vistaSoporteActual === 'compacta') {
-                    vistaContenedor.className = 'flex flex-col rounded-xl overflow-hidden shadow-sm border border-slate-200';
-                }
+                if (vistaSoporteActual === 'tarjetas') vistaContenedor.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+                else if (vistaSoporteActual === 'lista') vistaContenedor.className = 'flex flex-col gap-4';
+                else if (vistaSoporteActual === 'compacta') vistaContenedor.className = 'flex flex-col rounded-xl overflow-hidden shadow-sm border border-slate-200';
 
                 const ordenSelect = document.getElementById('orden-soporte').value;
                 const idxEstado = ESTADO_INDICES['Soporte'];
@@ -422,17 +461,10 @@
                 filas.forEach(r => {
                     let id = r[0];
                     let datos = r.slice(1);
-                    
-                    let v_fecha = datos[0];
-                    let v_ubicacion = datos[1];
-                    let v_equipo = datos[2];
-                    let v_tipo = datos[3];
-                    let v_desc = datos[4];
-                    let v_estado = datos[5];
+                    let v_fecha = datos[0], v_ubicacion = datos[1], v_equipo = datos[2], v_tipo = datos[3], v_desc = datos[4], v_estado = datos[5];
                     
                     let fechaObj = new Date(v_fecha);
                     let fechaMostrar = isNaN(fechaObj) ? v_fecha : fechaObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }).replace(',', ' -');
-                    
                     let auditTimestamp = datos[datos.length - 2] || '';
                     let fechaModObj = new Date(auditTimestamp);
                     let fechaModMostrar = isNaN(fechaModObj) ? auditTimestamp : fechaModObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
@@ -464,29 +496,17 @@
                             <div class="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col p-5 relative overflow-hidden group">
                                 <div class="absolute top-0 left-0 right-0 h-1 ${colorStrip}"></div>
                                 <div class="flex justify-between items-start mb-4">
-                                    <div class="flex flex-col">
-                                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">${fechaMostrar}</span>
-                                        <div class="mt-1">${badgeAntiguedad}</div>
-                                    </div>
+                                    <div class="flex flex-col"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">${fechaMostrar}</span><div class="mt-1">${badgeAntiguedad}</div></div>
                                     ${selectHtml}
                                 </div>
                                 <div class="mb-4 flex-1">
                                     <h4 class="text-lg font-bold text-slate-800 leading-tight mb-2">${escaparHTML(v_equipo)}</h4>
-                                    <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-3 bg-slate-50 inline-flex px-2 py-1 rounded-lg border border-slate-100">
-                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                        ${escaparHTML(v_ubicacion)}
-                                    </div>
+                                    <div class="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-3 bg-slate-50 inline-flex px-2 py-1 rounded-lg border border-slate-100"><svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>${escaparHTML(v_ubicacion)}</div>
                                     <p class="text-sm text-slate-600 bg-blue-50/50 p-3 rounded-xl border border-blue-100/50 leading-relaxed">${escaparHTML(v_desc)}</p>
                                 </div>
                                 <div class="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
-                                    <div class="flex flex-col">
-                                        <span class="text-[10px] text-slate-400 font-semibold">TIPO: ${escaparHTML(v_tipo).toUpperCase()}</span>
-                                        <span class="text-[10px] text-slate-400 font-medium mt-0.5">Modificado: ${escaparHTML(fechaModMostrar)}</span>
-                                    </div>
-                                    ${admin ? `<div class="flex gap-2">
-                                        <button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button>
-                                        <button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                                    </div>` : ''}
+                                    <div class="flex flex-col"><span class="text-[10px] text-slate-400 font-semibold">TIPO: ${escaparHTML(v_tipo).toUpperCase()}</span><span class="text-[10px] text-slate-400 font-medium mt-0.5">Modificado: ${escaparHTML(fechaModMostrar)}</span></div>
+                                    ${admin ? `<div class="flex gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>` : ''}
                                 </div>
                             </div>`;
                     } else if (vistaSoporteActual === 'lista') {
@@ -494,22 +514,11 @@
                             <div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row p-4 relative overflow-hidden group gap-4">
                                 <div class="absolute left-0 top-0 bottom-0 w-1.5 ${colorStrip}"></div>
                                 <div class="flex-1 pl-3">
-                                    <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                                        <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 w-32">${fechaMostrar}</span>
-                                        <h4 class="text-base font-bold text-slate-800 leading-tight">${escaparHTML(v_equipo)}</h4>
-                                        <span class="text-[10px] text-slate-400 font-semibold bg-slate-50 px-2 py-1 rounded-md border border-slate-100 shrink-0">TIPO: ${escaparHTML(v_tipo).toUpperCase()}</span>
-                                        ${badgeAntiguedad}
-                                    </div>
+                                    <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 w-32">${fechaMostrar}</span><h4 class="text-base font-bold text-slate-800 leading-tight">${escaparHTML(v_equipo)}</h4><span class="text-[10px] text-slate-400 font-semibold bg-slate-50 px-2 py-1 rounded-md border border-slate-100 shrink-0">TIPO: ${escaparHTML(v_tipo).toUpperCase()}</span>${badgeAntiguedad}</div>
                                     <p class="text-sm text-slate-600 bg-blue-50/40 p-3 rounded-lg border border-blue-50 leading-relaxed mb-3">${escaparHTML(v_desc)}</p>
-                                    <div class="flex flex-wrap items-center gap-4 text-xs">
-                                        <div class="flex items-center gap-1.5 text-slate-500 font-medium"><svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>${escaparHTML(v_ubicacion)}</div>
-                                        <div class="text-[11px] text-slate-400 bg-slate-50 px-2 py-1 rounded-md">Modificado: ${escaparHTML(fechaModMostrar)}</div>
-                                    </div>
+                                    <div class="flex flex-wrap items-center gap-4 text-xs"><div class="flex items-center gap-1.5 text-slate-500 font-medium"><svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>${escaparHTML(v_ubicacion)}</div><div class="text-[11px] text-slate-400 bg-slate-50 px-2 py-1 rounded-md">Modificado: ${escaparHTML(fechaModMostrar)}</div></div>
                                 </div>
-                                <div class="flex flex-row md:flex-col justify-between md:items-end gap-3 min-w-[140px] pl-0 md:pl-4 md:border-l md:border-slate-100 mt-2 md:mt-0">
-                                    ${selectHtml}
-                                    ${admin ? `<div class="flex gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>` : ''}
-                                </div>
+                                <div class="flex flex-row md:flex-col justify-between md:items-end gap-3 min-w-[140px] pl-0 md:pl-4 md:border-l md:border-slate-100 mt-2 md:mt-0">${selectHtml}${admin ? `<div class="flex gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>` : ''}</div>
                             </div>`;
                     } else if (vistaSoporteActual === 'compacta') {
                         vistaContenedor.innerHTML += `
@@ -518,20 +527,14 @@
                                 <div class="w-full md:w-32 pl-3"><span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">${fechaMostrar}</span></div>
                                 <div class="w-full md:w-1/4 font-semibold text-sm text-slate-800 truncate" title="${escaparHTML(v_equipo)}">${escaparHTML(v_equipo)}</div>
                                 <div class="w-full md:w-1/6 text-xs text-slate-500 truncate" title="${escaparHTML(v_ubicacion)}">${escaparHTML(v_ubicacion)}</div>
-                                <div class="w-full md:flex-1 flex justify-end items-center gap-3">
-                                    <div class="hidden lg:flex items-center gap-2">
-                                        ${badgeAntiguedad}
-                                        <span class="text-[10px] text-slate-400">Mod: ${escaparHTML(fechaModMostrar.split(' ')[0])}</span>
-                                    </div>
-                                    ${selectHtml}
-                                    ${admin ? `<div class="flex gap-1"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 hover:bg-blue-100 p-1.5 rounded-lg text-xs font-bold transition-colors">Edit</button></div>` : ''}
-                                </div>
+                                <div class="w-full md:flex-1 flex justify-end items-center gap-3"><div class="hidden lg:flex items-center gap-2">${badgeAntiguedad}<span class="text-[10px] text-slate-400">Mod: ${escaparHTML(fechaModMostrar.split(' ')[0])}</span></div>${selectHtml}${admin ? `<div class="flex gap-1"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 hover:bg-blue-100 p-1.5 rounded-lg text-xs font-bold transition-colors">Edit</button></div>` : ''}</div>
                             </div>`;
                     }
                 });
                 return;
             }
 
+            // RENDERIZADO DE TABLA (Acciones Mantenidas al Final)
             document.getElementById('vista-soporte-contenedor').classList.add('hidden');
             const vistaTabla = document.getElementById('vista-tabla');
             vistaTabla.classList.remove('hidden');
@@ -539,8 +542,8 @@
             const head = document.getElementById('tabla-head');
             const body = document.getElementById('tabla-body');
             
-            let thAcciones = admin ? `<th class="px-6 py-4 whitespace-nowrap">Acciones</th>` : '';
-            head.innerHTML = `<tr>${thAcciones}` + campos.map(c => `<th class="px-6 py-4 whitespace-nowrap">${c.label}</th>`).join('') + `<th class="px-6 py-4 whitespace-nowrap">Ult. Mod.</th><th class="px-6 py-4 whitespace-nowrap">Usuario</th></tr>`;
+            let thAcciones = admin ? `<th class="px-6 py-4 whitespace-nowrap text-right">Acciones</th>` : '';
+            head.innerHTML = `<tr>` + campos.map(c => `<th class="px-6 py-4 whitespace-nowrap">${c.label}</th>`).join('') + `<th class="px-6 py-4 whitespace-nowrap">Ult. Mod.</th><th class="px-6 py-4 whitespace-nowrap">Usuario</th>${thAcciones}</tr>`;
             
             body.innerHTML = '';
             
@@ -558,10 +561,16 @@
                 let auditUser = valoresRestantes[valoresRestantes.length - 1] || '';
                 let datosCampos = valoresRestantes.slice(0, campos.length);
 
-                let tdAcciones = admin ? `<td class="px-6 py-3 whitespace-nowrap flex gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button></td>` : '';
+                let tdAcciones = admin ? `<td class="px-6 py-3 whitespace-nowrap text-right flex justify-end gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button></td>` : '';
 
-                tr.innerHTML = tdAcciones + datosCampos.map((v, idx) => {
+                tr.innerHTML = datosCampos.map((v, idx) => {
                     let idxEst = ESTADO_INDICES[seccionActual];
+                    
+                    // Columna especial para hora de devolución sin el bug 1988
+                    if (seccionActual === 'Prestamos' && idx === 5) {
+                        return `<td class="px-6 py-3 whitespace-nowrap font-medium text-xs">${formatearHoraSegura(v)}</td>`;
+                    }
+
                     if (idx === idxEst && (seccionActual === 'Prestamos' || seccionActual === 'Permanente')) {
                         let verde = (v === "Devuelto" || v === "Bueno" || v === "Operativo");
                         let color = verde ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-amber-100 text-amber-800 border-amber-300";
@@ -575,13 +584,22 @@
                     let esTextoLargo = (campos[idx].name === 'descripcion' || campos[idx].name === 'observaciones' || campos[idx].name === 'actividad');
                     let claseCelda = esTextoLargo ? "px-6 py-3 whitespace-normal break-words min-w-[280px] max-w-xs leading-relaxed" : "px-6 py-3 whitespace-nowrap";
                     return `<td class="${claseCelda}">${escaparHTML(v)}</td>`;
-                }).join('') + `<td class="px-6 py-3 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditTimestamp)}</td><td class="px-6 py-3 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditUser)}</td>`;
+                }).join('') + `<td class="px-6 py-3 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditTimestamp)}</td><td class="px-6 py-3 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditUser)}</td>` + tdAcciones;
                 body.appendChild(tr);
             });
         }
 
         async function cambiarEstadoRapido(id, nuevoEstado) {
             if (!esAdmin()) return;
+            
+            // Si es un préstamo cambiando a Devuelto, desplegamos el modal de captura de hora
+            if (seccionActual === 'Prestamos' && nuevoEstado === 'Devuelto') {
+                document.getElementById('dev-id').value = id;
+                document.getElementById('dev-hora').value = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
+                document.getElementById('modal-devolucion').classList.remove('hidden');
+                return;
+            }
+
             let observacion = prompt((nuevoEstado === "Solucionado" || nuevoEstado === "Devuelto") ? "Agrega una observacion de cierre (Opcional):" : "¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)", "");
             if (observacion === null) return;
 
@@ -593,6 +611,26 @@
                 mostrarToast("Estado guardado", "success"); 
                 await cargarDatosServidor();
             } catch (err) { mostrarToast("Error al guardar", "error"); cargarDatosServidor(); }
+        }
+
+        function cerrarModalDevolucion() { document.getElementById('modal-devolucion').classList.add('hidden'); }
+
+        async function confirmarDevolucionPrestamo(event) {
+            event.preventDefault();
+            let id = document.getElementById('dev-id').value;
+            let horaDevolucion = document.getElementById('dev-hora').value;
+            let observacion = document.getElementById('dev-obs').value;
+
+            cerrarModalDevolucion();
+            mostrarToast("Guardando devolucion...", "info");
+
+            try {
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: 'Prestamos', action: "update_status", id, nuevoEstado: 'Devuelto', horaDevolucion, observacion, targetMonth: document.getElementById('month-selector').value }) });
+                let result = await res.json();
+                if(result.status !== 'success') throw new Error(result.message);
+                mostrarToast("Devolucion registrada", "success");
+                await cargarDatosServidor();
+            } catch(e) { mostrarToast("Error al guardar", "error"); }
         }
 
         async function eliminarRegistro(id) {
@@ -660,7 +698,26 @@
             } catch (err) { mostrarToast("Error", "error"); }
         }
 
-        function abrirModalNuevo() { if (!esAdmin()) return; document.getElementById('modal-titulo').innerText = "Nuevo Registro"; construirFormularioModal(); document.getElementById('modal').classList.remove('hidden'); }
+        function abrirModalNuevo() { 
+            if (!esAdmin()) return; 
+            document.getElementById('modal-titulo').innerText = "Nuevo Registro"; 
+            construirFormularioModal(); 
+
+            // Restaurador de borrador en caliente
+            const borrador = localStorage.getItem('borrador_modal_' + seccionActual);
+            if (borrador) {
+                try {
+                    const datos = JSON.parse(borrador);
+                    Object.keys(datos).forEach(key => {
+                        if (document.getElementById('modal-form').elements[key]) {
+                            document.getElementById('modal-form').elements[key].value = datos[key];
+                        }
+                    });
+                    mostrarToast("Se recupero tu borrador anterior", "info");
+                } catch(e){}
+            }
+            document.getElementById('modal').classList.remove('hidden'); 
+        }
 
         function abrirModalEditar(id) {
             if (!esAdmin()) return;
@@ -689,7 +746,6 @@
                 
                 let esCampoFecha = (c.type === 'date' || c.type === 'datetime-local');
                 let esModoEdicionDeFecha = (editId !== null && i === 0 && esCampoFecha);
-                
                 let req = c.required !== false ? 'required' : '';
                 let readonlyAttr = esModoEdicionDeFecha ? 'readonly' : '';
                 
@@ -705,6 +761,18 @@
                     }</div>`;
             }).join('') + '</div>' + 
             `<div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 bg-white sticky bottom-0"><button type="button" onclick="cerrarModal()" class="bg-white border border-slate-300 px-5 py-2.5 rounded-xl font-medium">Cancelar</button><button type="submit" id="btn-guardar" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-sm">Guardar Cambios</button></div>`;
+
+            // Auto-guardado en tiempo real en localStorage
+            const form = document.getElementById('modal-form');
+            form.addEventListener('input', () => {
+                if (!document.getElementById('edit-id')) {
+                    const datos = {};
+                    CAMPOS_SECCION[seccionActual].forEach((_, i) => {
+                        datos[`campo_${i}`] = form.elements[`campo_${i}`]?.value || '';
+                    });
+                    localStorage.setItem('borrador_modal_' + seccionActual, JSON.stringify(datos));
+                }
+            });
         }
 
         function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
@@ -718,6 +786,7 @@
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
                 let result = await res.json();
                 if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(); }
+                localStorage.removeItem('borrador_modal_' + seccionActual);
                 cerrarModal(); 
                 mostrarToast("Guardado con exito", "success"); 
                 await cargarDatosServidor();
