@@ -196,10 +196,70 @@
         </div>
     </div>
 
+    <!-- Mini Modal para Convertir a Préstamo Permanente -->
+    <div id="modal-convertir-permanente" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-slate-800 mb-1">Promover a Préstamo Permanente</h3>
+            <p class="text-xs text-slate-500 mb-4">Revisa y ajusta los campos antes de traspasar el equipo al registro permanente. El préstamo diario original se eliminará.</p>
+            
+            <form onsubmit="confirmarTraspasoPermanente(event)" class="space-y-3">
+                <input type="hidden" id="perm-original-id">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Entrega</label>
+                        <input type="date" id="perm-fecha" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Profesor/a - Sala</label>
+                        <input type="text" id="perm-profesor" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Insumo</label>
+                        <input type="text" id="perm-insumo" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Equipo (Detalle/Serie)</label>
+                        <input type="text" id="perm-equipo" required placeholder="Ej. Dell Latitude ID-04" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cantidad</label>
+                        <input type="text" id="perm-cantidad" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estado</label>
+                        <select id="perm-estado" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                            <option value="Asignado a usuario" selected>Asignado a usuario</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Operativo">Operativo</option>
+                            <option value="En Reparacion">En Reparacion</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones</label>
+                    <input type="text" id="perm-obs" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="cerrarModalConvertirPermanente()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm">Confirmar Traspaso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxuFxaaMDRPwU4eUsH_vobL5qFMC_xqzcstcSqiWkY1Ewa8djmnsRA412GHY5r_LQx0tA/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwvSsQ9Hvc7oItjcsL_kuq2mPf2Jc4zb94JoESnlYsKs4qlQpb9J-WKiS1zTit5O91YLg/exec";
        
         let googleToken = null; 
         let customUser = null;
@@ -559,7 +619,12 @@
                 let auditUser = valoresRestantes[valoresRestantes.length - 1] || '';
                 let datosCampos = valoresRestantes.slice(0, campos.length);
 
-                let tdAcciones = admin ? `<td class="px-6 py-3 whitespace-nowrap text-right flex justify-end gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button></td>` : '';
+                // Botón dinámico para convertir a Permanente cuando estamos en la sección Préstamos
+                let btnPermanente = (seccionActual === 'Prestamos') 
+                    ? `<button onclick="abrirModalConvertirPermanente('${id}')" class="text-amber-600 bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded text-xs font-semibold transition-colors" title="Promover a Préstamo Permanente">Permanente</button>` 
+                    : '';
+
+                let tdAcciones = admin ? `<td class="px-6 py-3 whitespace-nowrap text-right flex justify-end gap-2">${btnPermanente}<button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button></td>` : '';
 
                 tr.innerHTML = datosCampos.map((v, idx) => {
                     let idxEst = ESTADO_INDICES[seccionActual];
@@ -640,6 +705,70 @@
                 mostrarToast("Devolucion registrada", "success");
                 await cargarDatosServidor();
             } catch(e) { mostrarToast("Error al guardar", "error"); }
+        }
+
+        function abrirModalConvertirPermanente(id) {
+            if (!esAdmin()) return;
+            let registro = globalDataCache.historial.prestamos.find(r => r[0] === id);
+            if (!registro) return;
+
+            document.getElementById('perm-original-id').value = id;
+            document.getElementById('perm-fecha').value = registro[1] ? registro[1].split('T')[0] : new Date().toISOString().split('T')[0];
+            document.getElementById('perm-profesor').value = registro[2] || '';
+            document.getElementById('perm-insumo').value = registro[3] || '';
+            document.getElementById('perm-equipo').value = registro[3] || '';
+            document.getElementById('perm-cantidad').value = registro[4] || '1';
+            document.getElementById('perm-estado').value = 'Asignado a usuario';
+            
+            let obsOriginal = registro[9] || '';
+            document.getElementById('perm-obs').value = obsOriginal ? `${obsOriginal} [Traspasado desde Préstamo Diario]` : '[Traspasado desde Préstamo Diario]';
+
+            document.getElementById('modal-convertir-permanente').classList.remove('hidden');
+        }
+
+        function cerrarModalConvertirPermanente() {
+            document.getElementById('modal-convertir-permanente').classList.add('hidden');
+        }
+
+        async function confirmarTraspasoPermanente(event) {
+            event.preventDefault();
+            if (!esAdmin()) return;
+
+            const originalId = document.getElementById('perm-original-id').value;
+            const rowValues = [
+                document.getElementById('perm-fecha').value,
+                document.getElementById('perm-profesor').value,
+                document.getElementById('perm-insumo').value,
+                document.getElementById('perm-equipo').value,
+                document.getElementById('perm-cantidad').value,
+                document.getElementById('perm-estado').value,
+                document.getElementById('perm-obs').value
+            ];
+
+            cerrarModalConvertirPermanente();
+            mostrarToast("Traspasando a Préstamos Permanentes...", "info");
+
+            try {
+                let res = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        token: googleToken,
+                        customUser: customUser,
+                        action: "promote_to_permanent",
+                        originalId: originalId,
+                        rowValues: rowValues,
+                        targetMonth: document.getElementById('month-selector').value
+                    })
+                });
+
+                let result = await res.json();
+                if (result.status !== 'success') throw new Error(result.message);
+
+                mostrarToast("Préstamo promovido a Permanente con éxito", "success");
+                await cargarDatosServidor();
+            } catch (err) {
+                mostrarToast("Error al realizar el traspaso", "error");
+            }
         }
 
         async function eliminarRegistro(id) {
