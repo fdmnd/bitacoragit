@@ -104,7 +104,8 @@
                     <p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <div id="controles-soporte" class="flex items-center gap-3">
+                    <!-- Controles para la sección Soporte -->
+                    <div id="controles-soporte" class="flex items-center gap-3 hidden">
                         <div class="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
                             <button onclick="cambiarVistaSoporte('tarjetas')" id="btn-vista-tarjetas" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Tarjetas"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg></button>
                             <button onclick="cambiarVistaSoporte('lista')" id="btn-vista-lista" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Lista Detallada"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
@@ -115,6 +116,19 @@
                             <option value="antiguos">Más antiguos primero</option>
                         </select>
                     </div>
+
+                    <!-- NUEVO: Controles específicos para la sección Préstamos -->
+                    <div id="controles-prestamos" class="flex flex-wrap items-center gap-3 hidden">
+                        <label class="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                            <input type="checkbox" id="chk-ocultar-devueltos" onchange="renderizarTabla()" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
+                            <span>Ocultar devueltos</span>
+                        </label>
+                        <select id="orden-prestamos" onchange="renderizarTabla()" class="bg-white border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none font-medium shadow-sm cursor-pointer hover:border-blue-300">
+                            <option value="recientes">Más recientes primero</option>
+                            <option value="antiguos">Más antiguos primero</option>
+                        </select>
+                    </div>
+
                     <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Nuevo Registro
                     </button>
@@ -122,10 +136,11 @@
             </div>
 
             <div id="data-container">
+                <!-- VISTA TABLA: Ajustada para scrollbar permanente y sticky header en escritorio -->
                 <div id="vista-tabla" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hidden">
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto max-h-[calc(100vh-280px)] overflow-y-auto">
                         <table class="w-full text-left border-collapse">
-                            <thead id="tabla-head" class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold"></thead>
+                            <thead id="tabla-head" class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold sticky top-0 z-10 shadow-sm"></thead>
                             <tbody id="tabla-body" class="divide-y divide-slate-100 text-sm text-slate-700"></tbody>
                         </table>
                     </div>
@@ -173,16 +188,22 @@
         </div>
     </div>
 
-    <!-- Mini Modal de Devolución de Préstamo (Solo Hora) -->
+    <!-- NUEVO Mini Modal de Devolución de Préstamo (Fecha + Hora + Obs) -->
     <div id="modal-devolucion" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
-            <h3 class="text-lg font-bold text-slate-800 mb-2">Confirmar Devolución</h3>
-            <p class="text-xs text-slate-500 mb-4">Ingresa la hora exacta en la que se devolvió el insumo.</p>
+            <h3 class="text-lg font-bold text-slate-800 mb-1">Confirmar Devolución</h3>
+            <p class="text-xs text-slate-500 mb-4">Ingresa la fecha y hora exactas en que se devolvió el insumo.</p>
             <form onsubmit="confirmarDevolucionPrestamo(event)" class="space-y-4">
                 <input type="hidden" id="dev-id">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora de Devolución</label>
-                    <input type="time" id="dev-hora" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Devolución</label>
+                        <input type="date" id="dev-fecha" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora Devolución</label>
+                        <input type="time" id="dev-hora" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones (Opcional)</label>
@@ -190,7 +211,7 @@
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="cerrarModalDevolucion()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-xl shadow-sm">Guardar Devolución</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm">Guardar Devolución</button>
                 </div>
             </form>
         </div>
@@ -260,7 +281,7 @@
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwvSsQ9Hvc7oItjcsL_kuq2mPf2Jc4zb94JoESnlYsKs4qlQpb9J-WKiS1zTit5O91YLg/exec";
-       
+        
         let googleToken = null; 
         let customUser = null;
         let seccionActual = "Soporte";
@@ -409,6 +430,7 @@
             const panelPendientes = document.getElementById('panel-pendientes');
             const subtitulo = document.getElementById('subtitulo-seccion');
             const controlesSoporte = document.getElementById('controles-soporte');
+            const controlesPrestamos = document.getElementById('controles-prestamos');
             
             document.getElementById('vista-tabla').classList.add('hidden');
             document.getElementById('vista-soporte-contenedor').classList.add('hidden');
@@ -416,6 +438,7 @@
             panelBuscador.classList.add('hidden');
             panelPapelera.classList.add('hidden');
             controlesSoporte.classList.add('hidden');
+            controlesPrestamos.classList.add('hidden');
 
             if (seccion === 'Buscador') {
                 document.getElementById('titulo-seccion').innerText = "Buscador Global"; subtitulo.innerText = "Busca registros en todo el historial guardado.";
@@ -430,6 +453,8 @@
                 subtitulo.innerText = "Gestiona los registros de la seccion actual.";
                 
                 if (seccion === 'Soporte') controlesSoporte.classList.remove('hidden');
+                if (seccion === 'Prestamos') controlesPrestamos.classList.remove('hidden');
+                
                 if (esAdmin()) btnNuevo.classList.remove('hidden'); else btnNuevo.classList.add('hidden');
                 
                 if (panelPendientes && (seccion === 'Prestamos' || seccion === 'Soporte')) panelPendientes.classList.remove('hidden'); 
@@ -463,7 +488,6 @@
 
         function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
-        // Formateador para extraer SOLO HORA y evadir fechas fantasma (ej: 1899)
         function formatearSoloHora(strHora) {
             if (!strHora || strHora === 'null' || strHora === 'undefined' || strHora === '') return '--:--';
             let s = String(strHora);
@@ -592,6 +616,34 @@
                 return;
             }
 
+            // LÓGICA DE FILTRADO Y ORDENAMIENTO DE PRÉSTAMOS
+            if (seccionActual === 'Prestamos') {
+                const ocultarDevueltos = document.getElementById('chk-ocultar-devueltos')?.checked;
+                const ordenSelect = document.getElementById('orden-prestamos')?.value || 'recientes';
+                const idxEstado = ESTADO_INDICES['Prestamos'];
+
+                // 1. Filtrar si está marcado "Ocultar devueltos"
+                if (ocultarDevueltos) {
+                    filas = filas.filter(r => r[idxEstado + 1] === "Pendiente");
+                }
+
+                // 2. Ordenar: Pendientes SIEMPRE arriba + criterio de fecha
+                filas.sort((a, b) => {
+                    let esPendienteA = (a[idxEstado + 1] === "Pendiente");
+                    let esPendienteB = (b[idxEstado + 1] === "Pendiente");
+
+                    // Prioridad 1: Pendientes primero
+                    if (esPendienteA !== esPendienteB) {
+                        return esPendienteA ? -1 : 1;
+                    }
+
+                    // Prioridad 2: Criterio por fecha
+                    let fechaA = new Date(a[1] || 0);
+                    let fechaB = new Date(b[1] || 0);
+                    return ordenSelect === 'antiguos' ? fechaA - fechaB : fechaB - fechaA;
+                });
+            }
+
             // RENDERIZADO DE TABLA GENERAL
             document.getElementById('vista-soporte-contenedor').classList.add('hidden');
             const vistaTabla = document.getElementById('vista-tabla');
@@ -600,8 +652,8 @@
             const head = document.getElementById('tabla-head');
             const body = document.getElementById('tabla-body');
             
-            let thAcciones = admin ? `<th class="px-6 py-4 whitespace-nowrap text-right">Acciones</th>` : '';
-            head.innerHTML = `<tr>` + campos.map(c => `<th class="px-6 py-4 whitespace-nowrap">${c.label}</th>`).join('') + `<th class="px-6 py-4 whitespace-nowrap">Ult. Mod.</th><th class="px-6 py-4 whitespace-nowrap">Usuario</th>${thAcciones}</tr>`;
+            let thAcciones = admin ? `<th class="px-6 py-3 whitespace-nowrap text-right">Acciones</th>` : '';
+            head.innerHTML = `<tr>` + campos.map(c => `<th class="px-6 py-3 whitespace-nowrap">${c.label}</th>`).join('') + `<th class="px-6 py-3 whitespace-nowrap">Ult. Mod.</th><th class="px-6 py-3 whitespace-nowrap">Usuario</th>${thAcciones}</tr>`;
             
             body.innerHTML = '';
             
@@ -619,12 +671,18 @@
                 let auditUser = valoresRestantes[valoresRestantes.length - 1] || '';
                 let datosCampos = valoresRestantes.slice(0, campos.length);
 
+                // Destacar sutilmente en amarillo la fila si es un préstamo pendiente
+                let idxEstLog = ESTADO_INDICES[seccionActual];
+                if (seccionActual === 'Prestamos' && datosCampos[idxEstLog] === 'Pendiente') {
+                    tr.className += " bg-amber-50/40 hover:bg-amber-50/80";
+                }
+
                 // Botón dinámico para convertir a Permanente cuando estamos en la sección Préstamos
                 let btnPermanente = (seccionActual === 'Prestamos') 
                     ? `<button onclick="abrirModalConvertirPermanente('${id}')" class="text-amber-600 bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded text-xs font-semibold transition-colors" title="Promover a Préstamo Permanente">Permanente</button>` 
                     : '';
 
-                let tdAcciones = admin ? `<td class="px-6 py-3 whitespace-nowrap text-right flex justify-end gap-2">${btnPermanente}<button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button></td>` : '';
+                let tdAcciones = admin ? `<td class="px-6 py-2.5 whitespace-nowrap text-right flex justify-end gap-2">${btnPermanente}<button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button></td>` : '';
 
                 tr.innerHTML = datosCampos.map((v, idx) => {
                     let idxEst = ESTADO_INDICES[seccionActual];
@@ -633,14 +691,14 @@
                     if (seccionActual === 'Prestamos' && idx === 5) {
                         let textHora = formatearSoloHora(v);
                         if (textHora === '--:--') {
-                            return `<td class="px-6 py-3 whitespace-nowrap font-medium text-xs"><span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-amber-200">Sin devolver</span></td>`;
+                            return `<td class="px-6 py-2.5 whitespace-nowrap font-medium text-xs"><span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-amber-200">Sin devolver</span></td>`;
                         }
-                        return `<td class="px-6 py-3 whitespace-nowrap font-medium text-slate-700">${textHora}</td>`;
+                        return `<td class="px-6 py-2.5 whitespace-nowrap font-medium text-slate-700">${textHora}</td>`;
                     }
 
-                    // Si la columna está definida como type="time" (ej: Hora Entrega o Hora Uso Sala)
+                    // Si la columna está definida como type="time"
                     if (campos[idx].type === 'time') {
-                        return `<td class="px-6 py-3 whitespace-nowrap font-medium text-slate-700">${formatearSoloHora(v)}</td>`;
+                        return `<td class="px-6 py-2.5 whitespace-nowrap font-medium text-slate-700">${formatearSoloHora(v)}</td>`;
                     }
 
                     if (idx === idxEst && (seccionActual === 'Prestamos' || seccionActual === 'Permanente')) {
@@ -650,13 +708,13 @@
                         
                         if (admin) {
                             let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
-                            return `<td class="px-6 py-3 whitespace-nowrap"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg px-2 py-1.5 text-xs font-bold shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 ${color}">${opts}</select></td>`;
-                        } else return `<td class="px-6 py-3 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-bold border ${color}">${escaparHTML(v)}</span></td>`;
+                            return `<td class="px-6 py-2.5 whitespace-nowrap"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg px-2 py-1 text-xs font-bold shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 ${color}">${opts}</select></td>`;
+                        } else return `<td class="px-6 py-2.5 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-bold border ${color}">${escaparHTML(v)}</span></td>`;
                     }
                     let esTextoLargo = (campos[idx].name === 'descripcion' || campos[idx].name === 'observaciones' || campos[idx].name === 'actividad');
-                    let claseCelda = esTextoLargo ? "px-6 py-3 whitespace-normal break-words min-w-[280px] max-w-xs leading-relaxed" : "px-6 py-3 whitespace-nowrap";
+                    let claseCelda = esTextoLargo ? "px-6 py-2.5 whitespace-normal break-words min-w-[280px] max-w-xs leading-relaxed" : "px-6 py-2.5 whitespace-nowrap";
                     return `<td class="${claseCelda}">${escaparHTML(v)}</td>`;
-                }).join('') + `<td class="px-6 py-3 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditTimestamp)}</td><td class="px-6 py-3 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditUser)}</td>` + tdAcciones;
+                }).join('') + `<td class="px-6 py-2.5 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditTimestamp)}</td><td class="px-6 py-2.5 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditUser)}</td>` + tdAcciones;
                 body.appendChild(tr);
             });
         }
@@ -664,11 +722,13 @@
         async function cambiarEstadoRapido(id, nuevoEstado) {
             if (!esAdmin()) return;
             
-            // Apertura del modal de devolución con captura de HORA
+            // Apertura del modal de devolución con captura de FECHA + HORA
             if (seccionActual === 'Prestamos' && nuevoEstado === 'Devuelto') {
+                const hoyYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
                 const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
                 
                 document.getElementById('dev-id').value = id;
+                document.getElementById('dev-fecha').value = hoyYMD;
                 document.getElementById('dev-hora').value = horaHM;
                 document.getElementById('modal-devolucion').classList.remove('hidden');
                 return;
@@ -692,6 +752,7 @@
         async function confirmarDevolucionPrestamo(event) {
             event.preventDefault();
             let id = document.getElementById('dev-id').value;
+            let fechaDevolucion = document.getElementById('dev-fecha').value;
             let horaDevolucion = document.getElementById('dev-hora').value;
             let observacion = document.getElementById('dev-obs').value;
 
@@ -699,7 +760,7 @@
             mostrarToast("Guardando devolucion...", "info");
 
             try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: 'Prestamos', action: "update_status", id, nuevoEstado: 'Devuelto', horaDevolucion, observacion, targetMonth: document.getElementById('month-selector').value }) });
+                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: 'Prestamos', action: "update_status", id, nuevoEstado: 'Devuelto', fechaDevolucion, horaDevolucion, observacion, targetMonth: document.getElementById('month-selector').value }) });
                 let result = await res.json();
                 if(result.status !== 'success') throw new Error(result.message);
                 mostrarToast("Devolucion registrada", "success");
