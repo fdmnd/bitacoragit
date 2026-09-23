@@ -1,127 +1,120 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitacora TI | Gestion Escolar</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .tab-active { background-color: #2563eb; color: #ffffff; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
-        .tab-inactive { color: #64748b; }
-        .tab-inactive:hover { background-color: #f1f5f9; color: #0f172a; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitacora TI | Gestion Escolar</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body { font-family: 'Inter', sans-serif; }
+.tab-active { background-color: #2563eb; color: #ffffff; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+.tab-inactive { color: #64748b; }
+.tab-inactive:hover { background-color: #f1f5f9; color: #0f172a; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 </head>
 <body class="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-blue-200 selection:text-blue-900">
-    
-    <div id="login-container" class="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
-        <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl text-center max-w-md w-full border border-white/10 z-10">
-            <div class="bg-blue-500 w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            </div>
-            <h1 class="text-2xl font-bold mb-1 tracking-tight">Bitacora TI</h1>
-            <p class="text-slate-300 mb-6 text-xs">Gestion de Infraestructura Escolar</p>
-            
-            <div class="flex justify-center mb-6">
-                <div id="g_id_onload" data-client_id="1063772408490-0fipirlhukj70uvol4k2pjvehp753c5t.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
-                <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="center"></div>
-            </div>
-            <div class="relative flex py-2 items-center">
-                <div class="flex-grow border-t border-slate-600"></div>
-                <span class="flex-shrink mx-4 text-slate-400 text-xs uppercase">o acceso con usuario</span>
-                <div class="flex-grow border-t border-slate-600"></div>
-            </div>
-            <form onsubmit="loginCustom(event)" class="space-y-3 mt-4 text-left">
-                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Usuario</label><input type="text" id="custom-user" required placeholder="Ingresa tu usuario" class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 outline-none focus:border-blue-500"></div>
-                <div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Clave</label><input type="password" id="custom-pass" required placeholder="Ingresa tu clave" class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 outline-none focus:border-blue-500"></div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl text-sm font-medium shadow transition-colors mt-2">Ingresar al Sistema</button>
-            </form>
-        </div>
-    </div>
 
-    <div id="app-container" class="hidden flex flex-col min-h-screen">
-        <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="bg-blue-600 p-2 rounded-lg"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
-                    <h1 class="text-xl font-bold text-slate-800 tracking-tight">Bitacora TI</h1>
-                </div>
-                <div class="flex flex-wrap items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <select id="month-selector" onchange="cambiarMes()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-1.5 outline-none font-semibold shadow-sm transition-colors cursor-pointer hover:border-blue-300"><option value="">Cargando meses...</option></select>
-                    </div>
-                    <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        <span id="user-email" class="text-sm text-slate-600 font-medium truncate max-w-[150px] md:max-w-xs"></span>
-                    </div>
-                    <button onclick="cerrarSesion()" class="text-slate-500 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200">Salir</button>
-                </div>
-            </div>
-        </header>
+<div id="login-container" class="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+<div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl text-center max-w-md w-full border border-white/10 z-10">
+<div class="bg-blue-500 w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+<svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+</div>
+<h1 class="text-2xl font-bold mb-1 tracking-tight">Bitacora TI</h1>
+<p class="text-slate-300 mb-6 text-xs">Gestion de Infraestructura Escolar</p>
 
-        <nav class="bg-white border-b border-slate-200 shadow-sm z-20">
-            <div class="max-w-7xl mx-auto px-6 py-3 flex gap-2 overflow-x-auto hide-scrollbar items-center">
-                <button onclick="cambiarSeccion('Soporte')" id="btn-Soporte" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-active">Soporte</button>
-                <button onclick="cambiarSeccion('Uso_Sala')" id="btn-Uso_Sala" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Uso de Sala</button>
-                <button onclick="cambiarSeccion('Prestamos')" id="btn-Prestamos" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Prestamos</button>
-                <button onclick="cambiarSeccion('Permanente')" id="btn-Permanente" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Prestamos Permanentes</button>
-                <button onclick="cambiarSeccion('Buscador')" id="btn-Buscador" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Buscador
-                </button>
-                <button onclick="cambiarSeccion('Papelera')" id="btn-Papelera" class="ml-auto px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2 hidden-readonly">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Papelera
-                </button>
-            </div>
-        </nav>
+<div class="flex justify-center mb-6">
+<div id="g_id_onload" data-client_id="1063772408490-0fipirlhukj70uvol4k2pjvehp753c5t.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+<div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="center"></div>
+</div>
+<div class="relative flex py-2 items-center">
+<div class="flex-grow border-t border-slate-600"></div>
+<span class="flex-shrink mx-4 text-slate-400 text-xs uppercase">o acceso con usuario</span>
+<div class="flex-grow border-t border-slate-600"></div>
+</div>
+<form onsubmit="loginCustom(event)" class="space-y-3 mt-4 text-left">
+<div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Usuario</label><input type="text" id="custom-user" required placeholder="Ingresa tu usuario" class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 outline-none focus:border-blue-500"></div>
+<div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Clave</label><input type="password" id="custom-pass" required placeholder="Ingresa tu clave" class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 outline-none focus:border-blue-500"></div>
+<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl text-sm font-medium shadow transition-colors mt-2">Ingresar al Sistema</button>
+</form>
+</div>
+</div>
 
-        <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
-            <!-- PANEL DE METRICAS CON 3 TARJETAS -->
-            <div id="panel-pendientes" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400"></div>
-                    <div><p class="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">Prestamos Pendientes</p><h3 id="count-prestamos-pendientes" class="text-4xl font-bold text-slate-800">0</h3></div>
-                    <div class="bg-amber-50 p-4 rounded-xl"><svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                </div>
-                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-rose-500"></div>
-                    <div><p class="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">Tickets Abiertos</p><h3 id="count-soporte-pendientes" class="text-4xl font-bold text-slate-800">0</h3></div>
-                    <div class="bg-rose-50 p-4 rounded-xl"><svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
-                </div>
-                <!-- NUEVA TARJETA: TICKETS SOLUCIONADOS EN EL MES -->
-                <div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
-                    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
-                    <div><p class="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">Tickets Resueltos (Mes)</p><h3 id="count-soporte-solucionados" class="text-4xl font-bold text-slate-800">0</h3></div>
-                    <div class="bg-emerald-50 p-4 rounded-xl"><svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
-                </div>
-            </div>
+<div id="app-container" class="hidden flex flex-col min-h-screen">
+<header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30">
+<div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<div class="bg-blue-600 p-2 rounded-lg"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
+<h1 class="text-xl font-bold text-slate-800 tracking-tight">Bitacora TI</h1>
+</div>
+<div class="flex flex-wrap items-center gap-4">
+<div class="flex items-center gap-2">
+<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+<select id="month-selector" onchange="cambiarMes()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-1.5 outline-none font-semibold shadow-sm transition-colors cursor-pointer hover:border-blue-300"><option value="">Cargando meses...</option></select>
+</div>
+<div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+<span id="user-email" class="text-sm text-slate-600 font-medium truncate max-w-[150px] md:max-w-xs"></span>
+</div>
+<button onclick="cerrarSesion()" class="text-slate-500 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200">Salir</button>
+</div>
+</div>
+</header>
 
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                <div>
-                    <h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Soporte</h2>
-                    <p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-3">
+<nav class="bg-white border-b border-slate-200 shadow-sm z-20">
+<div class="max-w-7xl mx-auto px-6 py-3 flex gap-2 overflow-x-auto hide-scrollbar items-center">
+<button onclick="cambiarSeccion('Soporte')" id="btn-Soporte" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-active">Soporte</button>
+<button onclick="cambiarSeccion('Uso_Sala')" id="btn-Uso_Sala" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Uso de Sala</button>
+<button onclick="cambiarSeccion('Prestamos')" id="btn-Prestamos" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Prestamos</button>
+<button onclick="cambiarSeccion('Permanente')" id="btn-Permanente" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Prestamos Permanentes</button>
+<button onclick="cambiarSeccion('Buscador')" id="btn-Buscador" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Buscador
+</button>
+<button onclick="cambiarSeccion('Papelera')" id="btn-Papelera" class="ml-auto px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2 hidden-readonly">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Papelera
+</button>
+</div>
+</nav>
+
+<main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+<div id="panel-pendientes" class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400"></div>
+<div><p class="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">Prestamos Pendientes</p><h3 id="count-prestamos-pendientes" class="text-4xl font-bold text-slate-800">0</h3></div>
+<div class="bg-amber-50 p-4 rounded-xl"><svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+</div>
+<div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-rose-500"></div>
+<div><p class="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">Tickets Abiertos</p><h3 id="count-soporte-pendientes" class="text-4xl font-bold text-slate-800">0</h3></div>
+<div class="bg-rose-50 p-4 rounded-xl"><svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
+</div>
+</div>
+
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+<div>
+<h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Soporte</h2>
+<p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
                     <div id="controles-soporte" class="flex items-center gap-3 hidden">
-                        <div class="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
-                            <button onclick="cambiarVistaSoporte('tarjetas')" id="btn-vista-tarjetas" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Tarjetas"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg></button>
-                            <button onclick="cambiarVistaSoporte('lista')" id="btn-vista-lista" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Lista Detallada"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
-                            <button onclick="cambiarVistaSoporte('compacta')" id="btn-vista-compacta" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Compacta"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg></button>
-                        </div>
-                        <select id="orden-soporte" onchange="renderizarTabla()" class="bg-white border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 outline-none font-medium shadow-sm cursor-pointer hover:border-blue-300">
-                            <option value="recientes">Más recientes primero</option>
-                            <option value="antiguos">Más antiguos primero</option>
-                        </select>
-                    </div>
+<div class="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+<button onclick="cambiarVistaSoporte('tarjetas')" id="btn-vista-tarjetas" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Tarjetas"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg></button>
+<button onclick="cambiarVistaSoporte('lista')" id="btn-vista-lista" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Lista Detallada"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<button onclick="cambiarVistaSoporte('compacta')" id="btn-vista-compacta" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Compacta"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg></button>
+</div>
+<select id="orden-soporte" onchange="renderizarTabla()" class="bg-white border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 outline-none font-medium shadow-sm cursor-pointer hover:border-blue-300">
+<option value="recientes">Más recientes primero</option>
+<option value="antiguos">Más antiguos primero</option>
+</select>
+</div>
 
                     <div id="controles-prestamos" class="flex flex-wrap items-center gap-3 hidden">
                         <label class="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
@@ -134,460 +127,449 @@
                         </select>
                     </div>
 
-                    <button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Nuevo Registro
-                    </button>
-                </div>
-            </div>
+<button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Nuevo Registro
+</button>
+</div>
+</div>
 
-            <div id="data-container">
-                <div id="vista-tabla" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hidden">
-                    <div class="overflow-x-auto max-h-[calc(100vh-280px)] overflow-y-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead id="tabla-head" class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold sticky top-0 z-10 shadow-sm"></thead>
-                            <tbody id="tabla-body" class="divide-y divide-slate-100 text-sm text-slate-700"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div id="vista-soporte-contenedor"></div>
-            </div>
+<div id="data-container">
+<div id="vista-tabla" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hidden">
+    <div class="overflow-x-auto max-h-[calc(100vh-280px)] overflow-y-auto">
+<table class="w-full text-left border-collapse">
+    <thead id="tabla-head" class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold sticky top-0 z-10 shadow-sm"></thead>
+<tbody id="tabla-body" class="divide-y divide-slate-100 text-sm text-slate-700"></tbody>
+</table>
+</div>
+</div>
+<div id="vista-soporte-contenedor"></div>
+</div>
 
-            <div id="panel-Buscador" class="hidden">
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
-                    <div class="max-w-2xl mx-auto text-center mb-8">
-                        <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">Busqueda en el Archivo Historico</h3>
-                        <p class="text-slate-500 text-sm">Ingresa cualquier palabra para buscar en todos los meses registrados.</p>
-                    </div>
-                    <div class="flex gap-3 max-w-2xl mx-auto">
-                        <input type="text" id="input-buscar" placeholder="Ej. Proyector Sala 5..." class="border border-slate-300 rounded-xl p-3 text-base flex-1 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow bg-slate-50 focus:bg-white">
-                        <button onclick="ejecutarBusqueda()" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl font-medium shadow-sm active:scale-95 transition-all">Buscar</button>
-                    </div>
-                </div>
-                <div id="resultados-busqueda" class="space-y-3"></div>
-            </div>
+<div id="panel-Buscador" class="hidden">
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
+<div class="max-w-2xl mx-auto text-center mb-8">
+<div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
+<h3 class="text-xl font-bold text-slate-800 mb-2">Busqueda en el Archivo Historico</h3>
+<p class="text-slate-500 text-sm">Ingresa cualquier palabra para buscar en todos los meses registrados.</p>
+</div>
+<div class="flex gap-3 max-w-2xl mx-auto">
+<input type="text" id="input-buscar" placeholder="Ej. Proyector Sala 5..." class="border border-slate-300 rounded-xl p-3 text-base flex-1 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow bg-slate-50 focus:bg-white">
+<button onclick="ejecutarBusqueda()" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl font-medium shadow-sm active:scale-95 transition-all">Buscar</button>
+</div>
+</div>
+<div id="resultados-busqueda" class="space-y-3"></div>
+</div>
 
-            <div id="panel-Papelera" class="hidden">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-                        <div><h3 class="text-lg font-bold text-slate-800">Registros Eliminados</h3></div>
-                        <button onclick="cargarDatosPapelera()" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-200 transition-colors flex items-center gap-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Actualizar
-                        </button>
-                    </div>
-                    <div id="contenedor-papelera" class="space-y-6"></div>
-                </div>
-            </div>
-        </main>
+<div id="panel-Papelera" class="hidden">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
+<div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+<div><h3 class="text-lg font-bold text-slate-800">Registros Eliminados</h3></div>
+<button onclick="cargarDatosPapelera()" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-200 transition-colors flex items-center gap-1">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Actualizar
+</button>
+</div>
+<div id="contenedor-papelera" class="space-y-6"></div>
+</div>
+</div>
+</main>
+</div>
+
+<!-- Modal Formulario Base -->
+<div id="modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-opacity">
+<div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+<div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+<h3 id="modal-titulo" class="text-lg font-bold text-slate-800">Nuevo Registro</h3>
+<button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+</div>
+<div class="p-6 overflow-y-auto custom-scrollbar"><form id="modal-form" onsubmit="guardarRegistro(event)" class="space-y-4"></form></div>
+</div>
+</div>
+
+<div id="modal-devolucion" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+<div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+<h3 class="text-lg font-bold text-slate-800 mb-1">Confirmar Devolución</h3>
+<p class="text-xs text-slate-500 mb-4">Ingresa la fecha y hora exactas en que se devolvió el insumo.</p>
+<form onsubmit="confirmarDevolucionPrestamo(event)" class="space-y-4">
+<input type="hidden" id="dev-id">
+<div class="grid grid-cols-2 gap-3">
+    <div>
+        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Devolución</label>
+        <input type="date" id="dev-fecha" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
     </div>
-
-    <!-- Modal Formulario Base -->
-    <div id="modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-opacity">
-        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <h3 id="modal-titulo" class="text-lg font-bold text-slate-800">Nuevo Registro</h3>
-                <button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-            </div>
-            <div class="p-6 overflow-y-auto custom-scrollbar"><form id="modal-form" onsubmit="guardarRegistro(event)" class="space-y-4"></form></div>
-        </div>
+    <div>
+        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora Devolución</label>
+        <input type="time" id="dev-hora" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
     </div>
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones (Opcional)</label>
+<input type="text" id="dev-obs" placeholder="Ej. Entregado en buen estado" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+<div class="flex justify-end gap-2 pt-2">
+<button type="button" onclick="cerrarModalDevolucion()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
+<button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm">Guardar Devolución</button>
+</div>
+</form>
+</div>
+</div>
 
-    <!-- Mini Modal de Devolución de Préstamo (Fecha + Hora + Obs) -->
-    <div id="modal-devolucion" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
-            <h3 class="text-lg font-bold text-slate-800 mb-1">Confirmar Devolución</h3>
-            <p class="text-xs text-slate-500 mb-4">Ingresa la fecha y hora exactas en que se devolvió el insumo.</p>
-            <form onsubmit="confirmarDevolucionPrestamo(event)" class="space-y-4">
-                <input type="hidden" id="dev-id">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Devolución</label>
-                        <input type="date" id="dev-fecha" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora Devolución</label>
-                        <input type="time" id="dev-hora" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones (Opcional)</label>
-                    <input type="text" id="dev-obs" placeholder="Ej. Entregado en buen estado" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                </div>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="cerrarModalDevolucion()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm">Guardar Devolución</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<!-- Mini Modal para Convertir a Préstamo Permanente -->
+<div id="modal-convertir-permanente" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+<div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+<h3 class="text-lg font-bold text-slate-800 mb-1">Promover a Préstamo Permanente</h3>
+<p class="text-xs text-slate-500 mb-4">Revisa y ajusta los campos antes de traspasar el equipo al registro permanente. El préstamo diario original se eliminará.</p>
 
-    <!-- Mini Modal para Convertir a Préstamo Permanente -->
-    <div id="modal-convertir-permanente" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
-            <h3 class="text-lg font-bold text-slate-800 mb-1">Promover a Préstamo Permanente</h3>
-            <p class="text-xs text-slate-500 mb-4">Revisa y ajusta los campos antes de traspasar el equipo al registro permanente. El préstamo diario original se eliminará.</p>
-            
-            <form onsubmit="confirmarTraspasoPermanente(event)" class="space-y-3">
-                <input type="hidden" id="perm-original-id">
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Entrega</label>
-                        <input type="date" id="perm-fecha" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Profesor/a - Sala</label>
-                        <input type="text" id="perm-profesor" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                    </div>
-                </div>
+<form onsubmit="confirmarTraspasoPermanente(event)" class="space-y-3">
+<input type="hidden" id="perm-original-id">
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Insumo</label>
-                        <input type="text" id="perm-insumo" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Equipo (Detalle/Serie)</label>
-                        <input type="text" id="perm-equipo" required placeholder="Ej. Dell Latitude ID-04" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                    </div>
-                </div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Entrega</label>
+<input type="date" id="perm-fecha" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Profesor/a - Sala</label>
+<input type="text" id="perm-profesor" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+</div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cantidad</label>
-                        <input type="text" id="perm-cantidad" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estado</label>
-                        <select id="perm-estado" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                            <option value="Asignado a usuario" selected>Asignado a usuario</option>
-                            <option value="Entregado">Entregado</option>
-                            <option value="Operativo">Operativo</option>
-                            <option value="En Reparacion">En Reparacion</option>
-                        </select>
-                    </div>
-                </div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Insumo</label>
+<input type="text" id="perm-insumo" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Equipo (Detalle/Serie)</label>
+<input type="text" id="perm-equipo" required placeholder="Ej. Dell Latitude ID-04" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+</div>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones</label>
-                    <input type="text" id="perm-obs" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
-                </div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cantidad</label>
+<input type="text" id="perm-cantidad" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estado</label>
+<select id="perm-estado" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+<option value="Asignado a usuario" selected>Asignado a usuario</option>
+<option value="Entregado">Entregado</option>
+<option value="Operativo">Operativo</option>
+<option value="En Reparacion">En Reparacion</option>
+</select>
+</div>
+</div>
 
-                <div class="flex justify-end gap-2 pt-3">
-                    <button type="button" onclick="cerrarModalConvertirPermanente()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm">Confirmar Traspaso</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones</label>
+<input type="text" id="perm-obs" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
 
-    <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
+<div class="flex justify-end gap-2 pt-3">
+<button type="button" onclick="cerrarModalConvertirPermanente()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
+<button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm">Confirmar Traspaso</button>
+</div>
+</form>
+</div>
+</div>
 
-    <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycby31CQz_Gy094PCLhyIU09BmHNe8pGrbsjwpx-3y1V_WFQRhk24iDJrNiKPviWVFz3L3w/exec";
-        
-        let googleToken = null; 
-        let customUser = null;
-        let seccionActual = "Soporte";
-        let globalDataCache = null;
-        let globalPapeleraCache = null;
-        let vistaSoporteActual = localStorage.getItem('vistaSoporteActual') || 'tarjetas';
+<div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
-        const CAMPOS_SECCION = {
-            Prestamos: [
-                { name: "fecha", label: "Fecha", type: "date" },
-                { name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
-                { name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
-                { name: "cantidad", label: "Cantidad", type: "text" },
-                { name: "hora_entrega", label: "Hora Entrega", type: "time" },
-                { name: "hora_devolucion", label: "Hora Devolucion", type: "time", required: false },
-                { name: "estado_logistico", label: "Estado Logistico", type: "select", options: ["Pendiente", "Devuelto", "Bueno", "Dañado", "En Tránsito"] },
-                { name: "estado_fisico", label: "Estado Fisico", type: "text", required: false },
-                { name: "observaciones", label: "Observaciones", type: "text", required: false }
-            ],
-            Soporte: [
-                { name: "fecha_hora", label: "Fecha y Hora (Creación)", type: "datetime-local" },
-                { name: "ubicacion", label: "Ubicacion", type: "text" },
-                { name: "equipo", label: "Equipo", type: "text" },
-                { name: "tipo_mantenimiento", label: "Tipo de Mantenimiento", type: "text" },
-                { name: "descripcion", label: "Descripcion de la Tarea", type: "text" },
-                { name: "estado_final", label: "Estado Final", type: "select", options: ["Abierto", "En Proceso", "Solucionado", "Derivado a Terceros"] },
-                { name: "observaciones", label: "Observaciones de Cierre", type: "text", required: false }
-            ],
-            Uso_Sala: [
-                { name: "fecha", label: "Fecha", type: "date" },
-                { name: "hora", label: "Hora", type: "time" },
-                { name: "curso_usuario", label: "Curso o Usuario", type: "text" },
-                { name: "profesor_responsable", label: "Profesor Responsable", type: "text" },
-                { name: "asignatura", label: "Asignatura", type: "text" },
-                { name: "actividad", label: "Actividad Realizada", type: "text" },
-                { name: "observaciones", label: "Observaciones", type: "text", required: false }
-            ],
-            Permanente: [
-                { name: "fecha_entrega", label: "Fecha de Entrega", type: "date" },
-                { name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
-                { name: "insumo", label: "Insumo", type: "text" },
-                { name: "equipo", label: "Equipo", type: "text" },
-                { name: "cantidad", label: "Cantidad", type: "text" },
-                { name: "estado", label: "Estado", type: "select", options: ["Asignado a usuario", "Devuelto", "Entregado", "Operativo", "En Reparacion", "Dado de Baja"] },
-                { name: "observaciones", label: "Observaciones", type: "text", required: false }
-            ]
-        };
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzYZgjo09cNyM8SckGiNaSP5Cv8wPwVVJtqoAKRajAn6vsFSdOAoHIJV2musRw86AkHiw/exec";
 
-        const JSON_KEY_MAP = { Prestamos: "prestamos", Soporte: "soporte", Uso_Sala: "sala", Permanente: "permanente" };
-        const ESTADO_INDICES = { Prestamos: 6, Soporte: 5, Permanente: 5 };
+let googleToken = null; 
+let customUser = null;
+let seccionActual = "Soporte";
+let globalDataCache = null;
+let globalPapeleraCache = null;
+let vistaSoporteActual = localStorage.getItem('vistaSoporteActual') || 'tarjetas';
 
-        function esAdmin() { return googleToken !== null; }
+const CAMPOS_SECCION = {
+Prestamos: [
+{ name: "fecha", label: "Fecha", type: "date" },
+{ name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
+{ name: "insumo_equipo", label: "Insumo / Equipo", type: "text" },
+{ name: "cantidad", label: "Cantidad", type: "text" },
+{ name: "hora_entrega", label: "Hora Entrega", type: "time" },
+{ name: "hora_devolucion", label: "Hora Devolucion", type: "time", required: false },
+{ name: "estado_logistico", label: "Estado Logistico", type: "select", options: ["Pendiente", "Devuelto", "Bueno", "Dañado", "En Tránsito"] },
+{ name: "estado_fisico", label: "Estado Fisico", type: "text", required: false },
+{ name: "observaciones", label: "Observaciones", type: "text", required: false }
+],
+Soporte: [
+{ name: "fecha_hora", label: "Fecha y Hora (Creación)", type: "datetime-local" },
+{ name: "ubicacion", label: "Ubicacion", type: "text" },
+{ name: "equipo", label: "Equipo", type: "text" },
+{ name: "tipo_mantenimiento", label: "Tipo de Mantenimiento", type: "text" },
+{ name: "descripcion", label: "Descripcion de la Tarea", type: "text" },
+{ name: "estado_final", label: "Estado Final", type: "select", options: ["Abierto", "En Proceso", "Solucionado", "Derivado a Terceros"] },
+{ name: "observaciones", label: "Observaciones de Cierre", type: "text", required: false }
+],
+Uso_Sala: [
+{ name: "fecha", label: "Fecha", type: "date" },
+{ name: "hora", label: "Hora", type: "time" },
+{ name: "curso_usuario", label: "Curso o Usuario", type: "text" },
+{ name: "profesor_responsable", label: "Profesor Responsable", type: "text" },
+{ name: "asignatura", label: "Asignatura", type: "text" },
+{ name: "actividad", label: "Actividad Realizada", type: "text" },
+{ name: "observaciones", label: "Observaciones", type: "text", required: false }
+],
+Permanente: [
+{ name: "fecha_entrega", label: "Fecha de Entrega", type: "date" },
+{ name: "profesor_sala", label: "Profesor/a - Sala", type: "text" },
+{ name: "insumo", label: "Insumo", type: "text" },
+{ name: "equipo", label: "Equipo", type: "text" },
+{ name: "cantidad", label: "Cantidad", type: "text" },
+{ name: "estado", label: "Estado", type: "select", options: ["Asignado a usuario", "Devuelto", "Entregado", "Operativo", "En Reparacion", "Dado de Baja"] },
+{ name: "observaciones", label: "Observaciones", type: "text", required: false }
+]
+};
 
-        window.addEventListener('click', () => {
-            if (googleToken || customUser) localStorage.setItem('tokenTimestamp', Date.now());
-        });
+const JSON_KEY_MAP = { Prestamos: "prestamos", Soporte: "soporte", Uso_Sala: "sala", Permanente: "permanente" };
+const ESTADO_INDICES = { Prestamos: 6, Soporte: 5, Permanente: 5 };
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedToken = localStorage.getItem('googleToken');
-            const savedCustomUser = localStorage.getItem('customUser');
-            const savedTime = localStorage.getItem('tokenTimestamp');
+function esAdmin() { return googleToken !== null; }
 
-            if (savedTime && (Date.now() - Number(savedTime) < 60 * 60 * 1000)) {
-                if (savedToken) {
-                    googleToken = savedToken;
-                    try {
-                        const payload = JSON.parse(atob(googleToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-                        if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return cerrarSesion(false);
-                        activarSesionUI(payload.email);
-                        return;
-                    } catch (e) { cerrarSesion(false); }
-                } else if (savedCustomUser) {
-                    customUser = savedCustomUser;
-                    activarSesionUI(savedCustomUser + ' (Solo lectura)');
-                    return;
-                }
-            }
-            cerrarSesion(false);
-        });
+window.addEventListener('click', () => {
+if (googleToken || customUser) localStorage.setItem('tokenTimestamp', Date.now());
+});
 
-        async function loginCustom(event) {
-            event.preventDefault();
-            let user = document.getElementById('custom-user').value.trim();
-            let pass = document.getElementById('custom-pass').value.trim();
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "login_custom", user, pass }) });
-                let result = await res.json();
-                if(result.status === 'success') {
-                    customUser = user;
-                    localStorage.setItem('customUser', user);
-                    localStorage.setItem('tokenTimestamp', Date.now());
-                    activarSesionUI(result.email);
-                } else alert(result.message);
-            } catch(e) { alert("Error de conexion"); }
-        }
+window.addEventListener('DOMContentLoaded', () => {
+const savedToken = localStorage.getItem('googleToken');
+const savedCustomUser = localStorage.getItem('customUser');
+const savedTime = localStorage.getItem('tokenTimestamp');
 
-        function handleCredentialResponse(response) {
-            googleToken = response.credential;
-            localStorage.setItem('googleToken', googleToken);
-            localStorage.setItem('tokenTimestamp', Date.now());
-            try { activarSesionUI(JSON.parse(atob(googleToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).email); } catch (e) { cerrarSesion(false); }
-        }
+if (savedTime && (Date.now() - Number(savedTime) < 60 * 60 * 1000)) {
+if (savedToken) {
+googleToken = savedToken;
+try {
+const payload = JSON.parse(atob(googleToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) return cerrarSesion(false);
+activarSesionUI(payload.email);
+return;
+} catch (e) { cerrarSesion(false); }
+} else if (savedCustomUser) {
+customUser = savedCustomUser;
+activarSesionUI(savedCustomUser + ' (Solo lectura)');
+return;
+}
+}
+cerrarSesion(false);
+});
 
-        function activarSesionUI(emailTexto) {
-            document.getElementById('user-email').innerText = emailTexto;
-            document.getElementById('login-container').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            
-            if (!esAdmin()) {
-                document.getElementById('btn-nuevo').classList.add('hidden');
-                document.querySelectorAll('.hidden-readonly').forEach(el => el.classList.add('hidden'));
-            }
-            
-            cargarMeses().then(() => cargarDatosServidor());
-        }
+async function loginCustom(event) {
+event.preventDefault();
+let user = document.getElementById('custom-user').value.trim();
+let pass = document.getElementById('custom-pass').value.trim();
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "login_custom", user, pass }) });
+let result = await res.json();
+if(result.status === 'success') {
+customUser = user;
+localStorage.setItem('customUser', user);
+localStorage.setItem('tokenTimestamp', Date.now());
+activarSesionUI(result.email);
+} else alert(result.message);
+} catch(e) { alert("Error de conexion"); }
+}
 
-        function cerrarSesion(recargar = true) {
-            localStorage.removeItem('googleToken'); localStorage.removeItem('customUser'); localStorage.removeItem('tokenTimestamp');
-            googleToken = null; customUser = null;
-            if (recargar) location.reload();
-        }
+function handleCredentialResponse(response) {
+googleToken = response.credential;
+localStorage.setItem('googleToken', googleToken);
+localStorage.setItem('tokenTimestamp', Date.now());
+try { activarSesionUI(JSON.parse(atob(googleToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).email); } catch (e) { cerrarSesion(false); }
+}
 
-        async function cargarMeses() {
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_months" }) });
-                let result = await res.json();
-                if(result.status === 'success' && result.data.length > 0) {
-                    document.getElementById('month-selector').innerHTML = result.data.map(m => `<option value="${m}">${m}</option>`).join('');
-                }
-            } catch(e) {}
-        }
+function activarSesionUI(emailTexto) {
+document.getElementById('user-email').innerText = emailTexto;
+document.getElementById('login-container').classList.add('hidden');
+document.getElementById('app-container').classList.remove('hidden');
 
-        function cambiarMes() { cargarDatosServidor(); }
-        function cambiarVistaSoporte(vista) { vistaSoporteActual = vista; localStorage.setItem('vistaSoporteActual', vista); renderizarTabla(); }
+if (!esAdmin()) {
+document.getElementById('btn-nuevo').classList.add('hidden');
+document.querySelectorAll('.hidden-readonly').forEach(el => el.classList.add('hidden'));
+}
 
-        function cambiarSeccion(seccion) {
-            seccionActual = seccion;
-            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('tab-active'); b.classList.add('tab-inactive'); });
-            let btnActivo = document.getElementById('btn-' + seccion);
-            if(btnActivo) { btnActivo.classList.remove('tab-inactive'); btnActivo.classList.add('tab-active'); }
+cargarMeses().then(() => cargarDatosServidor());
+}
 
-            const panelBuscador = document.getElementById('panel-Buscador');
-            const panelPapelera = document.getElementById('panel-Papelera');
-            const btnNuevo = document.getElementById('btn-nuevo');
-            const panelPendientes = document.getElementById('panel-pendientes');
-            const subtitulo = document.getElementById('subtitulo-seccion');
-            const controlesSoporte = document.getElementById('controles-soporte');
-            const controlesPrestamos = document.getElementById('controles-prestamos');
-            
-            document.getElementById('vista-tabla').classList.add('hidden');
-            document.getElementById('vista-soporte-contenedor').classList.add('hidden');
+function cerrarSesion(recargar = true) {
+localStorage.removeItem('googleToken'); localStorage.removeItem('customUser'); localStorage.removeItem('tokenTimestamp');
+googleToken = null; customUser = null;
+if (recargar) location.reload();
+}
 
-            panelBuscador.classList.add('hidden');
-            panelPapelera.classList.add('hidden');
-            controlesSoporte.classList.add('hidden');
-            controlesPrestamos.classList.add('hidden');
+async function cargarMeses() {
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_months" }) });
+let result = await res.json();
+if(result.status === 'success' && result.data.length > 0) {
+document.getElementById('month-selector').innerHTML = result.data.map(m => `<option value="${m}">${m}</option>`).join('');
+}
+} catch(e) {}
+}
 
-            if (seccion === 'Buscador') {
-                document.getElementById('titulo-seccion').innerText = "Buscador Global"; subtitulo.innerText = "Busca registros en todo el historial guardado.";
-                btnNuevo.classList.add('hidden'); panelPendientes.classList.add('hidden'); panelBuscador.classList.remove('hidden');
-            } else if (seccion === 'Papelera') {
-                if(!esAdmin()) return cambiarSeccion('Soporte');
-                document.getElementById('titulo-seccion').innerText = "Papelera de Reciclaje"; subtitulo.innerText = "Historial de registros eliminados.";
-                btnNuevo.classList.add('hidden'); panelPendientes.classList.add('hidden'); panelPapelera.classList.remove('hidden');
-                cargarDatosPapelera();
-            } else {
-                document.getElementById('titulo-seccion').innerText = (seccion === 'Permanente') ? 'Prestamos Permanentes' : seccion.replace('_', ' '); 
-                subtitulo.innerText = "Gestiona los registros de la seccion actual.";
-                
-                if (seccion === 'Soporte') controlesSoporte.classList.remove('hidden');
-                if (seccion === 'Prestamos') controlesPrestamos.classList.remove('hidden');
-                
-                if (esAdmin()) btnNuevo.classList.remove('hidden'); else btnNuevo.classList.add('hidden');
-                
-                if (panelPendientes && (seccion === 'Prestamos' || seccion === 'Soporte')) panelPendientes.classList.remove('hidden'); 
-                else if (panelPendientes) panelPendientes.classList.add('hidden');
-                
-                renderizarTabla();
-            }
-        }
+function cambiarMes() { cargarDatosServidor(); }
+function cambiarVistaSoporte(vista) { vistaSoporteActual = vista; localStorage.setItem('vistaSoporteActual', vista); renderizarTabla(); }
 
-        async function cargarDatosServidor() {
-            if (!googleToken && !customUser) return cerrarSesion();
-            mostrarToast("Cargando base de datos...", "info");
-            let targetMonth = document.getElementById('month-selector').value;
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_data", targetMonth }) });
-                let result = await res.json();
-                if(result.status !== 'success') { 
-                    if(result.message === "No autorizado") return cerrarSesion();
-                    throw new Error(result.message); 
-                }
-                globalDataCache = result.data;
-                
-                // Actualizar métricas del Dashboard
-                if(globalDataCache.pendientes) {
-                    document.getElementById('panel-pendientes').classList.remove('hidden');
-                    document.getElementById('count-prestamos-pendientes').innerText = globalDataCache.pendientes.prestamos?.length || 0;
-                    document.getElementById('count-soporte-pendientes').innerText = globalDataCache.pendientes.soporte?.length || 0;
-                }
-                
-                // Cálculo del contador de Tickets Solucionados del Mes Seleccionado
-                if(globalDataCache.historial && globalDataCache.historial.soporte) {
-                    let idxEst = ESTADO_INDICES['Soporte'];
-                    let solucionadosMes = globalDataCache.historial.soporte.filter(r => r[idxEst + 1] === "Solucionado").length;
-                    document.getElementById('count-soporte-solucionados').innerText = solucionadosMes;
-                }
+function cambiarSeccion(seccion) {
+seccionActual = seccion;
+document.querySelectorAll('nav button').forEach(b => { b.classList.remove('tab-active'); b.classList.add('tab-inactive'); });
+let btnActivo = document.getElementById('btn-' + seccion);
+if(btnActivo) { btnActivo.classList.remove('tab-inactive'); btnActivo.classList.add('tab-active'); }
 
-                renderizarTabla(); 
-                ocultarToast();
-            } catch (err) { mostrarToast('Error de conexion', 'error'); }
-        }
+const panelBuscador = document.getElementById('panel-Buscador');
+const panelPapelera = document.getElementById('panel-Papelera');
+const btnNuevo = document.getElementById('btn-nuevo');
+const panelPendientes = document.getElementById('panel-pendientes');
+const subtitulo = document.getElementById('subtitulo-seccion');
+const controlesSoporte = document.getElementById('controles-soporte');
+const controlesPrestamos = document.getElementById('controles-prestamos');
 
-        function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
+document.getElementById('vista-tabla').classList.add('hidden');
+document.getElementById('vista-soporte-contenedor').classList.add('hidden');
 
-        function formatearSoloHora(strHora) {
-            if (!strHora || strHora === 'null' || strHora === 'undefined' || strHora === '') return '--:--';
-            let s = String(strHora);
-            if (s.includes('T')) return s.split('T')[1].substring(0, 5); 
-            return escaparHTML(s);
-        }
+panelBuscador.classList.add('hidden');
+panelPapelera.classList.add('hidden');
+controlesSoporte.classList.add('hidden');
+controlesPrestamos.classList.add('hidden');
 
-        function renderizarTabla() {
-            if (!globalDataCache || !globalDataCache.historial) return;
-            let campos = CAMPOS_SECCION[seccionActual];
-            let jsonKey = JSON_KEY_MAP[seccionActual];
-            let filas = [...(globalDataCache.historial[jsonKey] || [])];
-            let admin = esAdmin();
+if (seccion === 'Buscador') {
+document.getElementById('titulo-seccion').innerText = "Buscador Global"; subtitulo.innerText = "Busca registros en todo el historial guardado.";
+btnNuevo.classList.add('hidden'); panelPendientes.classList.add('hidden'); panelBuscador.classList.remove('hidden');
+} else if (seccion === 'Papelera') {
+if(!esAdmin()) return cambiarSeccion('Soporte');
+document.getElementById('titulo-seccion').innerText = "Papelera de Reciclaje"; subtitulo.innerText = "Historial de registros eliminados.";
+btnNuevo.classList.add('hidden'); panelPendientes.classList.add('hidden'); panelPapelera.classList.remove('hidden');
+cargarDatosPapelera();
+} else {
+document.getElementById('titulo-seccion').innerText = (seccion === 'Permanente') ? 'Prestamos Permanentes' : seccion.replace('_', ' '); 
+subtitulo.innerText = "Gestiona los registros de la seccion actual.";
 
-            if (seccionActual === 'Soporte') {
-                document.getElementById('vista-tabla').classList.add('hidden');
-                const vistaContenedor = document.getElementById('vista-soporte-contenedor');
-                vistaContenedor.classList.remove('hidden');
-                vistaContenedor.innerHTML = '';
+if (seccion === 'Soporte') controlesSoporte.classList.remove('hidden');
+if (seccion === 'Prestamos') controlesPrestamos.classList.remove('hidden');
 
-                const botonesVistas = ['tarjetas', 'lista', 'compacta'];
-                botonesVistas.forEach(v => {
-                    let btn = document.getElementById('btn-vista-' + v);
-                    if (v === vistaSoporteActual) {
-                        btn.classList.add('bg-blue-50', 'text-blue-600', 'shadow-sm');
-                        btn.classList.remove('text-slate-400');
-                    } else {
-                        btn.classList.remove('bg-blue-50', 'text-blue-600', 'shadow-sm');
-                        btn.classList.add('text-slate-400');
-                    }
-                });
+if (esAdmin()) btnNuevo.classList.remove('hidden'); else btnNuevo.classList.add('hidden');
 
-                if (vistaSoporteActual === 'tarjetas') vistaContenedor.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-                else if (vistaSoporteActual === 'lista') vistaContenedor.className = 'flex flex-col gap-4';
-                else if (vistaSoporteActual === 'compacta') vistaContenedor.className = 'flex flex-col rounded-xl overflow-hidden shadow-sm border border-slate-200';
+if (panelPendientes && (seccion === 'Prestamos' || seccion === 'Soporte')) panelPendientes.classList.remove('hidden'); 
+else if (panelPendientes) panelPendientes.classList.add('hidden');
 
-                const ordenSelect = document.getElementById('orden-soporte').value;
-                const idxEstado = ESTADO_INDICES['Soporte'];
-                
-                filas.sort((a, b) => {
-                    let esFinalizadoA = ((a[idxEstado + 1] || "") === "Solucionado");
-                    let esFinalizadoB = ((b[idxEstado + 1] || "") === "Solucionado");
-                    if (esFinalizadoA !== esFinalizadoB) return esFinalizadoA ? 1 : -1; 
-                    let fechaA = new Date(a[1] || 0), fechaB = new Date(b[1] || 0);
-                    return ordenSelect === 'antiguos' ? fechaA - fechaB : fechaB - fechaA;
-                });
+renderizarTabla();
+}
+}
 
-                if (filas.length === 0) {
-                    vistaContenedor.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200"><p>No hay tickets para mostrar</p></div>`;
-                    return;
-                }
+async function cargarDatosServidor() {
+if (!googleToken && !customUser) return cerrarSesion();
+mostrarToast("Cargando base de datos...", "info");
+let targetMonth = document.getElementById('month-selector').value;
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_data", targetMonth }) });
+let result = await res.json();
+if(result.status !== 'success') { 
+if(result.message === "No autorizado") return cerrarSesion();
+throw new Error(result.message); 
+}
+globalDataCache = result.data;
+if(globalDataCache.pendientes) {
+document.getElementById('panel-pendientes').classList.remove('hidden');
+document.getElementById('count-prestamos-pendientes').innerText = globalDataCache.pendientes.prestamos?.length || 0;
+document.getElementById('count-soporte-pendientes').innerText = globalDataCache.pendientes.soporte?.length || 0;
+}
+renderizarTabla(); 
+ocultarToast();
+} catch (err) { mostrarToast('Error de conexion', 'error'); }
+}
 
-                filas.forEach(r => {
-                    let id = r[0];
-                    let datos = r.slice(1);
-                    let v_fecha = datos[0], v_ubicacion = datos[1], v_equipo = datos[2], v_tipo = datos[3], v_desc = datos[4], v_estado = datos[5];
-                    
-                    let fechaObj = new Date(v_fecha);
-                    let fechaMostrar = isNaN(fechaObj) ? v_fecha : fechaObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }).replace(',', ' -');
-                    let auditTimestamp = datos[datos.length - 2] || '';
-                    let fechaModObj = new Date(auditTimestamp);
-                    let fechaModMostrar = isNaN(fechaModObj) ? auditTimestamp : fechaModObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
 
-                    let badgeAntiguedad = '';
-                    if (!isNaN(fechaObj) && v_estado !== "Solucionado") {
-                        let diasAbierto = Math.floor((new Date() - fechaObj) / (1000 * 60 * 60 * 24));
-                        if (diasAbierto >= 3) {
-                            badgeAntiguedad = `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 shadow-sm shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> +${diasAbierto} días</span>`;
-                        }
-                    }
+function formatearSoloHora(strHora) {
+if (!strHora || strHora === 'null' || strHora === 'undefined' || strHora === '') return '--:--';
+let s = String(strHora);
+if (s.includes('T')) return s.split('T')[1].substring(0, 5); 
+return escaparHTML(s);
+}
 
-                    let colorStrip = (v_estado === "Solucionado") ? "bg-emerald-400" : "bg-amber-400";
-                    let selectHtml = "";
-                    
-                    if (admin) {
-                        let colorClase = (v_estado === "Solucionado") ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
-                        let paddingClase = (vistaSoporteActual === 'compacta') ? "px-2 py-1 text-[11px]" : "px-2 py-1 text-xs";
-                        let opts = campos[idxEstado].options.map(o => `<option value="${o}" ${v_estado === o ? 'selected' : ''}>${o}</option>`).join('');
-                        selectHtml = `<select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg ${paddingClase} font-bold shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${colorClase}">${opts}</select>`;
-                    } else {
-                        let colorClase = (v_estado === "Solucionado") ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-amber-100 text-amber-800 border-amber-300";
-                        let sizeClase = (vistaSoporteActual === 'compacta') ? "text-[10px]" : "text-xs";
-                        selectHtml = `<span class="px-2.5 py-1 rounded-full ${sizeClase} font-bold border ${colorClase}">${escaparHTML(v_estado)}</span>`;
-                    }
+function renderizarTabla() {
+if (!globalDataCache || !globalDataCache.historial) return;
+let campos = CAMPOS_SECCION[seccionActual];
+let jsonKey = JSON_KEY_MAP[seccionActual];
+let filas = [...(globalDataCache.historial[jsonKey] || [])];
+let admin = esAdmin();
 
-                    if (vistaSoporteActual === 'tarjetas') {
-                        vistaContenedor.innerHTML += `
+if (seccionActual === 'Soporte') {
+document.getElementById('vista-tabla').classList.add('hidden');
+const vistaContenedor = document.getElementById('vista-soporte-contenedor');
+vistaContenedor.classList.remove('hidden');
+vistaContenedor.innerHTML = '';
+
+const botonesVistas = ['tarjetas', 'lista', 'compacta'];
+botonesVistas.forEach(v => {
+let btn = document.getElementById('btn-vista-' + v);
+if (v === vistaSoporteActual) {
+btn.classList.add('bg-blue-50', 'text-blue-600', 'shadow-sm');
+btn.classList.remove('text-slate-400');
+} else {
+btn.classList.remove('bg-blue-50', 'text-blue-600', 'shadow-sm');
+btn.classList.add('text-slate-400');
+}
+});
+
+if (vistaSoporteActual === 'tarjetas') vistaContenedor.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+else if (vistaSoporteActual === 'lista') vistaContenedor.className = 'flex flex-col gap-4';
+else if (vistaSoporteActual === 'compacta') vistaContenedor.className = 'flex flex-col rounded-xl overflow-hidden shadow-sm border border-slate-200';
+
+const ordenSelect = document.getElementById('orden-soporte').value;
+const idxEstado = ESTADO_INDICES['Soporte'];
+
+filas.sort((a, b) => {
+let esFinalizadoA = ((a[idxEstado + 1] || "") === "Solucionado");
+let esFinalizadoB = ((b[idxEstado + 1] || "") === "Solucionado");
+if (esFinalizadoA !== esFinalizadoB) return esFinalizadoA ? 1 : -1; 
+let fechaA = new Date(a[1] || 0), fechaB = new Date(b[1] || 0);
+return ordenSelect === 'antiguos' ? fechaA - fechaB : fechaB - fechaA;
+});
+
+if (filas.length === 0) {
+vistaContenedor.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200"><p>No hay tickets para mostrar</p></div>`;
+return;
+}
+
+filas.forEach(r => {
+let id = r[0];
+let datos = r.slice(1);
+let v_fecha = datos[0], v_ubicacion = datos[1], v_equipo = datos[2], v_tipo = datos[3], v_desc = datos[4], v_estado = datos[5];
+
+let fechaObj = new Date(v_fecha);
+let fechaMostrar = isNaN(fechaObj) ? v_fecha : fechaObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }).replace(',', ' -');
+let auditTimestamp = datos[datos.length - 2] || '';
+let fechaModObj = new Date(auditTimestamp);
+let fechaModMostrar = isNaN(fechaModObj) ? auditTimestamp : fechaModObj.toLocaleString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+
+let badgeAntiguedad = '';
+if (!isNaN(fechaObj) && v_estado !== "Solucionado") {
+let diasAbierto = Math.floor((new Date() - fechaObj) / (1000 * 60 * 60 * 24));
+if (diasAbierto >= 3) {
+badgeAntiguedad = `<span class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold px-2 py-0.5 rounded-full inline-flex items-center gap-1 shadow-sm shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> +${diasAbierto} días</span>`;
+}
+}
+
+let colorStrip = (v_estado === "Solucionado") ? "bg-emerald-400" : "bg-amber-400";
+let selectHtml = "";
+
+if (admin) {
+let colorClase = (v_estado === "Solucionado") ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
+let paddingClase = (vistaSoporteActual === 'compacta') ? "px-2 py-1 text-[11px]" : "px-2 py-1 text-xs";
+let opts = campos[idxEstado].options.map(o => `<option value="${o}" ${v_estado === o ? 'selected' : ''}>${o}</option>`).join('');
+selectHtml = `<select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg ${paddingClase} font-bold shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${colorClase}">${opts}</select>`;
+} else {
+let colorClase = (v_estado === "Solucionado") ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-amber-100 text-amber-800 border-amber-300";
+let sizeClase = (vistaSoporteActual === 'compacta') ? "text-[10px]" : "text-xs";
+selectHtml = `<span class="px-2.5 py-1 rounded-full ${sizeClase} font-bold border ${colorClase}">${escaparHTML(v_estado)}</span>`;
+}
+
+if (vistaSoporteActual === 'tarjetas') {
+vistaContenedor.innerHTML += `
                             <div class="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col p-5 relative overflow-hidden group">
                                 <div class="absolute top-0 left-0 right-0 h-1 ${colorStrip}"></div>
                                 <div class="flex justify-between items-start mb-4">
@@ -604,8 +586,8 @@
                                     ${admin ? `<div class="flex gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>` : ''}
                                 </div>
                             </div>`;
-                    } else if (vistaSoporteActual === 'lista') {
-                        vistaContenedor.innerHTML += `
+} else if (vistaSoporteActual === 'lista') {
+vistaContenedor.innerHTML += `
                             <div class="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row p-4 relative overflow-hidden group gap-4">
                                 <div class="absolute left-0 top-0 bottom-0 w-1.5 ${colorStrip}"></div>
                                 <div class="flex-1 pl-3">
@@ -615,8 +597,8 @@
                                 </div>
                                 <div class="flex flex-row md:flex-col justify-between md:items-end gap-3 min-w-[140px] pl-0 md:pl-4 md:border-l md:border-slate-100 mt-2 md:mt-0">${selectHtml}${admin ? `<div class="flex gap-2"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Borrar"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div>` : ''}</div>
                             </div>`;
-                    } else if (vistaSoporteActual === 'compacta') {
-                        vistaContenedor.innerHTML += `
+} else if (vistaSoporteActual === 'compacta') {
+vistaContenedor.innerHTML += `
                             <div class="bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors flex flex-wrap md:flex-nowrap items-center p-3 relative overflow-hidden group gap-2 lg:gap-4 last:border-0">
                                 <div class="absolute left-0 top-0 bottom-0 w-1 ${colorStrip}"></div>
                                 <div class="w-full md:w-32 pl-3"><span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">${fechaMostrar}</span></div>
@@ -624,12 +606,11 @@
                                 <div class="w-full md:w-1/6 text-xs text-slate-500 truncate" title="${escaparHTML(v_ubicacion)}">${escaparHTML(v_ubicacion)}</div>
                                 <div class="w-full md:flex-1 flex justify-end items-center gap-3"><div class="hidden lg:flex items-center gap-2">${badgeAntiguedad}<span class="text-[10px] text-slate-400">Mod: ${escaparHTML(fechaModMostrar.split(' ')[0])}</span></div>${selectHtml}${admin ? `<div class="flex gap-1"><button onclick="abrirModalEditar('${id}')" class="text-blue-600 hover:bg-blue-100 p-1.5 rounded-lg text-xs font-bold transition-colors">Edit</button></div>` : ''}</div>
                             </div>`;
-                    }
-                });
-                return;
-            }
+}
+});
+return;
+}
 
-            // LÓGICA DE FILTRADO Y ORDENAMIENTO DE PRÉSTAMOS
             if (seccionActual === 'Prestamos') {
                 const ocultarDevueltos = document.getElementById('chk-ocultar-devueltos')?.checked;
                 const ordenSelect = document.getElementById('orden-prestamos')?.value || 'recientes';
@@ -653,358 +634,357 @@
                 });
             }
 
-            // RENDERIZADO TABLA GENERAL
-            document.getElementById('vista-soporte-contenedor').classList.add('hidden');
-            const vistaTabla = document.getElementById('vista-tabla');
-            vistaTabla.classList.remove('hidden');
+document.getElementById('vista-soporte-contenedor').classList.add('hidden');
+const vistaTabla = document.getElementById('vista-tabla');
+vistaTabla.classList.remove('hidden');
 
-            const head = document.getElementById('tabla-head');
-            const body = document.getElementById('tabla-body');
-            
-            let thAcciones = admin ? `<th class="px-6 py-3 whitespace-nowrap text-right">Acciones</th>` : '';
-            head.innerHTML = `<tr>` + campos.map(c => `<th class="px-6 py-3 whitespace-nowrap">${c.label}</th>`).join('') + `<th class="px-6 py-3 whitespace-nowrap">Ult. Mod.</th><th class="px-6 py-3 whitespace-nowrap">Usuario</th>${thAcciones}</tr>`;
-            
-            body.innerHTML = '';
-            
-            if (filas.length === 0) { 
-                let totalCols = campos.length + (admin ? 3 : 2);
-                body.innerHTML = `<tr><td colspan="${totalCols}" class="px-6 py-12 text-center text-slate-400 font-medium"><div class="flex flex-col items-center justify-center"><svg class="w-12 h-12 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>No hay registros para mostrar</div></td></tr>`; 
-                return; 
-            }
-            
-            filas.forEach(r => {
-                let id = r[0], valoresRestantes = r.slice(1), tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition-colors group border-b border-slate-100";
-                
-                let auditTimestamp = valoresRestantes[valoresRestantes.length - 2] || '';
-                let auditUser = valoresRestantes[valoresRestantes.length - 1] || '';
-                let datosCampos = valoresRestantes.slice(0, campos.length);
+const head = document.getElementById('tabla-head');
+const body = document.getElementById('tabla-body');
+
+let thAcciones = admin ? `<th class="px-6 py-2.5 whitespace-nowrap text-right">Acciones</th>` : '';
+head.innerHTML = `<tr>` + campos.map(c => `<th class="px-6 py-2.5 whitespace-nowrap">${c.label}</th>`).join('') + `<th class="px-6 py-2.5 whitespace-nowrap">Ult. Mod.</th><th class="px-6 py-2.5 whitespace-nowrap">Usuario</th>${thAcciones}</tr>`;
+
+body.innerHTML = '';
+
+if (filas.length === 0) { 
+let totalCols = campos.length + (admin ? 3 : 2);
+body.innerHTML = `<tr><td colspan="${totalCols}" class="px-6 py-12 text-center text-slate-400 font-medium"><div class="flex flex-col items-center justify-center"><svg class="w-12 h-12 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>No hay registros para mostrar</div></td></tr>`; 
+return; 
+}
+
+filas.forEach(r => {
+let id = r[0], valoresRestantes = r.slice(1), tr = document.createElement('tr');
+tr.className = "hover:bg-slate-50 transition-colors group border-b border-slate-100";
+
+let auditTimestamp = valoresRestantes[valoresRestantes.length - 2] || '';
+let auditUser = valoresRestantes[valoresRestantes.length - 1] || '';
+let datosCampos = valoresRestantes.slice(0, campos.length);
 
                 let idxEstLog = ESTADO_INDICES[seccionActual];
                 if (seccionActual === 'Prestamos' && datosCampos[idxEstLog] === 'Pendiente') {
                     tr.className += " bg-amber-50/40 hover:bg-amber-50/80";
                 }
 
-                let btnPermanente = (seccionActual === 'Prestamos') 
-                    ? `<button onclick="abrirModalConvertirPermanente('${id}')" class="text-amber-600 bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded text-xs font-semibold transition-colors" title="Promover a Préstamo Permanente">Permanente</button>` 
-                    : '';
+let btnPermanente = (seccionActual === 'Prestamos') 
+? `<button onclick="abrirModalConvertirPermanente('${id}')" class="text-amber-600 bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded text-xs font-semibold transition-colors" title="Promover a Préstamo Permanente">Permanente</button>` 
+: '';
 
-                let tdAcciones = admin ? `<td class="px-6 py-2.5 whitespace-nowrap text-right flex justify-end gap-2">${btnPermanente}<button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button></td>` : '';
+let tdAcciones = admin ? `<td class="px-6 py-2.5 whitespace-nowrap text-right flex justify-end gap-2">${btnPermanente}<button onclick="abrirModalEditar('${id}')" class="text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Editar</button><button onclick="eliminarRegistro('${id}')" class="text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded text-xs font-semibold transition-colors">Borrar</button></td>` : '';
 
-                tr.innerHTML = datosCampos.map((v, idx) => {
-                    let idxEst = ESTADO_INDICES[seccionActual];
+tr.innerHTML = datosCampos.map((v, idx) => {
+let idxEst = ESTADO_INDICES[seccionActual];
 
-                    if (seccionActual === 'Prestamos' && idx === 5) {
-                        let textHora = formatearSoloHora(v);
-                        if (textHora === '--:--') {
+if (seccionActual === 'Prestamos' && idx === 5) {
+let textHora = formatearSoloHora(v);
+if (textHora === '--:--') {
                             return `<td class="px-6 py-2.5 whitespace-nowrap font-medium text-xs"><span class="text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full text-xs font-semibold border border-amber-200">Sin devolver</span></td>`;
-                        }
+}
                         return `<td class="px-6 py-2.5 whitespace-nowrap font-medium text-slate-700">${textHora}</td>`;
-                    }
+}
 
-                    if (campos[idx].type === 'time') {
+if (campos[idx].type === 'time') {
                         return `<td class="px-6 py-2.5 whitespace-nowrap font-medium text-slate-700">${formatearSoloHora(v)}</td>`;
-                    }
+}
 
-                    if (idx === idxEst && (seccionActual === 'Prestamos' || seccionActual === 'Permanente')) {
-                        let verde = (v === "Devuelto" || v === "Bueno" || v === "Operativo");
-                        let color = verde ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-amber-100 text-amber-800 border-amber-300";
-                        if(seccionActual === 'Permanente' && !verde) color = "bg-blue-100 text-blue-800 border-blue-300";
-                        
-                        if (admin) {
-                            let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
+if (idx === idxEst && (seccionActual === 'Prestamos' || seccionActual === 'Permanente')) {
+let verde = (v === "Devuelto" || v === "Bueno" || v === "Operativo");
+let color = verde ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-amber-100 text-amber-800 border-amber-300";
+if(seccionActual === 'Permanente' && !verde) color = "bg-blue-100 text-blue-800 border-blue-300";
+
+if (admin) {
+let opts = campos[idx].options.map(o => `<option value="${o}" ${v === o ? 'selected' : ''}>${o}</option>`).join('');
                             return `<td class="px-6 py-2.5 whitespace-nowrap"><select onchange="cambiarEstadoRapido('${id}', this.value)" class="border rounded-lg px-2 py-1 text-xs font-bold shadow-sm cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 ${color}">${opts}</select></td>`;
                         } else return `<td class="px-6 py-2.5 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-bold border ${color}">${escaparHTML(v)}</span></td>`;
-                    }
-                    let esTextoLargo = (campos[idx].name === 'descripcion' || campos[idx].name === 'observaciones' || campos[idx].name === 'actividad');
+}
+let esTextoLargo = (campos[idx].name === 'descripcion' || campos[idx].name === 'observaciones' || campos[idx].name === 'actividad');
                     let claseCelda = esTextoLargo ? "px-6 py-2.5 whitespace-normal break-words min-w-[280px] max-w-xs leading-relaxed" : "px-6 py-2.5 whitespace-nowrap";
-                    return `<td class="${claseCelda}">${escaparHTML(v)}</td>`;
+return `<td class="${claseCelda}">${escaparHTML(v)}</td>`;
                 }).join('') + `<td class="px-6 py-2.5 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditTimestamp)}</td><td class="px-6 py-2.5 text-xs font-medium text-slate-400 whitespace-nowrap">${escaparHTML(auditUser)}</td>` + tdAcciones;
-                body.appendChild(tr);
-            });
-        }
+body.appendChild(tr);
+});
+}
 
-        async function cambiarEstadoRapido(id, nuevoEstado) {
-            if (!esAdmin()) return;
-            
-            if (seccionActual === 'Prestamos' && nuevoEstado === 'Devuelto') {
+async function cambiarEstadoRapido(id, nuevoEstado) {
+if (!esAdmin()) return;
+
+if (seccionActual === 'Prestamos' && nuevoEstado === 'Devuelto') {
                 const hoyYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
-                const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
-                
-                document.getElementById('dev-id').value = id;
+const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
+
+document.getElementById('dev-id').value = id;
                 document.getElementById('dev-fecha').value = hoyYMD;
-                document.getElementById('dev-hora').value = horaHM;
-                document.getElementById('modal-devolucion').classList.remove('hidden');
-                return;
-            }
+document.getElementById('dev-hora').value = horaHM;
+document.getElementById('modal-devolucion').classList.remove('hidden');
+return;
+}
 
-            let observacion = prompt((nuevoEstado === "Solucionado" || nuevoEstado === "Devuelto") ? "Agrega una observacion de cierre (Opcional):" : "¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)", "");
-            if (observacion === null) return;
+let observacion = prompt((nuevoEstado === "Solucionado" || nuevoEstado === "Devuelto") ? "Agrega una observacion de cierre (Opcional):" : "¿Deseas agregar alguna observacion para este cambio de estado? (Opcional)", "");
+if (observacion === null) return;
 
-            mostrarToast("Actualizando estado...", "info");
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "update_status", id, nuevoEstado, observacion: observacion.trim(), targetMonth: document.getElementById('month-selector').value }) });
-                let result = await res.json();
-                if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(result.message); }
-                mostrarToast("Estado guardado", "success"); 
-                await cargarDatosServidor();
-            } catch (err) { mostrarToast("Error al guardar", "error"); cargarDatosServidor(); }
-        }
+mostrarToast("Actualizando estado...", "info");
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "update_status", id, nuevoEstado, observacion: observacion.trim(), targetMonth: document.getElementById('month-selector').value }) });
+let result = await res.json();
+if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(result.message); }
+mostrarToast("Estado guardado", "success"); 
+await cargarDatosServidor();
+} catch (err) { mostrarToast("Error al guardar", "error"); cargarDatosServidor(); }
+}
 
-        function cerrarModalDevolucion() { document.getElementById('modal-devolucion').classList.add('hidden'); }
+function cerrarModalDevolucion() { document.getElementById('modal-devolucion').classList.add('hidden'); }
 
-        async function confirmarDevolucionPrestamo(event) {
-            event.preventDefault();
-            let id = document.getElementById('dev-id').value;
+async function confirmarDevolucionPrestamo(event) {
+event.preventDefault();
+let id = document.getElementById('dev-id').value;
             let fechaDevolucion = document.getElementById('dev-fecha').value;
-            let horaDevolucion = document.getElementById('dev-hora').value;
-            let observacion = document.getElementById('dev-obs').value;
+let horaDevolucion = document.getElementById('dev-hora').value;
+let observacion = document.getElementById('dev-obs').value;
 
-            cerrarModalDevolucion();
-            mostrarToast("Guardando devolucion...", "info");
+cerrarModalDevolucion();
+mostrarToast("Guardando devolucion...", "info");
 
-            try {
+try {
                 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: 'Prestamos', action: "update_status", id, nuevoEstado: 'Devuelto', fechaDevolucion, horaDevolucion, observacion, targetMonth: document.getElementById('month-selector').value }) });
-                let result = await res.json();
-                if(result.status !== 'success') throw new Error(result.message);
-                mostrarToast("Devolucion registrada", "success");
-                await cargarDatosServidor();
-            } catch(e) { mostrarToast("Error al guardar", "error"); }
-        }
+let result = await res.json();
+if(result.status !== 'success') throw new Error(result.message);
+mostrarToast("Devolucion registrada", "success");
+await cargarDatosServidor();
+} catch(e) { mostrarToast("Error al guardar", "error"); }
+}
 
-        function abrirModalConvertirPermanente(id) {
-            if (!esAdmin()) return;
-            let registro = globalDataCache.historial.prestamos.find(r => r[0] === id);
-            if (!registro) return;
+function abrirModalConvertirPermanente(id) {
+if (!esAdmin()) return;
+let registro = globalDataCache.historial.prestamos.find(r => r[0] === id);
+if (!registro) return;
 
-            document.getElementById('perm-original-id').value = id;
-            document.getElementById('perm-fecha').value = registro[1] ? registro[1].split('T')[0] : new Date().toISOString().split('T')[0];
-            document.getElementById('perm-profesor').value = registro[2] || '';
-            document.getElementById('perm-insumo').value = registro[3] || '';
-            document.getElementById('perm-equipo').value = registro[3] || '';
-            document.getElementById('perm-cantidad').value = registro[4] || '1';
-            document.getElementById('perm-estado').value = 'Asignado a usuario';
-            
-            let obsOriginal = registro[9] || '';
-            document.getElementById('perm-obs').value = obsOriginal ? `${obsOriginal} [Traspasado desde Préstamo Diario]` : '[Traspasado desde Préstamo Diario]';
+document.getElementById('perm-original-id').value = id;
+document.getElementById('perm-fecha').value = registro[1] ? registro[1].split('T')[0] : new Date().toISOString().split('T')[0];
+document.getElementById('perm-profesor').value = registro[2] || '';
+document.getElementById('perm-insumo').value = registro[3] || '';
+document.getElementById('perm-equipo').value = registro[3] || '';
+document.getElementById('perm-cantidad').value = registro[4] || '1';
+document.getElementById('perm-estado').value = 'Asignado a usuario';
 
-            document.getElementById('modal-convertir-permanente').classList.remove('hidden');
-        }
+let obsOriginal = registro[9] || '';
+document.getElementById('perm-obs').value = obsOriginal ? `${obsOriginal} [Traspasado desde Préstamo Diario]` : '[Traspasado desde Préstamo Diario]';
 
-        function cerrarModalConvertirPermanente() {
-            document.getElementById('modal-convertir-permanente').classList.add('hidden');
-        }
+document.getElementById('modal-convertir-permanente').classList.remove('hidden');
+}
 
-        async function confirmarTraspasoPermanente(event) {
-            event.preventDefault();
-            if (!esAdmin()) return;
+function cerrarModalConvertirPermanente() {
+document.getElementById('modal-convertir-permanente').classList.add('hidden');
+}
 
-            const originalId = document.getElementById('perm-original-id').value;
-            const rowValues = [
-                document.getElementById('perm-fecha').value,
-                document.getElementById('perm-profesor').value,
-                document.getElementById('perm-insumo').value,
-                document.getElementById('perm-equipo').value,
-                document.getElementById('perm-cantidad').value,
-                document.getElementById('perm-estado').value,
-                document.getElementById('perm-obs').value
-            ];
+async function confirmarTraspasoPermanente(event) {
+event.preventDefault();
+if (!esAdmin()) return;
 
-            cerrarModalConvertirPermanente();
-            mostrarToast("Traspasando a Préstamos Permanentes...", "info");
+const originalId = document.getElementById('perm-original-id').value;
+const rowValues = [
+document.getElementById('perm-fecha').value,
+document.getElementById('perm-profesor').value,
+document.getElementById('perm-insumo').value,
+document.getElementById('perm-equipo').value,
+document.getElementById('perm-cantidad').value,
+document.getElementById('perm-estado').value,
+document.getElementById('perm-obs').value
+];
 
-            try {
-                let res = await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        token: googleToken,
-                        customUser: customUser,
-                        action: "promote_to_permanent",
-                        originalId: originalId,
-                        rowValues: rowValues,
-                        targetMonth: document.getElementById('month-selector').value
-                    })
-                });
+cerrarModalConvertirPermanente();
+mostrarToast("Traspasando a Préstamos Permanentes...", "info");
 
-                let result = await res.json();
-                if (result.status !== 'success') throw new Error(result.message);
+try {
+let res = await fetch(API_URL, {
+method: "POST",
+body: JSON.stringify({
+token: googleToken,
+customUser: customUser,
+action: "promote_to_permanent",
+originalId: originalId,
+rowValues: rowValues,
+targetMonth: document.getElementById('month-selector').value
+})
+});
 
-                mostrarToast("Préstamo promovido a Permanente con éxito", "success");
-                await cargarDatosServidor();
-            } catch (err) {
-                mostrarToast("Error al realizar el traspaso", "error");
-            }
-        }
+let result = await res.json();
+if (result.status !== 'success') throw new Error(result.message);
 
-        async function eliminarRegistro(id) {
-            if (!esAdmin()) return;
-            if (!confirm("¿Estas seguro de mover este registro a la papelera?")) return;
-            mostrarToast("Moviendo a la papelera...", "info");
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "delete_row", id, targetMonth: document.getElementById('month-selector').value }) });
-                let result = await res.json();
-                if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(result.message); }
-                mostrarToast("Movido a la papelera", "success"); 
-                await cargarDatosServidor();
-            } catch (err) { mostrarToast("Error al eliminar", "error"); cargarDatosServidor(); }
-        }
+mostrarToast("Préstamo promovido a Permanente con éxito", "success");
+await cargarDatosServidor();
+} catch (err) {
+mostrarToast("Error al realizar el traspaso", "error");
+}
+}
 
-        async function cargarDatosPapelera() {
-            mostrarToast("Cargando papelera...", "info");
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_deleted_data" }) });
-                let result = await res.json();
-                if(result.status !== 'success') throw new Error(result.message);
-                globalPapeleraCache = result.data; renderizarPapelera(); ocultarToast();
-            } catch(e) { mostrarToast("Error al cargar", "error"); }
-        }
+async function eliminarRegistro(id) {
+if (!esAdmin()) return;
+if (!confirm("¿Estas seguro de mover este registro a la papelera?")) return;
+mostrarToast("Moviendo a la papelera...", "info");
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion: seccionActual, action: "delete_row", id, targetMonth: document.getElementById('month-selector').value }) });
+let result = await res.json();
+if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(result.message); }
+mostrarToast("Movido a la papelera", "success"); 
+await cargarDatosServidor();
+} catch (err) { mostrarToast("Error al eliminar", "error"); cargarDatosServidor(); }
+}
 
-        function renderizarPapelera() {
-            let contenedor = document.getElementById('contenedor-papelera');
-            if (!globalPapeleraCache) return;
-            let tiene = false;
-            let html = Object.keys(globalPapeleraCache).map(sec => {
-                let filas = globalPapeleraCache[sec] || [];
-                if (filas.length === 0) return ''; tiene = true;
-                let items = filas.map(r => {
-                    let id = r[0]; if (!id) return '';
-                    let detalle = r.slice(1, r.length - 2).filter(c => c !== "").join(' | ');
-                    return `<div class="flex flex-col md:flex-row justify-between bg-slate-50 border border-slate-200 p-4 rounded-xl gap-3"><div class="flex flex-col gap-1 pr-4"><span class="text-xs font-bold text-slate-500">Eliminado: ${escaparHTML(r[r.length - 2]||'')}</span><span class="text-sm text-slate-700">${escaparHTML(detalle)}</span></div>${esAdmin() ? `<button onclick="restaurarRegistro('${id}', '${sec}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1 self-start md:self-center">Restaurar</button>` : ''}</div>`;
-                }).join('');
-                return `<div class="space-y-3"><h4 class="text-xs font-bold uppercase text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg inline-block">${sec}</h4><div class="space-y-2">${items}</div></div>`;
-            }).join('');
-            contenedor.innerHTML = tiene ? html : `<div class="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-slate-200">Papelera vacia.</div>`;
-        }
+async function cargarDatosPapelera() {
+mostrarToast("Cargando papelera...", "info");
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_deleted_data" }) });
+let result = await res.json();
+if(result.status !== 'success') throw new Error(result.message);
+globalPapeleraCache = result.data; renderizarPapelera(); ocultarToast();
+} catch(e) { mostrarToast("Error al cargar", "error"); }
+}
 
-        async function restaurarRegistro(id, seccion) {
-            if (!esAdmin() || !confirm("¿Restaurar registro?")) return;
-            mostrarToast("Restaurando...", "info");
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion, action: "restore_row", id, targetMonth: document.getElementById('month-selector').value }) });
-                let result = await res.json();
-                if(result.status !== 'success') throw new Error(result.message);
-                mostrarToast("Restaurado", "success"); cargarDatosPapelera(); cargarDatosServidor();
-            } catch(e) { mostrarToast("Error", "error"); }
-        }
+function renderizarPapelera() {
+let contenedor = document.getElementById('contenedor-papelera');
+if (!globalPapeleraCache) return;
+let tiene = false;
+let html = Object.keys(globalPapeleraCache).map(sec => {
+let filas = globalPapeleraCache[sec] || [];
+if (filas.length === 0) return ''; tiene = true;
+let items = filas.map(r => {
+let id = r[0]; if (!id) return '';
+let detalle = r.slice(1, r.length - 2).filter(c => c !== "").join(' | ');
+return `<div class="flex flex-col md:flex-row justify-between bg-slate-50 border border-slate-200 p-4 rounded-xl gap-3"><div class="flex flex-col gap-1 pr-4"><span class="text-xs font-bold text-slate-500">Eliminado: ${escaparHTML(r[r.length - 2]||'')}</span><span class="text-sm text-slate-700">${escaparHTML(detalle)}</span></div>${esAdmin() ? `<button onclick="restaurarRegistro('${id}', '${sec}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1 self-start md:self-center">Restaurar</button>` : ''}</div>`;
+}).join('');
+return `<div class="space-y-3"><h4 class="text-xs font-bold uppercase text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg inline-block">${sec}</h4><div class="space-y-2">${items}</div></div>`;
+}).join('');
+contenedor.innerHTML = tiene ? html : `<div class="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-slate-200">Papelera vacia.</div>`;
+}
 
-        async function ejecutarBusqueda() {
-            let q = document.getElementById('input-buscar').value; if(!q.trim()) return alert("Ingresa un termino");
-            mostrarToast("Buscando...", "info");
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "search", query: q }) });
-                let result = await res.json();
-                if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(); }
-                let cont = document.getElementById('resultados-busqueda');
-                if(result.data.length === 0) cont.innerHTML = `<div class="bg-slate-50 border border-slate-200 p-8 rounded-xl text-center"><p class="text-slate-500 font-medium">Sin resultados para "${escaparHTML(q)}".</p></div>`;
-                else cont.innerHTML = result.data.map(r => `<div class="bg-white p-5 border border-slate-200 rounded-xl flex flex-col gap-2"><div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2"><span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase">${r.seccion}</span><span class="text-slate-400 text-xs">${r.archivo}</span></div><div class="text-slate-700 text-sm">${r.datos.slice(1).join(' <span class="text-slate-300 mx-1">|</span> ')}</div></div>`).join('');
-                ocultarToast();
-            } catch (err) { mostrarToast("Error", "error"); }
-        }
+async function restaurarRegistro(id, seccion) {
+if (!esAdmin() || !confirm("¿Restaurar registro?")) return;
+mostrarToast("Restaurando...", "info");
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion, action: "restore_row", id, targetMonth: document.getElementById('month-selector').value }) });
+let result = await res.json();
+if(result.status !== 'success') throw new Error(result.message);
+mostrarToast("Restaurado", "success"); cargarDatosPapelera(); cargarDatosServidor();
+} catch(e) { mostrarToast("Error", "error"); }
+}
 
-        function abrirModalNuevo() { 
-            if (!esAdmin()) return; 
-            document.getElementById('modal-titulo').innerText = "Nuevo Registro"; 
-            construirFormularioModal(); 
+async function ejecutarBusqueda() {
+let q = document.getElementById('input-buscar').value; if(!q.trim()) return alert("Ingresa un termino");
+mostrarToast("Buscando...", "info");
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "search", query: q }) });
+let result = await res.json();
+if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(); }
+let cont = document.getElementById('resultados-busqueda');
+if(result.data.length === 0) cont.innerHTML = `<div class="bg-slate-50 border border-slate-200 p-8 rounded-xl text-center"><p class="text-slate-500 font-medium">Sin resultados para "${escaparHTML(q)}".</p></div>`;
+else cont.innerHTML = result.data.map(r => `<div class="bg-white p-5 border border-slate-200 rounded-xl flex flex-col gap-2"><div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2"><span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase">${r.seccion}</span><span class="text-slate-400 text-xs">${r.archivo}</span></div><div class="text-slate-700 text-sm">${r.datos.slice(1).join(' <span class="text-slate-300 mx-1">|</span> ')}</div></div>`).join('');
+ocultarToast();
+} catch (err) { mostrarToast("Error", "error"); }
+}
 
-            const borrador = localStorage.getItem('borrador_modal_' + seccionActual);
-            if (borrador) {
-                try {
-                    const datos = JSON.parse(borrador);
-                    Object.keys(datos).forEach(key => {
-                        if (document.getElementById('modal-form').elements[key]) {
-                            document.getElementById('modal-form').elements[key].value = datos[key];
-                        }
-                    });
-                    mostrarToast("Se recupero tu borrador anterior", "info");
-                } catch(e){}
-            }
-            document.getElementById('modal').classList.remove('hidden'); 
-        }
+function abrirModalNuevo() { 
+if (!esAdmin()) return; 
+document.getElementById('modal-titulo').innerText = "Nuevo Registro"; 
+construirFormularioModal(); 
 
-        function abrirModalEditar(id) {
-            if (!esAdmin()) return;
-            let registro = globalDataCache.historial[JSON_KEY_MAP[seccionActual]].find(r => r[0] === id);
-            if (!registro) return;
-            document.getElementById('modal-titulo').innerText = "Editar Registro";
-            construirFormularioModal(id, registro.slice(1, CAMPOS_SECCION[seccionActual].length + 1));
-            document.getElementById('modal').classList.remove('hidden');
-        }
+const borrador = localStorage.getItem('borrador_modal_' + seccionActual);
+if (borrador) {
+try {
+const datos = JSON.parse(borrador);
+Object.keys(datos).forEach(key => {
+if (document.getElementById('modal-form').elements[key]) {
+document.getElementById('modal-form').elements[key].value = datos[key];
+}
+});
+mostrarToast("Se recupero tu borrador anterior", "info");
+} catch(e){}
+}
+document.getElementById('modal').classList.remove('hidden'); 
+}
 
-        function construirFormularioModal(editId = null, valores = []) {
-            if (!esAdmin()) return;
-            let campos = CAMPOS_SECCION[seccionActual];
-            const hoyYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
-            const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
-            const ahoraDT = `${hoyYMD}T${horaHM}`;
+function abrirModalEditar(id) {
+if (!esAdmin()) return;
+let registro = globalDataCache.historial[JSON_KEY_MAP[seccionActual]].find(r => r[0] === id);
+if (!registro) return;
+document.getElementById('modal-titulo').innerText = "Editar Registro";
+construirFormularioModal(id, registro.slice(1, CAMPOS_SECCION[seccionActual].length + 1));
+document.getElementById('modal').classList.remove('hidden');
+}
 
-            document.getElementById('modal-form').innerHTML = (editId ? `<input type="hidden" id="edit-id" value="${editId}">` : '') + 
-            '<div class="grid grid-cols-1 gap-4">' +
-            campos.map((c, i) => {
-                let val = valores[i];
-                if (!editId && seccionActual === 'Prestamos' && c.name === 'hora_devolucion') return `<input type="hidden" name="campo_${i}" value="">`;
-                if (val === undefined || val === '') {
-                    if (!editId) { if (c.type === 'date') val = hoyYMD; if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM; if (c.type === 'datetime-local') val = ahoraDT; }
-                }
-                
-                let esCampoFecha = (c.type === 'date' || c.type === 'datetime-local');
-                let esModoEdicionDeFecha = (editId !== null && i === 0 && esCampoFecha);
-                let req = c.required !== false ? 'required' : '';
-                let readonlyAttr = esModoEdicionDeFecha ? 'readonly' : '';
-                
-                let inputClasses = esModoEdicionDeFecha 
-                    ? 'bg-slate-100 cursor-not-allowed opacity-70 border-slate-200 text-slate-500' 
-                    : 'bg-slate-50 focus:bg-white focus:ring-blue-500 border-slate-300 text-slate-700 hover:border-blue-300';
+function construirFormularioModal(editId = null, valores = []) {
+if (!esAdmin()) return;
+let campos = CAMPOS_SECCION[seccionActual];
+const hoyYMD = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Santiago' });
+const horaHM = new Date().toLocaleTimeString('en-GB', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' });
+const ahoraDT = `${hoyYMD}T${horaHM}`;
 
-                return `<div>
+document.getElementById('modal-form').innerHTML = (editId ? `<input type="hidden" id="edit-id" value="${editId}">` : '') + 
+'<div class="grid grid-cols-1 gap-4">' +
+campos.map((c, i) => {
+let val = valores[i];
+if (!editId && seccionActual === 'Prestamos' && c.name === 'hora_devolucion') return `<input type="hidden" name="campo_${i}" value="">`;
+if (val === undefined || val === '') {
+if (!editId) { if (c.type === 'date') val = hoyYMD; if (c.type === 'time' && c.name !== 'hora_devolucion') val = horaHM; if (c.type === 'datetime-local') val = ahoraDT; }
+}
+
+let esCampoFecha = (c.type === 'date' || c.type === 'datetime-local');
+let esModoEdicionDeFecha = (editId !== null && i === 0 && esCampoFecha);
+let req = c.required !== false ? 'required' : '';
+let readonlyAttr = esModoEdicionDeFecha ? 'readonly' : '';
+
+let inputClasses = esModoEdicionDeFecha 
+? 'bg-slate-100 cursor-not-allowed opacity-70 border-slate-200 text-slate-500' 
+: 'bg-slate-50 focus:bg-white focus:ring-blue-500 border-slate-300 text-slate-700 hover:border-blue-300';
+
+return `<div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">${c.label}</label>
                     ${c.type === 'select' 
                         ? `<select name="campo_${i}" ${req} class="w-full border border-slate-300 rounded-xl px-4 py-2.5 text-sm outline-none bg-slate-50 focus:bg-white text-slate-700 cursor-pointer shadow-sm">${c.options.map(o => `<option value="${o}" ${(val||'') === o ? 'selected' : ''}>${o}</option>`).join('')}</select>` 
                         : `<input type="${c.type}" name="campo_${i}" value="${escaparHTML(val||'')}" ${req}${readonlyAttr} class="w-full border rounded-xl px-4 py-2.5 text-sm outline-none shadow-sm transition-colors ${inputClasses}">`
                     }</div>`;
-            }).join('') + '</div>' + 
-            `<div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 bg-white sticky bottom-0"><button type="button" onclick="cerrarModal()" class="bg-white border border-slate-300 px-5 py-2.5 rounded-xl font-medium">Cancelar</button><button type="submit" id="btn-guardar" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-sm">Guardar Cambios</button></div>`;
+}).join('') + '</div>' + 
+`<div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100 bg-white sticky bottom-0"><button type="button" onclick="cerrarModal()" class="bg-white border border-slate-300 px-5 py-2.5 rounded-xl font-medium">Cancelar</button><button type="submit" id="btn-guardar" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-sm">Guardar Cambios</button></div>`;
 
-            const form = document.getElementById('modal-form');
-            form.addEventListener('input', () => {
-                if (!document.getElementById('edit-id')) {
-                    const datos = {};
-                    CAMPOS_SECCION[seccionActual].forEach((_, i) => {
-                        datos[`campo_${i}`] = form.elements[`campo_${i}`]?.value || '';
-                    });
-                    localStorage.setItem('borrador_modal_' + seccionActual, JSON.stringify(datos));
-                }
-            });
-        }
+const form = document.getElementById('modal-form');
+form.addEventListener('input', () => {
+if (!document.getElementById('edit-id')) {
+const datos = {};
+CAMPOS_SECCION[seccionActual].forEach((_, i) => {
+datos[`campo_${i}`] = form.elements[`campo_${i}`]?.value || '';
+});
+localStorage.setItem('borrador_modal_' + seccionActual, JSON.stringify(datos));
+}
+});
+}
 
-        function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
+function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
 
-        async function guardarRegistro(event) {
-            event.preventDefault(); if (!esAdmin()) return;
-            const btn = document.getElementById('btn-guardar'); btn.disabled = true; btn.innerHTML = "Procesando...";
-            let payload = { token: googleToken, customUser, seccion: seccionActual, targetMonth: document.getElementById('month-selector').value, action: document.getElementById('edit-id') ? "edit_row" : "insert", rowValues: CAMPOS_SECCION[seccionActual].map((_, i) => event.target.elements[`campo_${i}`].value) };
-            if (payload.action === "edit_row") payload.id = document.getElementById('edit-id').value;
-            try {
-                let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-                let result = await res.json();
-                if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(); }
-                localStorage.removeItem('borrador_modal_' + seccionActual);
-                cerrarModal(); 
-                mostrarToast("Guardado con exito", "success"); 
-                await cargarDatosServidor();
-            } catch (err) { 
-                mostrarToast("Error", "error"); 
-                btn.disabled = false; 
-                btn.innerHTML = "Guardar Cambios"; 
-            }
-        }
+async function guardarRegistro(event) {
+event.preventDefault(); if (!esAdmin()) return;
+const btn = document.getElementById('btn-guardar'); btn.disabled = true; btn.innerHTML = "Procesando...";
+let payload = { token: googleToken, customUser, seccion: seccionActual, targetMonth: document.getElementById('month-selector').value, action: document.getElementById('edit-id') ? "edit_row" : "insert", rowValues: CAMPOS_SECCION[seccionActual].map((_, i) => event.target.elements[`campo_${i}`].value) };
+if (payload.action === "edit_row") payload.id = document.getElementById('edit-id').value;
+try {
+let res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+let result = await res.json();
+if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(); }
+localStorage.removeItem('borrador_modal_' + seccionActual);
+cerrarModal(); 
+mostrarToast("Guardado con exito", "success"); 
+await cargarDatosServidor();
+} catch (err) { 
+mostrarToast("Error", "error"); 
+btn.disabled = false; 
+btn.innerHTML = "Guardar Cambios"; 
+}
+}
 
-        function mostrarToast(m, t) { 
-            let toast = document.getElementById('toast'); 
-            toast.innerHTML = (t==='error'?`<svg class="w-5 h-5"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none"/></svg>`:`<svg class="w-5 h-5"><path d="M9 12l2 2 4-4" stroke="currentColor" fill="none"/></svg>`) + ` <span>${m}</span>`; 
-            toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold z-50 flex items-center gap-3 border ${t === 'error' ? 'bg-white text-rose-600 border-rose-200' : 'bg-slate-900 text-white border-slate-700'}`; 
-            toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 4000); 
-        }
-        function ocultarToast() { document.getElementById('toast').classList.add('hidden'); }
-    </script>
+function mostrarToast(m, t) { 
+let toast = document.getElementById('toast'); 
+toast.innerHTML = (t==='error'?`<svg class="w-5 h-5"><circle cx="12" cy="12" r="10" stroke="currentColor" fill="none"/></svg>`:`<svg class="w-5 h-5"><path d="M9 12l2 2 4-4" stroke="currentColor" fill="none"/></svg>`) + ` <span>${m}</span>`; 
+toast.className = `fixed bottom-6 right-6 px-5 py-3 rounded-xl shadow-lg text-sm font-semibold z-50 flex items-center gap-3 border ${t === 'error' ? 'bg-white text-rose-600 border-rose-200' : 'bg-slate-900 text-white border-slate-700'}`; 
+toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden'), 4000); 
+}
+function ocultarToast() { document.getElementById('toast').classList.add('hidden'); }
+</script>
 </body>
 </html>
