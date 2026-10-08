@@ -1,3 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitacora TI | Gestion Escolar</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body { font-family: 'Inter', sans-serif; }
+.tab-active { background-color: #2563eb; color: #ffffff; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+.tab-inactive { color: #64748b; }
+.tab-inactive:hover { background-color: #f1f5f9; color: #0f172a; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-blue-200 selection:text-blue-900">
+
+<div id="login-container" class="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+<div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl text-center max-w-md w-full border border-white/10 z-10">
+<div class="bg-blue-500 w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+<svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+</div>
+<h1 class="text-2xl font-bold mb-1 tracking-tight">Bitacora TI</h1>
+<p class="text-slate-300 mb-6 text-xs">Gestion de Infraestructura Escolar</p>
+
+<div class="flex justify-center mb-6">
+<div id="g_id_onload" data-client_id="1063772408490-0fipirlhukj70uvol4k2pjvehp753c5t.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+<div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="center"></div>
+</div>
+<div class="relative flex py-2 items-center">
+<div class="flex-grow border-t border-slate-600"></div>
+<span class="flex-shrink mx-4 text-slate-400 text-xs uppercase">o acceso con usuario</span>
+<div class="flex-grow border-t border-slate-600"></div>
+</div>
+<form onsubmit="loginCustom(event)" class="space-y-3 mt-4 text-left">
+<div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Usuario</label><input type="text" id="custom-user" required placeholder="Ingresa tu usuario" class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 outline-none focus:border-blue-500"></div>
+<div><label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Clave</label><input type="password" id="custom-pass" required placeholder="Ingresa tu clave" class="w-full bg-slate-800/80 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-400 outline-none focus:border-blue-500"></div>
+<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-2.5 rounded-xl text-sm font-medium shadow transition-colors mt-2">Ingresar al Sistema</button>
+</form>
+</div>
+</div>
+
+<div id="app-container" class="hidden flex flex-col min-h-screen">
+<header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-30">
+<div class="max-w-7xl mx-auto px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+<div class="flex items-center gap-3">
+<div class="bg-blue-600 p-2 rounded-lg"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
+<h1 class="text-xl font-bold text-slate-800 tracking-tight">Bitacora TI</h1>
+</div>
+<div class="flex flex-wrap items-center gap-4">
+<div class="flex items-center gap-2">
+<svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+<select id="month-selector" onchange="cambiarMes()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-1.5 outline-none font-semibold shadow-sm transition-colors cursor-pointer hover:border-blue-300"><option value="">Cargando meses...</option></select>
+</div>
+<div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+<span id="user-email" class="text-sm text-slate-600 font-medium truncate max-w-[150px] md:max-w-xs"></span>
+</div>
+<button onclick="cerrarSesion()" class="text-slate-500 hover:text-red-600 bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200">Salir</button>
+</div>
+</div>
+</header>
+
+<nav class="bg-white border-b border-slate-200 shadow-sm z-20">
+<div class="max-w-7xl mx-auto px-6 py-3 flex gap-2 overflow-x-auto hide-scrollbar items-center">
+<button onclick="cambiarSeccion('Soporte')" id="btn-Soporte" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-active">Soporte</button>
+<button onclick="cambiarSeccion('Uso_Sala')" id="btn-Uso_Sala" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Uso de Sala</button>
+<button onclick="cambiarSeccion('Prestamos')" id="btn-Prestamos" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Prestamos</button>
+<button onclick="cambiarSeccion('Permanente')" id="btn-Permanente" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive">Prestamos Permanentes</button>
+<button onclick="cambiarSeccion('Buscador')" id="btn-Buscador" class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg> Buscador
+</button>
+<button onclick="cambiarSeccion('Papelera')" id="btn-Papelera" class="ml-auto px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap tab-inactive flex items-center gap-2 hidden-readonly">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Papelera
+</button>
+</div>
+</nav>
+
+<main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+<div id="panel-pendientes" class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400"></div>
+<div><p class="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">Prestamos Pendientes</p><h3 id="count-prestamos-pendientes" class="text-4xl font-bold text-slate-800">0</h3></div>
+<div class="bg-amber-50 p-4 rounded-xl"><svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+</div>
+<div class="bg-white border border-slate-200 p-6 rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-rose-500"></div>
+<div><p class="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">Tickets Abiertos</p><h3 id="count-soporte-pendientes" class="text-4xl font-bold text-slate-800">0</h3></div>
+<div class="bg-rose-50 p-4 rounded-xl"><svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg></div>
+</div>
+</div>
+
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+<div>
+<h2 id="titulo-seccion" class="text-2xl font-bold text-slate-800 tracking-tight">Soporte</h2>
+<p id="subtitulo-seccion" class="text-sm text-slate-500 mt-1">Gestiona los registros de la seccion actual.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+                    <div id="controles-soporte" class="flex items-center gap-3 hidden">
+<div class="flex bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+<button onclick="cambiarVistaSoporte('tarjetas')" id="btn-vista-tarjetas" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Tarjetas"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg></button>
+<button onclick="cambiarVistaSoporte('lista')" id="btn-vista-lista" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Lista Detallada"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<button onclick="cambiarVistaSoporte('compacta')" id="btn-vista-compacta" class="p-1.5 rounded-lg text-slate-400 transition-colors" title="Vista Compacta"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg></button>
+</div>
+<select id="orden-soporte" onchange="renderizarTabla()" class="bg-white border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 outline-none font-medium shadow-sm cursor-pointer hover:border-blue-300">
+<option value="recientes">Más recientes primero</option>
+<option value="antiguos">Más antiguos primero</option>
+</select>
+</div>
+
+                    <div id="controles-prestamos" class="flex flex-wrap items-center gap-3 hidden">
+                        <label class="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 shadow-sm cursor-pointer hover:bg-slate-50 transition-colors">
+                            <input type="checkbox" id="chk-ocultar-devueltos" onchange="renderizarTabla()" class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
+                            <span>Ocultar devueltos</span>
+                        </label>
+                        <select id="orden-prestamos" onchange="renderizarTabla()" class="bg-white border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 outline-none font-medium shadow-sm cursor-pointer hover:border-blue-300">
+                            <option value="recientes">Más recientes primero</option>
+                            <option value="antiguos">Más antiguos primero</option>
+                        </select>
+                    </div>
+
+<button id="btn-nuevo" onclick="abrirModalNuevo()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl shadow-sm font-medium flex items-center gap-2 transform active:scale-95 transition-all">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Nuevo Registro
+</button>
+</div>
+</div>
+
+<div id="data-container">
+<div id="vista-tabla" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hidden">
+    <div class="overflow-x-auto max-h-[calc(100vh-280px)] overflow-y-auto">
+<table class="w-full text-left border-collapse">
+    <thead id="tabla-head" class="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold sticky top-0 z-10 shadow-sm"></thead>
+<tbody id="tabla-body" class="divide-y divide-slate-100 text-sm text-slate-700"></tbody>
+</table>
+</div>
+</div>
+<div id="vista-soporte-contenedor"></div>
+</div>
+
+<div id="panel-Buscador" class="hidden">
+<div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
+<div class="max-w-2xl mx-auto text-center mb-8">
+<div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
+<h3 class="text-xl font-bold text-slate-800 mb-2">Busqueda en el Archivo Historico</h3>
+<p class="text-slate-500 text-sm">Ingresa cualquier palabra para buscar en todos los meses registrados.</p>
+</div>
+<div class="flex gap-3 max-w-2xl mx-auto">
+<input type="text" id="input-buscar" placeholder="Ej. Proyector Sala 5..." class="border border-slate-300 rounded-xl p-3 text-base flex-1 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow bg-slate-50 focus:bg-white">
+<button onclick="ejecutarBusqueda()" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-3 rounded-xl font-medium shadow-sm active:scale-95 transition-all">Buscar</button>
+</div>
+</div>
+<div id="resultados-busqueda" class="space-y-3"></div>
+</div>
+
+<div id="panel-Papelera" class="hidden">
+<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
+<div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
+<div><h3 class="text-lg font-bold text-slate-800">Registros Eliminados</h3></div>
+<button onclick="cargarDatosPapelera()" class="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-200 transition-colors flex items-center gap-1">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Actualizar
+</button>
+</div>
+<div id="contenedor-papelera" class="space-y-6"></div>
+</div>
+</div>
+</main>
+</div>
+
+<!-- Modal Formulario Base -->
+<div id="modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-opacity">
+<div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+<div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+<h3 id="modal-titulo" class="text-lg font-bold text-slate-800">Nuevo Registro</h3>
+<button onclick="cerrarModal()" class="text-slate-400 hover:text-slate-600 transition-colors"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+</div>
+<div class="p-6 overflow-y-auto custom-scrollbar"><form id="modal-form" onsubmit="guardarRegistro(event)" class="space-y-4"></form></div>
+</div>
+</div>
+
+<div id="modal-devolucion" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+<div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+<h3 class="text-lg font-bold text-slate-800 mb-1">Confirmar Devolución</h3>
+<p class="text-xs text-slate-500 mb-4">Ingresa la fecha y hora exactas en que se devolvió el insumo.</p>
+<form onsubmit="confirmarDevolucionPrestamo(event)" class="space-y-4">
+<input type="hidden" id="dev-id">
+<div class="grid grid-cols-2 gap-3">
+    <div>
+        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Devolución</label>
+        <input type="date" id="dev-fecha" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+    </div>
+    <div>
+        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Hora Devolución</label>
+        <input type="time" id="dev-hora" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+    </div>
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones (Opcional)</label>
+<input type="text" id="dev-obs" placeholder="Ej. Entregado en buen estado" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+<div class="flex justify-end gap-2 pt-2">
+<button type="button" onclick="cerrarModalDevolucion()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
+<button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm">Guardar Devolución</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Mini Modal para Convertir a Préstamo Permanente -->
+<div id="modal-convertir-permanente" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+<div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+<h3 class="text-lg font-bold text-slate-800 mb-1">Promover a Préstamo Permanente</h3>
+<p class="text-xs text-slate-500 mb-4">Revisa y ajusta los campos antes de traspasar el equipo al registro permanente. El préstamo diario original se eliminará.</p>
+
+<form onsubmit="confirmarTraspasoPermanente(event)" class="space-y-3">
+<input type="hidden" id="perm-original-id">
+
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fecha Entrega</label>
+<input type="date" id="perm-fecha" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Profesor/a - Sala</label>
+<input type="text" id="perm-profesor" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Insumo</label>
+<input type="text" id="perm-insumo" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Equipo (Detalle/Serie)</label>
+<input type="text" id="perm-equipo" required placeholder="Ej. Dell Latitude ID-04" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cantidad</label>
+<input type="text" id="perm-cantidad" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Estado</label>
+<select id="perm-estado" required class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+<option value="Asignado a usuario" selected>Asignado a usuario</option>
+<option value="Entregado">Entregado</option>
+<option value="Operativo">Operativo</option>
+<option value="En Reparacion">En Reparacion</option>
+</select>
+</div>
+</div>
+
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observaciones</label>
+<input type="text" id="perm-obs" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm outline-none bg-slate-50 focus:bg-white">
+</div>
+
+<div class="flex justify-end gap-2 pt-3">
+<button type="button" onclick="cerrarModalConvertirPermanente()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-xl">Cancelar</button>
+<button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm">Confirmar Traspaso</button>
+</div>
+</form>
+</div>
+</div>
+
+<div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzYUgzBiF3ApPXOqxaxvb05M2fDJ2L2csiY6B4zwIeHTdCFgQORaTrXbAvVgfijovfgDA/exec";
 
@@ -58,7 +335,6 @@ window.addEventListener('click', () => {
 if (googleToken || customUser) localStorage.setItem('tokenTimestamp', Date.now());
 });
 
-// NUEVO: Función wrapper inteligente que reintenta las peticiones fallidas
 async function fetchConReintentos(url, options, maxRetries = 3) {
     for (let i = 0; i < maxRetries; i++) {
         try {
@@ -72,10 +348,10 @@ async function fetchConReintentos(url, options, maxRetries = 3) {
             return result; 
         } catch (error) {
             if (error.message === "No autorizado" || i === maxRetries - 1) {
-                throw error; // Lanza el error definitivo si es problema de sesión o se acabaron los intentos
+                throw error;
             }
             mostrarToast(`Conexión inestable. Reintentando (${i + 1}/${maxRetries})...`, "info");
-            await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1))); // Espera 2s, luego 4s...
+            await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
         }
     }
 }
@@ -672,7 +948,6 @@ localStorage.setItem('borrador_modal_' + seccionActual, JSON.stringify(datos));
 
 function cerrarModal() { document.getElementById('modal').classList.add('hidden'); }
 
-// NUEVO: Guardar con Interfaz Optimista (cambios instantáneos en pantalla)
 async function guardarRegistro(event) {
     event.preventDefault(); 
     if (!esAdmin()) return;
@@ -685,20 +960,19 @@ async function guardarRegistro(event) {
     const action = editId ? "edit_row" : "insert";
     const rowValues = CAMPOS_SECCION[seccionActual].map((_, i) => event.target.elements[`campo_${i}`].value);
     
-    // 1. INYECTAR EN LA VISTA INMEDIATAMENTE ANTES DE ENVIAR (Optimistic UI)
     let jsonKey = JSON_KEY_MAP[seccionActual];
     let tempId = editId || "TEMP-" + Date.now();
     let timestamp = new Date().toLocaleString('es-CL', { timeZone: 'America/Santiago' });
     let nuevaFila = [tempId, ...rowValues, timestamp, "Admin TI (Guardando...)"];
     
     if (action === "insert") {
-        globalDataCache.historial[jsonKey].unshift(nuevaFila); // Agrega al inicio visualmente
+        globalDataCache.historial[jsonKey].unshift(nuevaFila);
     } else {
         let idx = globalDataCache.historial[jsonKey].findIndex(r => r[0] === editId);
         if(idx !== -1) globalDataCache.historial[jsonKey][idx] = nuevaFila;
     }
     
-    renderizarTabla(); // Actualiza "Uso de Sala" (y todo lo demás) al instante
+    renderizarTabla(); 
     cerrarModal(); 
     mostrarToast("Confirmando con Google...", "info");
     
@@ -710,15 +984,11 @@ async function guardarRegistro(event) {
     if (editId) payload.id = editId;
 
     try {
-        // 2. ENVIAR A GOOGLE CON REINTENTOS
         await fetchConReintentos(API_URL, { method: "POST", body: JSON.stringify(payload) });
         localStorage.removeItem('borrador_modal_' + seccionActual);
         mostrarToast("Guardado confirmado", "success"); 
-        
-        // 3. RECARGA FINAL SILENCIOSA (Para reemplazar los IDs temporales por los reales)
         cargarDatosServidor(true); 
     } catch (err) { 
-        // 4. REVERTIR SI GOOGLE FALLÓ DEFINITIVAMENTE
         if (action === "insert") {
             globalDataCache.historial[jsonKey] = globalDataCache.historial[jsonKey].filter(r => r[0] !== tempId);
         }
@@ -742,3 +1012,5 @@ toast.classList.remove('hidden'); setTimeout(() => toast.classList.add('hidden')
 }
 function ocultarToast() { document.getElementById('toast').classList.add('hidden'); }
 </script>
+</body>
+</html>
