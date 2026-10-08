@@ -276,7 +276,7 @@ body { font-family: 'Inter', sans-serif; }
 <div id="toast" class="fixed bottom-6 right-6 hidden px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-50 transition-all transform flex items-center gap-2 border"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzYZgjo09cNyM8SckGiNaSP5Cv8wPwVVJtqoAKRajAn6vsFSdOAoHIJV2musRw86AkHiw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzYUgzBiF3ApPXOqxaxvb05M2fDJ2L2csiY6B4zwIeHTdCFgQORaTrXbAvVgfijovfgDA/exec";
 
 let googleToken = null; 
 let customUser = null;
@@ -391,7 +391,7 @@ document.getElementById('btn-nuevo').classList.add('hidden');
 document.querySelectorAll('.hidden-readonly').forEach(el => el.classList.add('hidden'));
 }
 
-cargarMeses().then(() => cargarDatosServidor());
+cargarMeses().then(() => cargarDatosServidor(false));
 }
 
 function cerrarSesion(recargar = true) {
@@ -410,7 +410,7 @@ document.getElementById('month-selector').innerHTML = result.data.map(m => `<opt
 } catch(e) {}
 }
 
-function cambiarMes() { cargarDatosServidor(); }
+function cambiarMes() { cargarDatosServidor(false); }
 function cambiarVistaSoporte(vista) { vistaSoporteActual = vista; localStorage.setItem('vistaSoporteActual', vista); renderizarTabla(); }
 
 function cambiarSeccion(seccion) {
@@ -459,9 +459,10 @@ renderizarTabla();
 }
 }
 
-async function cargarDatosServidor() {
+// NUEVO: Agregado parametro "silent" para recargas en segundo plano y no aplastar el Toast de Exito
+async function cargarDatosServidor(silent = false) {
 if (!googleToken && !customUser) return cerrarSesion();
-mostrarToast("Cargando base de datos...", "info");
+if (!silent) mostrarToast("Cargando base de datos...", "info");
 let targetMonth = document.getElementById('month-selector').value;
 try {
 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, action: "get_data", targetMonth }) });
@@ -477,8 +478,8 @@ document.getElementById('count-prestamos-pendientes').innerText = globalDataCach
 document.getElementById('count-soporte-pendientes').innerText = globalDataCache.pendientes.soporte?.length || 0;
 }
 renderizarTabla(); 
-ocultarToast();
-} catch (err) { mostrarToast('Error de conexion', 'error'); }
+if (!silent) ocultarToast();
+} catch (err) { if (!silent) mostrarToast('Error de conexion', 'error'); }
 }
 
 function escaparHTML(str) { return String(str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
@@ -727,8 +728,8 @@ let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: g
 let result = await res.json();
 if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(result.message); }
 mostrarToast("Estado guardado", "success"); 
-await cargarDatosServidor();
-} catch (err) { mostrarToast("Error al guardar", "error"); cargarDatosServidor(); }
+await cargarDatosServidor(true); // RECARGA SILENCIOSA
+} catch (err) { mostrarToast("Error al guardar", "error"); cargarDatosServidor(false); }
 }
 
 function cerrarModalDevolucion() { document.getElementById('modal-devolucion').classList.add('hidden'); }
@@ -748,7 +749,7 @@ try {
 let result = await res.json();
 if(result.status !== 'success') throw new Error(result.message);
 mostrarToast("Devolucion registrada", "success");
-await cargarDatosServidor();
+await cargarDatosServidor(true); // RECARGA SILENCIOSA
 } catch(e) { mostrarToast("Error al guardar", "error"); }
 }
 
@@ -810,7 +811,7 @@ let result = await res.json();
 if (result.status !== 'success') throw new Error(result.message);
 
 mostrarToast("Préstamo promovido a Permanente con éxito", "success");
-await cargarDatosServidor();
+await cargarDatosServidor(true); // RECARGA SILENCIOSA
 } catch (err) {
 mostrarToast("Error al realizar el traspaso", "error");
 }
@@ -825,8 +826,8 @@ let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: g
 let result = await res.json();
 if(result.status !== 'success') { if (result.message === "No autorizado") return cerrarSesion(); throw new Error(result.message); }
 mostrarToast("Movido a la papelera", "success"); 
-await cargarDatosServidor();
-} catch (err) { mostrarToast("Error al eliminar", "error"); cargarDatosServidor(); }
+await cargarDatosServidor(true); // RECARGA SILENCIOSA
+} catch (err) { mostrarToast("Error al eliminar", "error"); cargarDatosServidor(false); }
 }
 
 async function cargarDatosPapelera() {
@@ -863,7 +864,7 @@ try {
 let res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ token: googleToken, customUser, seccion, action: "restore_row", id, targetMonth: document.getElementById('month-selector').value }) });
 let result = await res.json();
 if(result.status !== 'success') throw new Error(result.message);
-mostrarToast("Restaurado", "success"); cargarDatosPapelera(); cargarDatosServidor();
+mostrarToast("Restaurado", "success"); cargarDatosPapelera(); cargarDatosServidor(true);
 } catch(e) { mostrarToast("Error", "error"); }
 }
 
@@ -970,7 +971,7 @@ if(result.status !== 'success') { if (result.message === "No autorizado") return
 localStorage.removeItem('borrador_modal_' + seccionActual);
 cerrarModal(); 
 mostrarToast("Guardado con exito", "success"); 
-await cargarDatosServidor();
+await cargarDatosServidor(true); // RECARGA SILENCIOSA AQUI
 } catch (err) { 
 mostrarToast("Error", "error"); 
 btn.disabled = false; 
